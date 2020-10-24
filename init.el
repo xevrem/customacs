@@ -139,6 +139,10 @@
   :config
   (evil-collection-init))
 
+;; hydra
+
+ 
+
 ;; better key binding
 (use-package general
   :config
@@ -148,11 +152,34 @@
     :prefix "SPC"
     :global-prefix "C-SPC")
   (custo/leader-keys
+   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
    "t" '(:ignore t :which-key "toggles")
    "t t" '(counsel-load-theme :which-key "choose theme")
-   "q" '(:ignore q :whick-key "quit")
-   "q q" '(save-buffers-kill-emacs :whick-key "save and quit")
-   "q Q" '(kill-emacs :whick-key "quit no-save")
+   "q" '(:ignore q :which-key "quit")
+   "q q" '(save-buffers-kill-emacs :which-key "save and quit")
+   "q Q" '(kill-emacs :which-key "quit no-save")
+   "f" '(:ignore f :which-key "file")
+   "f f" '(counsel-find-file :which-key "find file")
+   "f s" '(save-buffer :which-key "save file")
+   "s" '(:ignore f :which-key "search")
+   "s s" '(swiper :which-key "search buffer")
+   "b" '(:ignore f :which-key "buffer")
+   "b b" '(counsel-switch-buffer :which-key "switch buffers")
    )
   )
-  
+
+;; hyrdra to build menus
+(use-package hydra
+  :config
+  (defhydra hydra-text-scale (:timeout 4)
+    "scale text"
+    ("j" text-scale-increase "in")
+    ("k" text-scale-decrease "out")
+    ("f" nil "finished" :exit t)
+    )
+  ;; since custo leader keys are defined, we can bind to them now :D
+  (custo/leader-keys
+    "t s" '(hydra-text-scale/body :which-key "scale text")
+    )
+  )
+
