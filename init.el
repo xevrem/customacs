@@ -2,7 +2,7 @@
 (setq inhibit-startup-message t)
 (scroll-bar-mode -1)    ;; disable vis scrollbar
 (tool-bar-mode -1)      ;; disable the toolbar
-(tooltip-mode -1)       ;; disable tooltipt
+(tooltip-mode -1)       ;; disable tooltip
 (set-fringe-mode 10)    ;; 'breathing' room
 (menu-bar-mode -1)
 ;;(setq visible-bell t)   ;; visual bell
@@ -56,25 +56,44 @@
   :config
   (ivy-mode 1))
 
+;; load all-the-icons only if in GUI mode
+;; and install them if not present
+(use-package all-the-icons
+  :if (display-graphic-p)
+  :commands all-the-icons-install-fonts
+  :init
+  (unless (find-font (font-spec :name "all-the-icons"))
+    (all-the-icons-install-fonts t)))
+
+;; add a better modeline
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
 
-(use-package doom-themes)
+;; enable better themes
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italics t)
+  (load-theme 'doom-palenight t))
 
-(load-theme 'doom-palenight)
-
+;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; setup a special menu that tells us what keys are available
+;; based on the current mode, set pop-up delay to 0.1s
 (use-package which-key
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq whick-key-idle-delay 0.1))
 
+;; provide more helpful info in ivy panels
 (use-package ivy-rich
   :init (ivy-rich-mode 1))
 
+;; use counsel for completions over
+;; default M-x and some other things
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
 	 ("C-x b" . counsel-ibuffer)
@@ -82,6 +101,7 @@
 	 :map minibuffer-local-map
 	 ("C-r" . 'counsel-minibuffer-history)))
 
+;; more better help menus
 (use-package helpful
   :custom
   (counsel-describe-function-function #'helpful-callable)
@@ -89,6 +109,46 @@
   :bind
   ([remap describe-function] . counsel-describe-function)
   ([remap describe-command] . helpful-command)
-  ([rema describe-variable] . counsel-describe-variable)
+  ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
   
+
+(defun custo-evil-hook ()
+  (dolist (mode '(custom-mode
+		  eshell-mode
+		  git-rebase-mode
+		  term-mode
+		  ansi-term-mode))
+    (add-to-list 'evil-emacs-state-modes mode)))
+
+;; the very best mode
+(use-package evil
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-d-scroll t)
+  ;;:hook (evil-mode . custo-evil-hook)
+  :config
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+ )
+
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
+
+;; better key binding
+(use-package general)
+ ;; :config
+ ;; (setq general-default-prefix "SPC")
+ ;; (general-create-definer custo-leader-keys
+ ;;   ;;:keymaps '(normal insert visual emacs)
+ ;;   :prefix "SPC"
+ ;;   ;;:global-prefix "C-SPC"
+ ;;   )
+
+ ;; (custo-leader-keys
+ ;;  "t" '(:ignore t :which-key "toggles")
+ ;;  "t t" '(counsel-load-theme :which-key "choose theme")))
