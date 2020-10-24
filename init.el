@@ -29,6 +29,7 @@
 ;; better line info
 (column-number-mode)
 (global-display-line-numbers-mode t)
+(menu-bar--display-line-numbers-mode-relative)
 (dolist (mode '(org-mode-hook
 		term-mode-hook
 		eshell-mode-hook
@@ -86,7 +87,8 @@
   :init (which-key-mode)
   :diminish which-key-mode
   :config
-  (setq whick-key-idle-delay 0.1))
+  (setq which-key-idle-delay 0.1)
+  )
 
 ;; provide more helpful info in ivy panels
 (use-package ivy-rich
@@ -99,7 +101,9 @@
 	 ("C-x b" . counsel-ibuffer)
 	 ("C-x C-f" . counsel-find-file)
 	 :map minibuffer-local-map
-	 ("C-r" . 'counsel-minibuffer-history)))
+	 ("C-r" . 'counsel-minibuffer-history)
+	 )
+  )
 
 ;; more better help menus
 (use-package helpful
@@ -110,7 +114,8 @@
   ([remap describe-function] . counsel-describe-function)
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
+  ([remap describe-key] . helpful-key)
+  )
   
 
 (defun custo-evil-hook ()
@@ -119,7 +124,9 @@
 		  git-rebase-mode
 		  term-mode
 		  ansi-term-mode))
-    (add-to-list 'evil-emacs-state-modes mode)))
+    (add-to-list 'evil-emacs-state-modes mode)
+    )
+  )
 
 ;; the very best mode
 (use-package evil
@@ -139,9 +146,6 @@
   :config
   (evil-collection-init))
 
-;; hydra
-
- 
 
 ;; better key binding
 (use-package general
@@ -152,23 +156,32 @@
     :prefix "SPC"
     :global-prefix "C-SPC")
   (custo/leader-keys
-   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
-   "t" '(:ignore t :which-key "toggles")
-   "t t" '(counsel-load-theme :which-key "choose theme")
-   "q" '(:ignore q :which-key "quit")
-   "q q" '(save-buffers-kill-emacs :which-key "save and quit")
-   "q Q" '(kill-emacs :which-key "quit no-save")
-   "f" '(:ignore f :which-key "file")
-   "f f" '(counsel-find-file :which-key "find file")
-   "f s" '(save-buffer :which-key "save file")
-   "s" '(:ignore f :which-key "search")
-   "s s" '(swiper :which-key "search buffer")
-   "b" '(:ignore f :which-key "buffer")
-   "b b" '(counsel-switch-buffer :which-key "switch buffers")
-   )
+    "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
+    "a" '(:ignore t :which-key "apps")
+    "a e" '(eww :which-key "eww")
+    "t" '(:ignore t :which-key "toggles")
+    "t t" '(counsel-load-theme :which-key "choose theme")
+    "q" '(:ignore q :which-key "quit")
+    "q q" '(save-buffers-kill-emacs :which-key "save and quit")
+    "q Q" '(kill-emacs :which-key "quit no-save")
+    "f" '(:ignore f :which-key "file")
+    "f f" '(counsel-find-file :which-key "find file")
+    "f s" '(save-buffer :which-key "save file")
+    "s" '(:ignore f :which-key "search")
+    "s s" '(swiper :which-key "search buffer")
+    "b" '(:ignore f :which-key "buffer")
+    "b b" '(counsel-switch-buffer :which-key "switch buffers")
+    "b d" '(kill-current-buffer :which-key "destroy buffer")
+    "b i" '(ibuffer-list-buffers :which-key "ibuffer")
+    "w" '(:ignore w :which-key "window")
+    "w w" '(other-window :which-key "other window")
+    "w d" '(delete-window :which-key "delete window")
+    "w h" '(evil-window-vsplit :which-key "split window horizontally")
+    "w v" '(evil-window-split :which-key "delete window vertically")
+    )
   )
 
-;; hyrdra to build menus
+;; hydra to build menus
 (use-package hydra
   :config
   (defhydra hydra-text-scale (:timeout 4)
@@ -183,3 +196,30 @@
     )
   )
 
+;; setup project management
+(use-package projectile
+  :diminish projectile-mode
+  :custom
+  (projectile-completion-system 'ivy)
+  :init
+  (setq projectile-switch-project-action #'projectile-dired)
+  :config
+  (projectile-mode)
+  (custo/leader-keys
+    "p" '(projectile-command-map :which-key "projectile"))
+  )
+  
+;; add counsel capability
+(use-package counsel-projectile
+  :after projectile
+  :config (counsel-projectile-mode)
+  )
+
+
+;; make dired more like ranger
+(use-package ranger
+  :config
+  (custo/leader-keys
+   "f d" '(ranger :which-key "file directory")
+   )
+  )
