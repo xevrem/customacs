@@ -140,15 +140,19 @@
   (evil-collection-init))
 
 ;; better key binding
-(use-package general)
- ;; :config
- ;; (setq general-default-prefix "SPC")
- ;; (general-create-definer custo-leader-keys
- ;;   ;;:keymaps '(normal insert visual emacs)
- ;;   :prefix "SPC"
- ;;   ;;:global-prefix "C-SPC"
- ;;   )
-
- ;; (custo-leader-keys
- ;;  "t" '(:ignore t :which-key "toggles")
- ;;  "t t" '(counsel-load-theme :which-key "choose theme")))
+(use-package general
+  :config
+  ;;(setq general-default-prefix "SPC")
+  (general-create-definer custo/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+  (custo/leader-keys
+   "t" '(:ignore t :which-key "toggles")
+   "t t" '(counsel-load-theme :which-key "choose theme")
+   "q" '(:ignore q :whick-key "quit")
+   "q q" '(save-buffers-kill-emacs :whick-key "save and quit")
+   "q Q" '(kill-emacs :whick-key "quit no-save")
+   )
+  )
+  
