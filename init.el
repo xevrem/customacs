@@ -6,6 +6,7 @@
 (set-fringe-mode 10)    ;; 'breathing' room
 (menu-bar-mode -1)
 ;;(setq visible-bell t)   ;; visual bell
+(setq-default indent-tabs-mode nil) ;; uses spaces and not tabs
 
 (set-face-attribute 'default 'nil :font "Fira Code" :height 180)
 
@@ -31,9 +32,9 @@
 (global-display-line-numbers-mode t)
 (menu-bar--display-line-numbers-mode-relative)
 (dolist (mode '(org-mode-hook
-		term-mode-hook
-		eshell-mode-hook
-		ansi-term-mode-hook))
+                term-mode-hook
+                eshell-mode-hook
+                ansi-term-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 
@@ -42,18 +43,18 @@
 (use-package counsel)
 (use-package ivy
   :bind (("C-s" . swiper)
-	 :map ivy-minibuffer-map
-	 ("TAB" . ivy-alt-done)
-	 ("C-l" . ivy-alt-done)
-	 ("C-j" . ivy-next-line)
-	 ("C-k" . ivy-previous-line)
-	 :map ivy-switch-buffer-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-l" . ivy-done)
-	 ("C-d" . ivy-switch-buffer-kill)
-	 :map ivy-reverse-i-search-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-d" . ivy-reverse-i-search-kill))
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill)
+         :map ivy-reverse-i-search-map
+         ("C-k" . ivy-previous-line)
+         ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
 
@@ -98,10 +99,10 @@
 ;; default M-x and some other things
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
-	 ("C-x b" . counsel-ibuffer)
-	 ("C-x C-f" . counsel-find-file)
-	 :map minibuffer-local-map
-	 ("C-r" . 'counsel-minibuffer-history)
+         ("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history)
 	 )
   )
 
@@ -120,10 +121,10 @@
 
 (defun custo-evil-hook ()
   (dolist (mode '(custom-mode
-		  eshell-mode
-		  git-rebase-mode
-		  term-mode
-		  ansi-term-mode))
+                  eshell-mode
+                  git-rebase-mode
+                  term-mode
+                  ansi-term-mode))
     (add-to-list 'evil-emacs-state-modes mode)
     )
   )
@@ -141,6 +142,7 @@
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
  )
 
+;; better evil stuff
 (use-package evil-collection
   :after evil
   :config
@@ -215,7 +217,6 @@
   :config (counsel-projectile-mode)
   )
 
-
 ;; make dired more like ranger
 (use-package ranger
   :config
@@ -224,7 +225,6 @@
    )
   )
 
-
 ;; magit
 (use-package magit
   ;;:commands (magit-status magit-get-current-branch)
@@ -232,8 +232,8 @@
   ;;(magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :config
   (custo/leader-keys
-    "g" `(:ignore g :which-key "magit")
-    "g s" `(magit-status :whick-key "magit status")
+    "g" '(:ignore g :which-key "magit")
+    "g s" '(magit-status :whick-key "magit status")
     )
 
 ;; evil keys with magit  
