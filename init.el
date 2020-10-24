@@ -235,7 +235,13 @@
     "g" `(:ignore g :which-key "magit")
     "g s" `(magit-status :whick-key "magit status")
     )
+
+;; evil keys with magit  
+(use-package evil-magit
+  :after magit
   )
 
-(use-package evil-magit
-  :after magit)
+;; magit integration with github and gitlab
+(use-package forge
+  :after magit
+  )
