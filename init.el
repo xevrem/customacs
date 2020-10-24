@@ -223,3 +223,19 @@
    "f d" '(ranger :which-key "file directory")
    )
   )
+
+
+;; magit
+(use-package magit
+  ;;:commands (magit-status magit-get-current-branch)
+  ;;:custom
+  ;;(magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  :config
+  (custo/leader-keys
+    "g" `(:ignore g :which-key "magit")
+    "g s" `(magit-status :whick-key "magit status")
+    )
+  )
+
+(use-package evil-magit
+  :after magit)
