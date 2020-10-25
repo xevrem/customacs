@@ -39,6 +39,8 @@
 
 
 ;; packages
+
+;; ivy trio
 (use-package swiper)
 (use-package counsel)
 (use-package ivy
@@ -229,8 +231,8 @@
 ;; magit
 (use-package magit
   ;;:commands (magit-status magit-get-current-branch)
-  ;;:custom
-  ;;(magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :config
   (custo/leader-keys
     "g" '(:ignore g :which-key "magit")
@@ -260,19 +262,12 @@
 (use-package js2-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-  (setq js-indent-level 2
-        )
-  ;;:hook (js-mode . js2-minor-mode)
+  (setq js-indent-level 2)
   )
-
-;; (use-package js2-refactor
-;;   :after js2-mode
-;;   :hook 
-;;   (js2-mode-hook . js2-refactor-mode)
-;;   )
 
 ;; teach js2-mode how to jsx
 (use-package rjsx-mode
+  :diminish
   :after js2-mode
   :config
   ;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
@@ -289,7 +284,6 @@
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp
   :config
-  ;; (setq lsp-keymap-prefix "C-l")
   (setq lsp-completion-provider :capf)
   (custo/leader-keys
     "l" '(:ignore l :which-key "lsp")
@@ -310,5 +304,3 @@
 ;; better lsp
 (use-package lsp-ivy
   :commands lsp-ivy-workspace-symbol)
-
-
