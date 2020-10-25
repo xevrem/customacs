@@ -84,6 +84,23 @@
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; yasnippet
+(use-package yasnippet
+  :hook
+  '((text-mode-hook . yas-minor-mode-on)
+    (prog-mode-hook . yas-minor-mode-on)
+    (conf-mode-hook . yas-minor-mode-on)
+    (snippet-mode-hook . yas-minor-mode-on)
+    )
+  )
+
+(use-package smartparens
+  :init (smartparens-global-mode 1)
+  :config
+  ;; don't interfere with yasnippets
+  (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
+  )
+
 ;; setup a special menu that tells us what keys are available
 ;; based on the current mode, set pop-up delay to 0.1s
 (use-package which-key
@@ -155,35 +172,50 @@
 (use-package general
   :config
   ;;(setq general-default-prefix "SPC")
-  (general-create-definer custo/leader-keys
+  (general-create-definer custo/leader-key
     :keymaps '(normal insert visual emacs)
     :prefix "SPC"
     :global-prefix "C-SPC")
-  (custo/leader-keys
+  (general-create-definer custo/local-leader-key
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC m"
+    :global-prefix "C-SPC m")
+  )
+
+;; define default keybinds
+(custo/leader-key
     "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
     "a" '(:ignore t :which-key "apps")
     "a e" '(eww :which-key "eww")
-    "t" '(:ignore t :which-key "toggles")
-    "t t" '(counsel-load-theme :which-key "choose theme")
-    "t c" '(comment-line :which-key "toggle comment")
-    "q" '(:ignore q :which-key "quit")
-    "q q" '(save-buffers-kill-emacs :which-key "save and quit")
-    "q Q" '(kill-emacs :which-key "quit no-save")
-    "f" '(:ignore f :which-key "file")
-    "f f" '(counsel-find-file :which-key "find file")
-    "f s" '(save-buffer :which-key "save file")
-    "s" '(:ignore f :which-key "search")
-    "s s" '(swiper :which-key "search buffer")
-    "b" '(:ignore f :which-key "buffer")
+    "b" '(:ignore b :which-key "buffer")
     "b b" '(counsel-switch-buffer :which-key "switch buffers")
     "b d" '(kill-current-buffer :which-key "destroy buffer")
     "b i" '(ibuffer-list-buffers :which-key "ibuffer")
+    "f" '(:ignore f :which-key "file")
+    "f f" '(counsel-find-file :which-key "find file")
+    "f s" '(save-buffer :which-key "save file")
+    "m" '(:ignore m :which-key "local-leader")
+    "q" '(:ignore q :which-key "quit")
+    "q q" '(save-buffers-kill-emacs :which-key "save and quit")
+    "q Q" '(kill-emacs :which-key "quit no-save")
+    "s" '(:ignore f :which-key "search")
+    "s s" '(swiper :which-key "search buffer")
+    "t" '(:ignore t :which-key "toggles")
+    "t t" '(counsel-load-theme :which-key "choose theme")
     "w" '(:ignore w :which-key "window")
     "w w" '(other-window :which-key "other window")
     "w d" '(delete-window :which-key "delete window")
     "w h" '(evil-window-vsplit :which-key "split window horizontally")
     "w v" '(evil-window-split :which-key "delete window vertically")
     )
+
+(custo/local-leader-key
+  "=" '(:ignore = :which-key "format")
+  "d" '(:ignore d :which-key "documentation")
+  "l" '(:ignore l :which-key "lsp")
+  "i" '(:ingore i :which-key "insert")
+  "c" '(:ignore c :which-key "comment")
+  "c c" '(comment-line :which-key "comment line")
   )
 
 ;; hydra to build menus
@@ -196,7 +228,7 @@
     ("f" nil "finished" :exit t)
     )
   ;; since custo leader keys are defined, we can bind to them now :D
-  (custo/leader-keys
+  (custo/leader-key
     "t s" '(hydra-text-scale/body :which-key "scale text")
     )
   )
@@ -210,7 +242,7 @@
   (setq projectile-switch-project-action #'projectile-dired)
   :config
   (projectile-mode)
-  (custo/leader-keys
+  (custo/leader-key
     "p" '(projectile-command-map :which-key "projectile"))
   )
   
@@ -223,7 +255,7 @@
 ;; make dired more like ranger
 (use-package ranger
   :config
-  (custo/leader-keys
+  (custo/leader-key
    "f d" '(ranger :which-key "file directory")
    )
   )
@@ -234,7 +266,7 @@
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :config
-  (custo/leader-keys
+  (custo/leader-key
     "g" '(:ignore g :which-key "magit")
     "g s" '(magit-status :whick-key "magit status")
     )
@@ -249,6 +281,7 @@
 (use-package forge
   :after magit
   )
+
 
 ;; completion mini buffers
 (use-package company
@@ -274,9 +307,31 @@
   (add-to-list 'auto-mode-alist '("\\js\\'" . rjsx-mode))
   )
 
+;; (use-package js-doc
+;;   :after js2-mode
+;;   :config
+;;   (custo/local-leader-key
+;;    "d" '(:ignore d :which-key "jsdoc")
+;;    "d f" '(js-doc-insert-function-doc-snippet :which-key "jsdoc function")
+;;    )
+;;   )
+
+(use-package js-react-redux-yasnippets
+  :after yasnippet
+  :config
+  (custo/local-leader-key
+    "i s" '(yas-insert-snippet :which-key "insert snippet")
+    )
+  )
+
 ;; format js and jsx
 (use-package prettier
-  :after js2-mode)
+  :after js2-mode
+  :config
+  (custo/local-leader-key
+    "= =" '(prettier-prettify :which-key "format with prettier")
+    )
+  )
 
 ;; lsp-mode
 (use-package lsp-mode
@@ -285,22 +340,34 @@
   :commands lsp
   :config
   (setq lsp-completion-provider :capf)
-  (custo/leader-keys
-    "l" '(:ignore l :which-key "lsp")
+  (custo/local-leader-key
     "l f" '(:ignore f :which-key "find")
     "l f r" '(lsp-ui-peek-find-references :which-key "find references")
     "l f d" '(lsp-find-definition :which-key "find definition")
     "l r" '(lsp-rename :which-key "rename")
     "l =" '(:ignore = :which-key "format")
-    "l = =" '(prettier-prettify :which-key "format with prittier")
     "l = l" '(lsp-format-buffer :which-key "format with lsp")
     )
   )
 
 ;; prettier lsp
 (use-package lsp-ui
-  :commands lsp-ui-mode)
+  :commands lsp-ui-mode
+  )
 
 ;; better lsp
 (use-package lsp-ivy
-  :commands lsp-ivy-workspace-symbol)
+  :commands lsp-ivy-workspace-symbol
+  )
+
+;; error checking
+(use-package flycheck
+  ;; :commands flycheck-list-errors flycheck-buffer
+  :hook (after-init-hook . global-flycheck-mode)
+  :config
+  (custo/local-leader-key
+    "e" '(:ignore t :which-key "errors")
+    "e l" '(flycheck-list-errors :which-key "list errors")
+    )
+  )
+
