@@ -163,6 +163,7 @@
     "a e" '(eww :which-key "eww")
     "t" '(:ignore t :which-key "toggles")
     "t t" '(counsel-load-theme :which-key "choose theme")
+    "t c" '(comment-line :which-key "toggle comment")
     "q" '(:ignore q :which-key "quit")
     "q q" '(save-buffers-kill-emacs :which-key "save and quit")
     "q Q" '(kill-emacs :which-key "quit no-save")
@@ -235,6 +236,7 @@
     "g" '(:ignore g :which-key "magit")
     "g s" '(magit-status :whick-key "magit status")
     )
+  )
 
 ;; evil keys with magit  
 (use-package evil-magit
@@ -245,3 +247,68 @@
 (use-package forge
   :after magit
   )
+
+;; completion mini buffers
+(use-package company
+  :hook
+  (after-init-hook . global-company-mode)
+  :config
+  (setq company-backends '(company-capf))
+  )
+
+;; better javascript mode
+(use-package js2-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  (setq js-indent-level 2
+        )
+  ;;:hook (js-mode . js2-minor-mode)
+  )
+
+;; (use-package js2-refactor
+;;   :after js2-mode
+;;   :hook 
+;;   (js2-mode-hook . js2-refactor-mode)
+;;   )
+
+;; teach js2-mode how to jsx
+(use-package rjsx-mode
+  :after js2-mode
+  :config
+  ;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+  (add-to-list 'auto-mode-alist '("\\js\\'" . rjsx-mode))
+  )
+
+;; format js and jsx
+(use-package prettier
+  :after js2-mode)
+
+;; lsp-mode
+(use-package lsp-mode
+  :hook ((js-mode . lsp)
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp
+  :config
+  ;; (setq lsp-keymap-prefix "C-l")
+  (setq lsp-completion-provider :capf)
+  (custo/leader-keys
+    "l" '(:ignore l :which-key "lsp")
+    "l f" '(:ignore f :which-key "find")
+    "l f r" '(lsp-ui-peek-find-references :which-key "find references")
+    "l f d" '(lsp-find-definition :which-key "find definition")
+    "l r" '(lsp-rename :which-key "rename")
+    "l =" '(:ignore = :which-key "format")
+    "l = =" '(prettier-prettify :which-key "format with prittier")
+    "l = l" '(lsp-format-buffer :which-key "format with lsp")
+    )
+  )
+
+;; prettier lsp
+(use-package lsp-ui
+  :commands lsp-ui-mode)
+
+;; better lsp
+(use-package lsp-ivy
+  :commands lsp-ivy-workspace-symbol)
+
+
