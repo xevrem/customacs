@@ -20,18 +20,32 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 ;; init srouces
-(require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
-;; init use-package on non-linux platforms
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-(require 'use-package)
-(setq use-package-always-ensure t)
+;; (require 'package)
+;; (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+;;                          ("org" . "https://orgmode.org/elpa/")
+;;                          ("elpa" . "https://elpa.gnu.org/packages/")))
+;; (package-initialize)
+;; (unless package-archive-contents
+;;   (package-refresh-contents))
+;; ;; init use-package on non-linux platforms
+;; (unless (package-installed-p 'use-package)
+;;   (package-install 'use-package))
+;; (require 'use-package)
+;; (setq use-package-always-ensure t)
+(setq straight-use-package-by-default t)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(straight-use-package 'use-package)
 
 ;; better line info
 (column-number-mode)
@@ -45,7 +59,6 @@
 
 
 ;; packages
-
 
 
 ;; ivy trio
@@ -213,12 +226,14 @@
     "q q" '(save-buffers-kill-emacs :which-key "save and quit")
     "q Q" '(kill-emacs :which-key "quit no-save")
     "s" '(:ignore f :which-key "search")
-    "s s" '(swiper :which-key "search buffer")
+    "s b" '(swiper :which-key "search buffer")
+    "s p" '(counsel-projectile-rg :which-key "search project")
     "t" '(:ignore t :which-key "toggles")
     "t t" '(counsel-load-theme :which-key "choose theme")
     "w" '(:ignore w :which-key "window")
     "w w" '(other-window :which-key "other window")
     "w d" '(delete-window :which-key "delete window")
+    "w o" '(delete-other-windows :which-key "delete other windows")
     "w h" '(evil-window-vsplit :which-key "split window horizontally")
     "w v" '(evil-window-split :which-key "delete window vertically")
     )
@@ -366,9 +381,13 @@
     )
   )
 
+(use-package web-mode)
+
 ;; lsp-mode
 (use-package lsp-mode
   :hook ((js-mode . lsp)
+         (scss-mode . lsp)
+         (web-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp
   :config
@@ -405,3 +424,16 @@
     )
   )
 
+
+;; org stuff
+(use-package org-projectile
+  :config
+  (org-projectile-per-project)
+  (setq org-projectile-per-project-filepath "todo.org")
+  (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
+  )
+
+(use-package org-superstar
+  :hook
+  (org-mode-hook . org-superstar-mode)
+  )
