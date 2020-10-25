@@ -5,8 +5,14 @@
 (tooltip-mode -1)       ;; disable tooltip
 (set-fringe-mode 10)    ;; 'breathing' room
 (menu-bar-mode -1)
-;;(setq visible-bell t)   ;; visual bell
+(setq visible-bell t)   ;; visual bell
 (setq-default indent-tabs-mode nil) ;; uses spaces and not tabs
+
+;; for performance
+(setq gc-cons-threshold 100000000)
+;; (setq gc-cons-threshold most-positive-fixnum)
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
+
 
 (set-face-attribute 'default 'nil :font "Fira Code" :height 180)
 
@@ -40,9 +46,20 @@
 
 ;; packages
 
+
+
 ;; ivy trio
 (use-package swiper)
-(use-package counsel)
+;; use counsel for completions over
+;; default M-x and some other things
+(use-package counsel
+  :bind (("M-x" . counsel-M-x)
+         ("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history)
+	 )
+  )
 (use-package ivy
   :bind (("C-s" . swiper)
          :map ivy-minibuffer-map
@@ -59,6 +76,10 @@
          ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
+
+(use-package prescient)
+(use-package ivy-prescient
+ :init (ivy-prescient-mode 1))
 
 ;; load all-the-icons only if in GUI mode
 ;; and install them if not present
@@ -101,6 +122,7 @@
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
   )
 
+
 ;; setup a special menu that tells us what keys are available
 ;; based on the current mode, set pop-up delay to 0.1s
 (use-package which-key
@@ -114,16 +136,6 @@
 (use-package ivy-rich
   :init (ivy-rich-mode 1))
 
-;; use counsel for completions over
-;; default M-x and some other things
-(use-package counsel
-  :bind (("M-x" . counsel-M-x)
-         ("C-x b" . counsel-ibuffer)
-         ("C-x C-f" . counsel-find-file)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history)
-	 )
-  )
 
 ;; more better help menus
 (use-package helpful
@@ -182,6 +194,8 @@
     :global-prefix "C-SPC m")
   )
 
+
+
 ;; define default keybinds
 (custo/leader-key
     "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
@@ -230,6 +244,20 @@
   ;; since custo leader keys are defined, we can bind to them now :D
   (custo/leader-key
     "t s" '(hydra-text-scale/body :which-key "scale text")
+    )
+  )
+
+(use-package undo-tree
+  :init (global-undo-tree-mode 1)
+  :config
+  (defhydra hydra-undo-tree (:timeout 4)
+    "undo / redo"
+    ("u" undo-tree-undo "undo")
+    ("r" undo-tree-redo "redo")
+    ("t" undo-tree-visualize "undo-tree visualize" :exit t)
+    )
+  (custo/leader-key
+    "u" '(hydra-undo-tree/body :which-key "undo/redo")
     )
   )
 
@@ -282,7 +310,6 @@
   :after magit
   )
 
-
 ;; completion mini buffers
 (use-package company
   :hook
@@ -290,6 +317,12 @@
   :config
   (setq company-backends '(company-capf))
   )
+
+(use-package company-prescient
+  :init (company-prescient-mode 1))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
 
 ;; better javascript mode
 (use-package js2-mode
@@ -344,6 +377,7 @@
     "l f" '(:ignore f :which-key "find")
     "l f r" '(lsp-ui-peek-find-references :which-key "find references")
     "l f d" '(lsp-find-definition :which-key "find definition")
+    "l o" '(lsp-ui-imenu :which-key "overview")
     "l r" '(lsp-rename :which-key "rename")
     "l =" '(:ignore = :which-key "format")
     "l = l" '(lsp-format-buffer :which-key "format with lsp")
