@@ -1,4 +1,13 @@
 ;; (setq package-user-dir "~/repos/customacs/packages")
+;; update path variables because stuff may not be set yet
+(let '(path
+       (shell-command-to-string "bash -c \"env | grep \\^PATH | tr -d PATH=\""))
+  (setenv "PATH" path)
+  (setq exec-path
+        (append
+         (split-string-and-unquote path ":")
+         exec-path)
+        ))
 (setq inhibit-startup-message t)
 (scroll-bar-mode -1)    ;; disable vis scrollbar
 (tool-bar-mode -1)      ;; disable the toolbar
@@ -273,7 +282,8 @@
   :config
   (projectile-mode)
   (custo/leader-key
-    "p" '(projectile-command-map :which-key "projectile"))
+    "p" '(projectile-command-map :which-key "projectile")
+    "p a" '(projectile-add-known-project :which-key "add project"))
   )
   
 ;; add counsel capability
@@ -284,11 +294,16 @@
 
 ;; make dired more like ranger
 (use-package ranger
+  :after dired
   :config
   (custo/leader-key
    "f d" '(ranger :which-key "file directory")
    )
   )
+
+(use-package diredfl
+  :after dired
+  :hook (dired-mode . diredfl-mode))
 
 ;; magit
 (use-package magit
