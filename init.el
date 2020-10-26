@@ -1,4 +1,4 @@
-(setq package-user-dir "~/repos/customacs/packages")
+;; (setq package-user-dir "~/repos/customacs/packages")
 (setq inhibit-startup-message t)
 (scroll-bar-mode -1)    ;; disable vis scrollbar
 (tool-bar-mode -1)      ;; disable the toolbar
@@ -13,25 +13,22 @@
 ;; (setq gc-cons-threshold most-positive-fixnum)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
-
 (set-face-attribute 'default 'nil :font "Fira Code" :height 180)
 
 ;; make escape qui prompts
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-;; init srouces
-;; (require 'package)
-;; (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-;;                          ("org" . "https://orgmode.org/elpa/")
-;;                          ("elpa" . "https://elpa.gnu.org/packages/")))
-;; (package-initialize)
-;; (unless package-archive-contents
-;;   (package-refresh-contents))
-;; ;; init use-package on non-linux platforms
-;; (unless (package-installed-p 'use-package)
-;;   (package-install 'use-package))
-;; (require 'use-package)
-;; (setq use-package-always-ensure t)
+;; better line info
+(column-number-mode)
+(global-display-line-numbers-mode t)
+(menu-bar--display-line-numbers-mode-relative)
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                eshell-mode-hook
+                ansi-term-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+;; setup straight for package management
 (setq straight-use-package-by-default t)
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -47,19 +44,9 @@
   (load bootstrap-file nil 'nomessage))
 (straight-use-package 'use-package)
 
-;; better line info
-(column-number-mode)
-(global-display-line-numbers-mode t)
-(menu-bar--display-line-numbers-mode-relative)
-(dolist (mode '(org-mode-hook
-                term-mode-hook
-                eshell-mode-hook
-                ansi-term-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
-
-;; packages
-
+;;
+;; PACKAGE CONFIGURATION
+;;
 
 ;; ivy trio
 (use-package swiper)
