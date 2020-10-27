@@ -22,7 +22,7 @@
 ;; (setq gc-cons-threshold most-positive-fixnum)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
-(set-face-attribute 'default 'nil :font "FiraCode NF" :height 200)
+(set-face-attribute 'default 'nil :font "Fira Code" :height 180)
 
 (setq initial-frame-alist
       `((width . 120) ; chars
@@ -234,7 +234,8 @@
     "s s" '(swiper :which-key "search buffer")
     "s p" '(counsel-projectile-rg :which-key "search project")
     "t" '(:ignore t :which-key "toggles")
-    "t t" '(counsel-load-theme :which-key "choose theme")
+    "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
+    "t T" '(counsel-load-theme :which-key "choose theme")
     "w" '(:ignore w :which-key "window")
     "w w" '(other-window :which-key "other window")
     "w d" '(delete-window :which-key "delete window")
@@ -350,6 +351,10 @@
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
+
+;; format js and jsx
+(use-package prettier)
+
 ;; better javascript mode
 (use-package js2-mode
   :config
@@ -364,6 +369,14 @@
   :config
   ;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
   (add-to-list 'auto-mode-alist '("\\js\\'" . rjsx-mode))
+  :hook
+  (rjsx-mode-hook . (lambda ()
+                       (custo/local-leader-key
+                         "= =" '(prettier-prettify :which-key "format with prettier")
+                         )
+                       (message "this hook was called")
+                       )
+                 )
   )
 
 (use-package js-doc
@@ -383,18 +396,19 @@
     )
   )
 
-;; format js and jsx
-(use-package prettier
-  :after js2-mode
-  :config
-  (custo/local-leader-key
-    "= =" '(prettier-prettify :which-key "format with prettier")
-    )
-  )
 
 (use-package web-mode)
 
 (use-package typescript-mode)
+
+(use-package rustic 
+  :config
+  (setq indent-tabs-mode nil
+        rust-format-on-save t)
+  (custo/local-leader-key
+    "= =" '(rustic-format-buffer :which-key "format with rustfmt")
+    )
+  )
 
 ;; lsp-mode
 (use-package lsp-mode
@@ -402,6 +416,7 @@
          (scss-mode . lsp)
          (web-mode . lsp)
          (typescript-mode . lsp)
+         (rustic-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp
   :config
@@ -489,10 +504,13 @@
 
 (use-package centaur-tabs
   :config
-  (setq centaur-tabs-height 22)
+  (setq centaur-tabs-height 32)
   (setq centaur-tabs-bar-height 43)
-  (setq centaur-tabs-set-bar 'over)
+  (setq centaur-tabs-set-bar 'under)
   (setq centaur-tabs-set-icons t)
   (setq centaur-tabs-set-greyout-icons t)
+  (setq centaur-tabs-icon-scale-factor 0.75)
+  ;; (setq centaur-tabs-icon-v-adjust -0.1)
+  (setq x-underline-at-descent-line t)
   (centaur-tabs-mode 1)
   )
