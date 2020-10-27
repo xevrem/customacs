@@ -394,11 +394,14 @@
 
 (use-package web-mode)
 
+(use-package typescript-mode)
+
 ;; lsp-mode
 (use-package lsp-mode
   :hook ((js-mode . lsp)
          (scss-mode . lsp)
          (web-mode . lsp)
+         (typescript-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp
   :config
