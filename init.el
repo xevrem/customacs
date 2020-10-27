@@ -289,10 +289,10 @@
   :init
   (setq projectile-switch-project-action #'projectile-dired)
   :config
-  (projectile-mode)
   (custo/leader-key
     "p" '(projectile-command-map :which-key "projectile")
     "p a" '(projectile-add-known-project :which-key "add project"))
+  (projectile-mode 1)
   )
   
 ;; add counsel capability
