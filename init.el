@@ -1,7 +1,7 @@
 ;; (setq package-user-dir "~/repos/customacs/packages")
 ;; update path variables because stuff may not be set yet
 (let '(path
-       (shell-command-to-string "bash -c \"env | grep \\^PATH | tr -d PATH=\""))
+       (shell-command-to-string "/usr/bin/env fish -c \"env | grep \\^PATH | tr -d PATH=\""))
   (setenv "PATH" path)
   (setq exec-path
         (append
@@ -22,7 +22,13 @@
 ;; (setq gc-cons-threshold most-positive-fixnum)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
-(set-face-attribute 'default 'nil :font "Fira Code" :height 180)
+(set-face-attribute 'default 'nil :font "FiraCode NF" :height 200)
+
+(setq initial-frame-alist
+      `((width . 120) ; chars
+        (height . 45) ; lines
+        )
+      )
 
 ;; make escape qui prompts
 ;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -57,6 +63,9 @@
 ;; PACKAGE CONFIGURATION
 ;;
 
+;; restart
+(use-package restart-emacs)
+
 ;; ivy trio
 (use-package swiper)
 ;; use counsel for completions over
@@ -88,7 +97,7 @@
 
 (use-package prescient)
 (use-package ivy-prescient
- :init (ivy-prescient-mode 1))
+  :init (ivy-prescient-mode 1))
 
 ;; load all-the-icons only if in GUI mode
 ;; and install them if not present
@@ -204,7 +213,6 @@
   )
 
 
-
 ;; define default keybinds
 (custo/leader-key
     "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
@@ -221,8 +229,9 @@
     "q" '(:ignore q :which-key "quit")
     "q q" '(save-buffers-kill-emacs :which-key "save and quit")
     "q Q" '(kill-emacs :which-key "quit no-save")
+    "q r" '(restart-emacs :which-key "restart emacs")
     "s" '(:ignore f :which-key "search")
-    "s b" '(swiper :which-key "search buffer")
+    "s s" '(swiper :which-key "search buffer")
     "s p" '(counsel-projectile-rg :which-key "search project")
     "t" '(:ignore t :which-key "toggles")
     "t t" '(counsel-load-theme :which-key "choose theme")
@@ -237,7 +246,7 @@
 (custo/local-leader-key
   "=" '(:ignore = :which-key "format")
   "d" '(:ignore d :which-key "documentation")
-  "l" '(:ignore l :which-key "lsp")
+  "g" '(:ignore g :which-key "goto")'
   "i" '(:ingore i :which-key "insert")
   "c" '(:ignore c :which-key "comment")
   "c c" '(comment-line :which-key "comment line")
@@ -357,14 +366,14 @@
   (add-to-list 'auto-mode-alist '("\\js\\'" . rjsx-mode))
   )
 
-;; (use-package js-doc
-;;   :after js2-mode
-;;   :config
-;;   (custo/local-leader-key
-;;    "d" '(:ignore d :which-key "jsdoc")
-;;    "d f" '(js-doc-insert-function-doc-snippet :which-key "jsdoc function")
-;;    )
-;;   )
+(use-package js-doc
+  :after js2-mode
+  :config
+  (custo/local-leader-key
+   "d" '(:ignore d :which-key "jsdoc")
+   "d f" '(js-doc-insert-function-doc-snippet :which-key "jsdoc function")
+   )
+  )
 
 (use-package js-react-redux-yasnippets
   :after yasnippet
@@ -395,13 +404,13 @@
   :config
   (setq lsp-completion-provider :capf)
   (custo/local-leader-key
-    "l f" '(:ignore f :which-key "find")
-    "l f r" '(lsp-ui-peek-find-references :which-key "find references")
-    "l f d" '(lsp-find-definition :which-key "find definition")
-    "l o" '(lsp-ui-imenu :which-key "overview")
-    "l r" '(lsp-rename :which-key "rename")
-    "l =" '(:ignore = :which-key "format")
-    "l = l" '(lsp-format-buffer :which-key "format with lsp")
+    "g r" '(lsp-ui-peek-find-references :which-key "goto references")
+    "g g" '(lsp-find-definition :which-key "goto definition")
+    "o" '(lsp-ui-imenu :which-key "overview")
+    "r" '(:ignore r :which-key "refactor")
+    "r r" '(lsp-rename :which-key "rename")
+    "=" '(:ignore = :which-key "format")
+    "= l" '(lsp-format-buffer :which-key "format with lsp")
     )
   )
 
@@ -428,6 +437,39 @@
 
 
 ;; org stuff
+(setq org-directory "~/org/")
+
+(use-package org
+  ;; :hook
+  ;; (org-load-hook . (lambda ()
+  ;;                    (org-hide-leading-stars t))
+  ;;                )
+  :config
+  (setq org-startup-indented nil)
+  (setq org-todo-keywords
+        '((sequence
+           "TODO"
+           "DOING"
+           "DELAYED"
+           "|"
+           "DONE"
+           "PARTIAL"
+           "CANCELLED"
+           "OBE")
+          )
+        )
+  (setq org-todo-keyword-faces
+        `(("TODO" . "#88ff88")
+          ("DOING" . "#ffff88")
+          ("DELAYED" . "#ffbb88")
+          ("DONE" . "#8888ff")
+          ("PARTIAL" . "#bb88ff")
+          ("CANCELLED" . "#ff8888")
+          ("OBE" . "#ffbb88")
+          )
+        )
+  )
+
 (use-package org-projectile
   :config
   (org-projectile-per-project)
@@ -435,7 +477,19 @@
   (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
   )
 
+;; make org look nicer
 (use-package org-superstar
-  :hook
-  (org-mode-hook . org-superstar-mode)
+  :config
+  (org-superstar-configure-like-org-bullets)
+  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+  )
+
+(use-package centaur-tabs
+  :config
+  (setq centaur-tabs-height 22)
+  (setq centaur-tabs-bar-height 43)
+  (setq centaur-tabs-set-bar 'over)
+  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-set-greyout-icons t)
+  (centaur-tabs-mode 1)
   )
