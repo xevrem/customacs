@@ -22,7 +22,16 @@
 ;; (setq gc-cons-threshold most-positive-fixnum)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
-(set-face-attribute 'default 'nil :font "Fira Code" :height 180)
+(defvar custo/default-font-size 180)
+(defvar custo/default-variable-font-size 180)
+
+(set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
+
+;; Set the fixed pitch face
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
+
+;; Set the variable pitch face
+(set-face-attribute 'variable-pitch nil :font "Noto Sans" :height custo/default-variable-font-size :weight 'regular)
 
 (setq initial-frame-alist
       `((width . 120) ; chars
@@ -333,9 +342,9 @@
   )
 
 ;; magit integration with github and gitlab
-(use-package forge
-  :after magit
-  )
+;; (use-package forge
+;;   :after magit
+;;   )
 
 ;; completion mini buffers
 (use-package company
@@ -362,40 +371,40 @@
   (setq js-indent-level 2)
   )
 
+
 ;; teach js2-mode how to jsx
 (use-package rjsx-mode
-  :diminish
   :after js2-mode
   :config
   ;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
   (add-to-list 'auto-mode-alist '("\\js\\'" . rjsx-mode))
   :hook
-  (rjsx-mode-hook . (lambda ()
+  (rjsx-mode . (lambda () 
                        (custo/local-leader-key
-                         "= =" '(prettier-prettify :which-key "format with prettier")
-                         )
+                         "= =" '(prettier-prettify :which-key "format with prettier"))
                        (message "this hook was called")
-                       )
-                 )
+                       ))
   )
 
 (use-package js-doc
   :after js2-mode
-  :config
-  (custo/local-leader-key
-   "d" '(:ignore d :which-key "jsdoc")
-   "d f" '(js-doc-insert-function-doc-snippet :which-key "jsdoc function")
-   )
+  :hook
+  (js2-mode . (lambda ()
+                (custo/local-leader-key
+                  "d" '(:ignore d :which-key "jsdoc")
+                  "d f" '(js-doc-insert-function-doc-snippet :which-key "jsdoc function"))
+                ))
   )
 
 (use-package js-react-redux-yasnippets
   :after yasnippet
   :config
-  (custo/local-leader-key
-    "i s" '(yas-insert-snippet :which-key "insert snippet")
-    )
+  :hook
+  (js2-mode . (lambda ()
+                (custo/local-leader-key
+                  "i s" '(yas-insert-snippet :which-key "insert snippet"))
+                ))
   )
-
 
 (use-package web-mode)
 
@@ -405,9 +414,11 @@
   :config
   (setq indent-tabs-mode nil
         rust-format-on-save t)
-  (custo/local-leader-key
-    "= =" '(rustic-format-buffer :which-key "format with rustfmt")
-    )
+  :hook
+  (rustic-mode . (lambda ()
+                   (custo/local-leader-key
+                     "= =" '(rustic-format-buffer :which-key "format with rustfmt"))
+                   ))
   )
 
 ;; lsp-mode
@@ -453,17 +464,38 @@
     )
   )
 
+(use-package hl-todo
+  :config
+  (setq hl-todo-keyword-faces
+        '(("TODO" . ,(face-foreground 'warning))
+          ("DONT" . ,(face-foreground 'error))
+          ("DANGER" . ,(face-foreground 'error ))
+          ("DONE" . ,(face-foreground 'success))
+          ("NOTE" . ,(face-foreground 'warning))
+          ("HACK" . ,(face-foreground 'warning))
+          ("FIXME" . ,(face-foreground 'error ))
+          ("WARNING" . ,(face-foreground 'warning))
+          ))
+  (global-hl-todo-mode 1)
+  )
 
 ;; org stuff
-(setq org-directory "~/org/")
+(defun custo/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1)
+  (setq org-directory "~/org/")
+  ;; (setq evil-auto-indent nil)
+  )
 
 (use-package org
-  ;; :hook
-  ;; (org-load-hook . (lambda ()
-  ;;                    (org-hide-leading-stars t))
-  ;;                )
+  :hook
+  (org-mode . custo/org-mode-setup)
   :config
-  (setq org-startup-indented nil)
+  (setq org-ellipsis " ▼"
+        ;; org-hide-emphasis-markers t
+        org-startup-indented nil)
   (setq org-todo-keywords
         '((sequence
            "TODO"
@@ -473,9 +505,7 @@
            "DONE"
            "PARTIAL"
            "CANCELLED"
-           "OBE")
-          )
-        )
+           "OBE")))
   (setq org-todo-keyword-faces
         `(("TODO" . "#88ff88")
           ("DOING" . "#ffff88")
@@ -483,10 +513,9 @@
           ("DONE" . "#8888ff")
           ("PARTIAL" . "#bb88ff")
           ("CANCELLED" . "#ff8888")
-          ("OBE" . "#ffbb88")
-          )
-        )
+          ("OBE" . "#ffbb88")))
   )
+
 
 (use-package org-projectile
   :config
@@ -501,6 +530,33 @@
   (org-superstar-configure-like-org-bullets)
   (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
   )
+
+(dolist (face '((org-level-1 . 1.2)
+                (org-level-2 . 1.1)
+                (org-level-3 . 1.05)
+                (org-level-4 . 1.0)
+                (org-level-5 . 1.1)
+                (org-level-6 . 1.1)
+                (org-level-7 . 1.1)
+                (org-level-8 . 1.1)))
+  (set-face-attribute (car face) nil :font "Noto Sans" :weight 'regular :height (cdr face)))
+
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+(defun custo/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . custo/org-mode-visual-fill))
 
 (use-package centaur-tabs
   :config
