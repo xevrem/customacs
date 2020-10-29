@@ -1,7 +1,7 @@
 ;; (setq package-user-dir "~/repos/customacs/packages")
 ;; update path variables because stuff may not be set yet
 (let '(path
-       (shell-command-to-string "/usr/bin/env fish -c \"env | grep \\^PATH | tr -d PATH=\""))
+       (shell-command-to-string "/usr/bin/env zsh -c \"env | grep \\^PATH | tr -d PATH=\""))
   (setenv "PATH" path)
   (setq exec-path
         (append
@@ -14,7 +14,7 @@
 (tooltip-mode -1)       ;; disable tooltip
 (set-fringe-mode 10)    ;; 'breathing' room
 (menu-bar-mode -1)
-(setq visible-bell t)   ;; visual bell
+(setq visible-bell nil)   ;; visual bell
 (setq-default indent-tabs-mode nil) ;; uses spaces and not tabs
 
 ;; for performance
@@ -25,13 +25,13 @@
 (defvar custo/default-font-size 180)
 (defvar custo/default-variable-font-size 180)
 
-(set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
+(set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
 
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
+(set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
 
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "Noto Sans" :height custo/default-variable-font-size :weight 'regular)
+(set-face-attribute 'variable-pitch nil :font "Menlo" :height custo/default-variable-font-size :weight 'regular)
 
 (setq initial-frame-alist
       `((width . 120) ; chars
@@ -224,42 +224,43 @@
 
 ;; define default keybinds
 (custo/leader-key
-    "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
-    "a" '(:ignore t :which-key "apps")
-    "a e" '(eww :which-key "eww")
-    "b" '(:ignore b :which-key "buffer")
-    "b b" '(counsel-switch-buffer :which-key "switch buffers")
-    "b d" '(kill-current-buffer :which-key "destroy buffer")
-    "b i" '(ibuffer-list-buffers :which-key "ibuffer")
-    "f" '(:ignore f :which-key "file")
-    "f f" '(counsel-find-file :which-key "find file")
-    "f s" '(save-buffer :which-key "save file")
-    "m" '(:ignore m :which-key "local-leader")
-    "q" '(:ignore q :which-key "quit")
-    "q q" '(save-buffers-kill-emacs :which-key "save and quit")
-    "q Q" '(kill-emacs :which-key "quit no-save")
-    "q r" '(restart-emacs :which-key "restart emacs")
-    "s" '(:ignore f :which-key "search")
-    "s s" '(swiper :which-key "search buffer")
-    "s p" '(counsel-projectile-rg :which-key "search project")
-    "t" '(:ignore t :which-key "toggles")
-    "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
-    "t T" '(counsel-load-theme :which-key "choose theme")
-    "w" '(:ignore w :which-key "window")
-    "w w" '(other-window :which-key "other window")
-    "w d" '(delete-window :which-key "delete window")
-    "w o" '(delete-other-windows :which-key "delete other windows")
-    "w h" '(evil-window-vsplit :which-key "split window horizontally")
-    "w v" '(evil-window-split :which-key "delete window vertically")
-    )
+  "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
+  ":" '(counsel-M-x :which-key "M-x")
+  "a" '(:ignore t :which-key "apps")
+  "a e" '(eww :which-key "eww")
+  "b" '(:ignore b :which-key "buffer")
+  "b b" '(counsel-switch-buffer :which-key "switch buffers")
+  "b d" '(kill-current-buffer :which-key "destroy buffer")
+  "b i" '(ibuffer-list-buffers :which-key "ibuffer")
+  "c" '(:ignore c :which-key "cursor")
+  "c c" '(comment-line :which-key "comment line")
+  "f" '(:ignore f :which-key "file")
+  "f f" '(counsel-find-file :which-key "find file")
+  "f s" '(save-buffer :which-key "save file")
+  "m" '(:ignore m :which-key "local-leader")
+  "q" '(:ignore q :which-key "quit")
+  "q q" '(save-buffers-kill-emacs :which-key "save and quit")
+  "q Q" '(kill-emacs :which-key "quit no-save")
+  "q r" '(restart-emacs :which-key "restart emacs")
+  "s" '(:ignore f :which-key "search")
+  "s s" '(swiper :which-key "search buffer")
+  "s p" '(counsel-projectile-rg :which-key "search project")
+  "t" '(:ignore t :which-key "toggles")
+  "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
+  "t T" '(counsel-load-theme :which-key "choose theme")
+  "w" '(:ignore w :which-key "window")
+  "w w" '(other-window :which-key "other window")
+  "w d" '(delete-window :which-key "delete window")
+  "w o" '(delete-other-windows :which-key "delete other windows")
+  "w h" '(evil-window-vsplit :which-key "split window horizontally")
+  "w v" '(evil-window-split :which-key "delete window vertically")
+  )
 
 (custo/local-leader-key
   "=" '(:ignore = :which-key "format")
   "d" '(:ignore d :which-key "documentation")
   "g" '(:ignore g :which-key "goto")'
   "i" '(:ingore i :which-key "insert")
-  "c" '(:ignore c :which-key "comment")
-  "c c" '(comment-line :which-key "comment line")
   )
 
 ;; hydra to build menus
@@ -289,6 +290,13 @@
   (custo/leader-key
     "u" '(hydra-undo-tree/body :which-key "undo/redo")
     )
+  )
+
+(use-package multiple-cursors
+  :config
+  (custo/leader-key
+    "c n" '(mc/mark-next-like-this :which-key "mc-mark and next")
+    "c p" '(mc/mark-prev-like-this :which-key "mc-mark and prev"))
   )
 
 ;; setup project management
@@ -539,7 +547,7 @@
                 (org-level-6 . 1.1)
                 (org-level-7 . 1.1)
                 (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font "Noto Sans" :weight 'regular :height (cdr face)))
+  (set-face-attribute (car face) nil :font "Menlo" :weight 'regular :height (cdr face)))
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way
 (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
@@ -550,13 +558,16 @@
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
-(defun custo/org-mode-visual-fill ()
+(defun custo/mode-visual-fill ()
   (setq visual-fill-column-width 100
         visual-fill-column-center-text t)
   (visual-fill-column-mode 1))
 
 (use-package visual-fill-column
-  :hook (org-mode . custo/org-mode-visual-fill))
+  :hook
+  (org-mode . custo/mode-visual-fill)
+  (js2-mode . custo/mode-visual-fill)  
+  )
 
 (use-package centaur-tabs
   :config
@@ -569,4 +580,9 @@
   ;; (setq centaur-tabs-icon-v-adjust -0.1)
   (setq x-underline-at-descent-line t)
   (centaur-tabs-mode 1)
+  )
+
+(straight-use-package
+ '(global-term-cursor
+   :host github :repo "h0d/term-cursor.el")
   )
