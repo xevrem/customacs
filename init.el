@@ -22,8 +22,8 @@
 ;; (setq gc-cons-threshold most-positive-fixnum)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
-(defvar custo/default-font-size 180)
-(defvar custo/default-variable-font-size 180)
+(defvar custo/default-font-size 96)
+(defvar custo/default-variable-font-size 96)
 
 ;; (set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
 (set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
