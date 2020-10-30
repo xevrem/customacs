@@ -25,13 +25,13 @@
 (defvar custo/default-font-size 180)
 (defvar custo/default-variable-font-size 180)
 
-(set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
+(set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
 
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
 
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "Menlo" :height custo/default-variable-font-size :weight 'regular)
+(set-face-attribute 'variable-pitch nil :font "DejaVu Sans" :height custo/default-variable-font-size :weight 'regular)
 
 (setq initial-frame-alist
       `((width . 120) ; chars
@@ -177,7 +177,7 @@
   )
   
 
-(defun custo-evil-hook ()
+(defun custo/evil-hook ()
   (dolist (mode '(custom-mode
                   eshell-mode
                   git-rebase-mode
@@ -194,7 +194,7 @@
   (setq evil-want-keybinding nil)
   (setq evil-want-C-u-scroll t)
   (setq evil-want-C-d-scroll t)
-  ;;:hook (evil-mode . custo-evil-hook)
+  :hook (evil-mode . custo/evil-hook)
   :config
   (evil-mode 1)
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
@@ -238,6 +238,8 @@
   "f f" '(counsel-find-file :which-key "find file")
   "f s" '(save-buffer :which-key "save file")
   "m" '(:ignore m :which-key "local-leader")
+  "o" '(:ignore o :which-key "open")
+  "o t" '(ansi-term :which-key "open terminal")
   "q" '(:ignore q :which-key "quit")
   "q q" '(save-buffers-kill-emacs :which-key "save and quit")
   "q Q" '(kill-emacs :which-key "quit no-save")
@@ -440,6 +442,7 @@
   :commands lsp
   :config
   (setq lsp-completion-provider :capf)
+  (setq lsp-rust-server 'rust-analyzer)
   (custo/local-leader-key
     "g r" '(lsp-ui-peek-find-references :which-key "goto references")
     "g g" '(lsp-find-definition :which-key "goto definition")
@@ -534,9 +537,11 @@
 
 ;; make org look nicer
 (use-package org-superstar
+  :hook
+  (org-mode . org-superstar-mode)
   :config
   (org-superstar-configure-like-org-bullets)
-  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+  ;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
   )
 
 (dolist (face '((org-level-1 . 1.2)
@@ -547,7 +552,7 @@
                 (org-level-6 . 1.1)
                 (org-level-7 . 1.1)
                 (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font "Menlo" :weight 'regular :height (cdr face)))
+  (set-face-attribute (car face) nil :font "DejaVu Sans" :weight 'regular :height (cdr face)))
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way
 (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
