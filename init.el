@@ -571,7 +571,7 @@
 (use-package visual-fill-column
   :hook
   (org-mode . custo/mode-visual-fill)
-  (js2-mode . custo/mode-visual-fill)  
+  (prog-mode . custo/mode-visual-fill)  
   )
 
 (use-package centaur-tabs
