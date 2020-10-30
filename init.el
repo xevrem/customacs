@@ -22,8 +22,8 @@
 ;; (setq gc-cons-threshold most-positive-fixnum)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
-(defvar custo/default-font-size 96)
-(defvar custo/default-variable-font-size 96)
+(defvar custo/default-font-size 155)
+(defvar custo/default-variable-font-size 155)
 
 (set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
 ;; (set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
@@ -423,6 +423,7 @@
 (use-package rustic 
   :config
   (setq indent-tabs-mode nil
+        rustic-lsp-server 'rust-analyzer
         rust-format-on-save t)
   :hook
   (rustic-mode . (lambda ()
@@ -501,43 +502,75 @@
   ;; (setq evil-auto-indent nil)
   )
 
-(straight-override-recipe
- '(org
+(straight-use-package
+ '(org-mode
    :type git
    :host github
    :repo "emacs-straight/org-mode"
    :files ("*.el" "lisp/*.el" "contrib/lisp/*.el")
-   :no-build t))
+   :shadow 'org)
+   
+   :hook
+   (org-mode . (custo/org-mode-setup))
+   :config
+   (setq org-ellipsis " ▼"
+         ;; org-hide-emphasis-markers t
+         org-startup-indented nil)
+   (setq org-agenda-files
+         `(
+           "~/org/tasks.org"
+           "~/org/birthdays.org"
+           )
+         )
+   (setq org-agenda-start-with-log-mode t)
+   (setq org-log-done 'time)
+   (setq org-log-into-drawer t)
+   (setq org-todo-keywords
+         '((sequence
+            "TODO"
+            "DOING"
+            "DELAYED"
+            "|"
+            "DONE"
+            "PARTIAL"
+            "CANCELLED"
+            "OBE")))
+   (setq org-todo-keyword-faces
+         `(("TODO" . "#88ff88")
+           ("DOING" . "#ffff88")
+           ("DELAYED" . "#ffbb88")
+           ("DONE" . "#8888ff")
+           ("PARTIAL" . "#bb88ff")
+           ("CANCELLED" . "#ff8888")
+           ("OBE" . "#ffbb88")))
+   (setq org-tag-alist
+         '((:startgroup)
+           ;; mutually exclusive tags here
+           (:endgroup)
+           ("errand" . ?e)
+           ("chore" . ?c)
+           ("appointment" . ?a)
+           ("note" . ?n)
+           ("idea" . ?i)
+           ("followup" . ?f)
+           )
+         )
+   (setq org-refile-targets
+         '(("archive.org" :maxlevel . 2)
+           ("tasks.org" :maxlevel . 1)
+           ))
+   ;; safety save all org buffers after refiling
+   (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
-(use-package org
-  :hook
-  (org-mode . (custo/org-mode-setup))
-  :config
-  (setq org-ellipsis " ▼"
-        ;; org-hide-emphasis-markers t
-        org-startup-indented nil)
-  (setq org-agenda-files
-        `("~/org/todo.org")
-        )
-  (setq org-todo-keywords
-        '((sequence
-           "TODO"
-           "DOING"
-           "DELAYED"
-           "|"
-           "DONE"
-           "PARTIAL"
-           "CANCELLED"
-           "OBE")))
-  (setq org-todo-keyword-faces
-        `(("TODO" . "#88ff88")
-          ("DOING" . "#ffff88")
-          ("DELAYED" . "#ffbb88")
-          ("DONE" . "#8888ff")
-          ("PARTIAL" . "#bb88ff")
-          ("CANCELLED" . "#ff8888")
-          ("OBE" . "#ffbb88")))
-  )
+   (setq org-capture-templates
+         '(("t" "Tasks")
+           ("tt" "Task" entry (file+olp "~/org/tasks.org" "Inbox")
+            "* TODO %?\n %U\n %a\n %i" :empty-lines 1)
+           
+           )
+         )
+   )
+ 
 
 
 ;; (use-package org-projectile
