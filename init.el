@@ -1,4 +1,4 @@
-;; (setq package-user-dir "~/repos/customacs/packages")
+;decreasedecrease; (setq package-user-dir "~/repos/customacs/packages")
 ;; update path variables because stuff may not be set yet
 (let '(path
        (shell-command-to-string "/usr/bin/env zsh -c \"env | grep \\^PATH | tr -d PATH=\""))
@@ -25,13 +25,16 @@
 (defvar custo/default-font-size 180)
 (defvar custo/default-variable-font-size 180)
 
-(set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
+;; (set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
+(set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
 
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
+;; (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
+(set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
 
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "DejaVu Sans" :height custo/default-variable-font-size :weight 'regular)
+;; (set-face-attribute 'variable-pitch nil :font "DejaVu Sans" :height custo/default-variable-font-size :weight 'regular)
+(set-face-attribute 'variable-pitch nil :font "Arial" :height custo/default-variable-font-size :weight 'regular)
 
 (setq initial-frame-alist
       `((width . 120) ; chars
@@ -270,8 +273,8 @@
   :config
   (defhydra hydra-text-scale (:timeout 4)
     "scale text"
-    ("j" text-scale-increase "in")
-    ("k" text-scale-decrease "out")
+    ("j" (text-scale-adjust 0.1) "in")
+    ("k" (text-scale-adjust -0.1) "out")
     ("f" nil "finished" :exit t)
     )
   ;; since custo leader keys are defined, we can bind to them now :D
@@ -342,7 +345,9 @@
   :config
   (custo/leader-key
     "g" '(:ignore g :which-key "magit")
-    "g s" '(magit-status :whick-key "magit status")
+    "g s" '(magit-status :which-key "magit status")
+    "g b" '(magit-branch :which-key "magit branch")
+    "g B" '(magit-blame :which-key "magit blame")
     )
   )
 
@@ -537,11 +542,11 @@
 
 ;; make org look nicer
 (use-package org-superstar
-  :hook
-  (org-mode . org-superstar-mode)
+  ;; :hook
+  ;; (org-mode . org-superstar-mode)
   :config
   (org-superstar-configure-like-org-bullets)
-  ;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
   )
 
 (dolist (face '((org-level-1 . 1.2)
@@ -552,7 +557,8 @@
                 (org-level-6 . 1.1)
                 (org-level-7 . 1.1)
                 (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font "DejaVu Sans" :weight 'regular :height (cdr face)))
+  ;; (set-face-attribute (car face) nil :font "DejaVu Sans" :weight 'regular :height (cdr face)))
+  (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face)))
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way
 (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
@@ -571,7 +577,7 @@
 (use-package visual-fill-column
   :hook
   (org-mode . custo/mode-visual-fill)
-  (prog-mode . custo/mode-visual-fill)  
+  ;; (prog-mode . custo/mode-visual-fill)  
   )
 
 (use-package centaur-tabs
