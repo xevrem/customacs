@@ -1,4 +1,4 @@
-;decreasedecrease; (setq package-user-dir "~/repos/customacs/packages")
+;; (setq package-user-dir "~/repos/customacs/packages")
 ;; update path variables because stuff may not be set yet
 (let '(path
        (shell-command-to-string "/usr/bin/env zsh -c \"env | grep \\^PATH | tr -d PATH=\""))
@@ -25,12 +25,12 @@
 (defvar custo/default-font-size 96)
 (defvar custo/default-variable-font-size 96)
 
-;; (set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
-(set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
+(set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
+;; (set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
 
 ;; Set the fixed pitch face
-;; (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
-(set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
+;; (set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
 
 ;; Set the variable pitch face
 ;; (set-face-attribute 'variable-pitch nil :font "DejaVu Sans" :height custo/default-variable-font-size :weight 'regular)
@@ -49,11 +49,6 @@
 (column-number-mode)
 (global-display-line-numbers-mode t)
 (menu-bar--display-line-numbers-mode-relative)
-(dolist (mode '(org-mode-hook
-                term-mode-hook
-                eshell-mode-hook
-                ansi-term-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; setup straight for package management
 (setq straight-use-package-by-default t)
@@ -499,19 +494,31 @@
 (defun custo/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
-  (auto-fill-mode 0)
+  ;; (auto-fill-mode 0)
   (visual-line-mode 1)
-  (setq org-directory "~/org/")
+  (display-line-numbers-mode 0)
+  ;; (setq org-directory "~/org/")
   ;; (setq evil-auto-indent nil)
   )
 
+(straight-override-recipe
+ '(org
+   :type git
+   :host github
+   :repo "emacs-straight/org-mode"
+   :files ("*.el" "lisp/*.el" "contrib/lisp/*.el")
+   :no-build t))
+
 (use-package org
   :hook
-  (org-mode . custo/org-mode-setup)
+  (org-mode . (custo/org-mode-setup))
   :config
   (setq org-ellipsis " ▼"
         ;; org-hide-emphasis-markers t
         org-startup-indented nil)
+  (setq org-agenda-files
+        `("~/org/todo.org")
+        )
   (setq org-todo-keywords
         '((sequence
            "TODO"
@@ -533,20 +540,20 @@
   )
 
 
-(use-package org-projectile
-  :config
-  (org-projectile-per-project)
-  (setq org-projectile-per-project-filepath "todo.org")
-  (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
-  )
+;; (use-package org-projectile
+;;   :config
+;;   (org-projectile-per-project)
+;;   (setq org-projectile-per-project-filepath "todo.org")
+;;   (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
+;;   )
 
 ;; make org look nicer
 (use-package org-superstar
-  ;; :hook
-  ;; (org-mode . org-superstar-mode)
+  :hook
+  (org-mode . org-superstar-mode)
   :config
   (org-superstar-configure-like-org-bullets)
-  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+  ;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
   )
 
 (dolist (face '((org-level-1 . 1.2)
@@ -580,6 +587,12 @@
   ;; (prog-mode . custo/mode-visual-fill)  
   )
 
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                eshell-mode-hook
+                ansi-term-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
 (use-package centaur-tabs
   :config
   (setq centaur-tabs-height 32)
@@ -597,3 +610,4 @@
  '(global-term-cursor
    :host github :repo "h0d/term-cursor.el")
   )
+
