@@ -371,31 +371,25 @@
   :hook (company-mode . company-box-mode))
 
 
-;; format js and jsx
-(use-package prettier)
 
 ;; better javascript mode
 (use-package js2-mode
+  :mode "\\.m?js\\'"
   :config
-  (add-to-list 'auto-mode-alist '("\\.js\\" . js2-mode))
   (setq js-indent-level 2)
   :hook
-  (js2-mode . yas-minor-mode)
-  (js2-mode . (lambda () 
-                       (custo/local-leader-key
-                         "= =" '(prettier-prettify :which-key "format with prettier"))
-                       (message "this hook was called")
-                       ))
+  (js-mode . yas-minor-mode)
   )
 
 ;; teach js2-mode how to jsx
 (use-package rjsx-mode
   :after js2-mode
-  :config
+  :mode "components/.+\\.js$"
+  ;; :config
   ;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
   ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
-  :hook
-  (js2-mode . rjsx-minor-mode)
+  ;; :hook
+  ;; (js2-mode . rjsx-minor-mode)
   )
 
 ;; auto-docs :D
@@ -411,13 +405,24 @@
 
 (use-package js-react-redux-yasnippets
   :after (yasnippet js2-mode)
-  :config
   :hook
   (js2-mode . (lambda ()
                 (custo/local-leader-key
                   "i s" '(yas-insert-snippet :which-key "insert snippet"))
                 ))
   )
+
+;; format js and jsx
+(use-package prettier
+  :after js2-mode
+  :hook
+  (js2-mode . (lambda () 
+                (custo/local-leader-key
+                  "= =" '(prettier-prettify :which-key "format with prettier"))
+                (message "this hook was called")
+                ))
+  )
+
 
 (use-package web-mode)
 
@@ -437,7 +442,7 @@
 
 ;; lsp-mode
 (use-package lsp-mode
-  :hook ((js-mode . lsp)
+  :hook ((js2-mode . lsp)
          (scss-mode . lsp)
          (web-mode . lsp)
          (typescript-mode . lsp)
