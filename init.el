@@ -22,8 +22,8 @@
 ;; (setq gc-cons-threshold most-positive-fixnum)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
-(defvar custo/default-font-size 155)
-(defvar custo/default-variable-font-size 155)
+(defvar custo/default-font-size 93)
+(defvar custo/default-variable-font-size 93)
 
 (set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
 ;; (set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
@@ -377,37 +377,40 @@
 ;; better javascript mode
 (use-package js2-mode
   :config
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  (add-to-list 'auto-mode-alist '("\\.js\\" . js2-mode))
   (setq js-indent-level 2)
-  )
-
-
-;; teach js2-mode how to jsx
-(use-package rjsx-mode
-  :after js2-mode
-  :config
-  ;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
-  (add-to-list 'auto-mode-alist '("\\js\\'" . rjsx-mode))
   :hook
-  (rjsx-mode . (lambda () 
+  (js2-mode . yas-minor-mode)
+  (js2-mode . (lambda () 
                        (custo/local-leader-key
                          "= =" '(prettier-prettify :which-key "format with prettier"))
                        (message "this hook was called")
                        ))
   )
 
+;; teach js2-mode how to jsx
+(use-package rjsx-mode
+  :after js2-mode
+  :config
+  ;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+  :hook
+  (js2-mode . rjsx-minor-mode)
+  )
+
+;; auto-docs :D
 (use-package js-doc
   :after js2-mode
   :hook
   (js2-mode . (lambda ()
                 (custo/local-leader-key
                   "d" '(:ignore d :which-key "jsdoc")
-                  "d f" '(js-doc-insert-function-doc-snippet :which-key "jsdoc function"))
+                  "d f" '(js-doc-insert-function-doc :which-key "jsdoc function"))
                 ))
   )
 
 (use-package js-react-redux-yasnippets
-  :after yasnippet
+  :after (yasnippet js2-mode)
   :config
   :hook
   (js2-mode . (lambda ()
@@ -502,75 +505,73 @@
   ;; (setq evil-auto-indent nil)
   )
 
-(straight-use-package
- '(org-mode
-   :type git
-   :host github
-   :repo "emacs-straight/org-mode"
-   :files ("*.el" "lisp/*.el" "contrib/lisp/*.el")
-   :shadow 'org)
-   
-   :hook
-   (org-mode . (custo/org-mode-setup))
-   :config
-   (setq org-ellipsis " ▼"
-         ;; org-hide-emphasis-markers t
-         org-startup-indented nil)
-   (setq org-agenda-files
-         `(
-           "~/org/tasks.org"
-           "~/org/birthdays.org"
-           )
-         )
-   (setq org-agenda-start-with-log-mode t)
-   (setq org-log-done 'time)
-   (setq org-log-into-drawer t)
-   (setq org-todo-keywords
-         '((sequence
-            "TODO"
-            "DOING"
-            "DELAYED"
-            "|"
-            "DONE"
-            "PARTIAL"
-            "CANCELLED"
-            "OBE")))
-   (setq org-todo-keyword-faces
-         `(("TODO" . "#88ff88")
-           ("DOING" . "#ffff88")
-           ("DELAYED" . "#ffbb88")
-           ("DONE" . "#8888ff")
-           ("PARTIAL" . "#bb88ff")
-           ("CANCELLED" . "#ff8888")
-           ("OBE" . "#ffbb88")))
-   (setq org-tag-alist
-         '((:startgroup)
-           ;; mutually exclusive tags here
-           (:endgroup)
-           ("errand" . ?e)
-           ("chore" . ?c)
-           ("appointment" . ?a)
-           ("note" . ?n)
-           ("idea" . ?i)
-           ("followup" . ?f)
-           )
-         )
-   (setq org-refile-targets
-         '(("archive.org" :maxlevel . 2)
-           ("tasks.org" :maxlevel . 1)
-           ))
-   ;; safety save all org buffers after refiling
-   (advice-add 'org-refile :after 'org-save-all-org-buffers)
+(use-package org
+  :straight
+  `(org
+    :local-repo nil
+    )
+  :hook
+  (org-mode . custo/org-mode-setup)
+  :config
+  ;; (add-hook 'org-mode-hook (lambda () (custo/org-mode-setup)))
+  (setq org-ellipsis " ▼"
+        ;; org-hide-emphasis-markers t
+        org-startup-indented nil)
+  (setq org-agenda-files
+        `(
+          "~/org/tasks.org"
+          "~/org/birthdays.org"
+          )
+        )
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+  (setq org-todo-keywords
+        '((sequence
+           "TODO"
+           "DOING"
+           "DELAYED"
+           "|"
+           "DONE"
+           "PARTIAL"
+           "CANCELLED"
+           "OBE")))
+  (setq org-todo-keyword-faces
+        `(("TODO" . "#88ff88")
+          ("DOING" . "#ffff88")
+          ("DELAYED" . "#ffbb88")
+          ("DONE" . "#8888ff")
+          ("PARTIAL" . "#bb88ff")
+          ("CANCELLED" . "#ff8888")
+          ("OBE" . "#ffbb88")))
+  (setq org-tag-alist
+        '((:startgroup)
+          ;; mutually exclusive tags here
+          (:endgroup)
+          ("errand" . ?e)
+          ("chore" . ?c)
+          ("appointment" . ?a)
+          ("note" . ?n)
+          ("idea" . ?i)
+          ("followup" . ?f)
+          )
+        )
+  (setq org-refile-targets
+        '(("archive.org" :maxlevel . 2)
+          ("tasks.org" :maxlevel . 1)
+          ))
+  ;; safety save all org buffers after refiling
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
-   (setq org-capture-templates
-         '(("t" "Tasks")
-           ("tt" "Task" entry (file+olp "~/org/tasks.org" "Inbox")
-            "* TODO %?\n %U\n %a\n %i" :empty-lines 1)
-           
-           )
-         )
-   )
- 
+  (setq org-capture-templates
+        '(("t" "Tasks")
+          ("tt" "Task" entry (file+olp "~/org/tasks.org" "Inbox")
+           "* TODO %?\n %U\n %a\n %i" :empty-lines 1)
+          
+          )
+        )
+  )
+
 
 
 ;; (use-package org-projectile
