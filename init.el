@@ -1,7 +1,8 @@
 ;; (setq package-user-dir "~/repos/customacs/packages")
 ;; update path variables because stuff may not be set yet
 (let '(path
-       (shell-command-to-string "/usr/bin/env zsh -c \"source ~/.zshrc && env | grep \\^PATH | tr -d PATH=\""))
+       ;; (shell-command-to-string "/usr/bin/env zsh -c \"source ~/.zshrc && env | grep \\^PATH | tr -d PATH=\""))
+       (shell-command-to-string "/usr/bin/env fish -c \"source && env | grep \\^PATH | tr -d PATH=\""))
   (setenv "PATH" path)
   (setq exec-path
         (append
@@ -257,7 +258,7 @@
   "w d" '(delete-window :which-key "delete window")
   "w o" '(delete-other-windows :which-key "delete other windows")
   "w h" '(evil-window-vsplit :which-key "split window horizontally")
-  "w v" '(evil-window-split :which-key "delete window vertically")
+  "w v" '(evil-window-split :which-key "split window vertically")
   )
 
 (custo/local-leader-key
@@ -436,6 +437,7 @@
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-server 'rust-analyzer
+        rustic-indent-offset 2
         rust-format-on-save t)
   :hook
   (rustic-mode . (lambda ()
