@@ -514,6 +514,7 @@
   (display-line-numbers-mode 0)
   ;; (setq org-directory "~/org/")
   ;; (setq evil-auto-indent nil)
+  (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
   )
 
 (use-package org
@@ -524,9 +525,8 @@
   :hook
   (org-mode . custo/org-mode-setup)
   :config
-  ;; (add-hook 'org-mode-hook (lambda () (custo/org-mode-setup)))
   (setq org-ellipsis " ▼"
-        ;; org-hide-emphasis-markers t
+        org-hide-emphasis-markers t
         org-startup-indented nil)
   (setq org-agenda-files
         `(
@@ -597,7 +597,7 @@
   :hook
   (org-mode . org-superstar-mode)
   :config
-  (org-superstar-configure-like-org-bullets)
+  ;; (org-superstar-configure-like-org-bullets)
   ;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
   )
 
