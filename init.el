@@ -1,7 +1,7 @@
 ;; (setq package-user-dir "~/repos/customacs/packages")
 ;; update path variables because stuff may not be set yet
 (let '(path
-       (shell-command-to-string "/usr/bin/env zsh -c \"env | grep \\^PATH | tr -d PATH=\""))
+       (shell-command-to-string "/usr/bin/env zsh -c \"source ~/.zshrc && env | grep \\^PATH | tr -d PATH=\""))
   (setenv "PATH" path)
   (setq exec-path
         (append
@@ -235,6 +235,10 @@
   "f" '(:ignore f :which-key "file")
   "f f" '(counsel-find-file :which-key "find file")
   "f s" '(save-buffer :which-key "save file")
+  "h" '(:ignore h :which-key "custo help")
+  "h s" '(:ignore s :which-key "straight")
+  "h s p" '(straight-pull-all :which-key "straight pull packages")
+  "h s b" '(straight-rebuild-all :which-key "straight buildpackages")
   "m" '(:ignore m :which-key "local-leader")
   "o" '(:ignore o :which-key "open")
   "o t" '(ansi-term :which-key "open terminal")
