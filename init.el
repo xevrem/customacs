@@ -467,15 +467,15 @@
 
 ;; lsp-mode
 (use-package lsp-mode
-  :hook ((js2-mode . lsp)
-         (rsjx-mode . lsp)
-         (scss-mode . lsp)
-         (web-mode . lsp)
-         (typescript-mode . lsp)
-         (rustic-mode . lsp)
-         (csharp-mode . lsp)
+  :hook ((js2-mode . lsp-deferred)
+         (rsjx-mode . lsp-deferred)
+         (scss-mode . lsp-deferred)
+         (web-mode . lsp-deferred)
+         (typescript-mode . lsp-deferred)
+         (rustic-mode . lsp-deferred)
+         (csharp-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp
+  :commands (lsp lsp-deferred)
   :config
   (setq lsp-completion-provider :capf)
   (setq lsp-rust-server 'rust-analyzer)
