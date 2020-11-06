@@ -1,8 +1,9 @@
 ;; (setq package-user-dir "~/repos/customacs/packages")
+
 ;; update path variables because stuff may not be set yet
 (let '(path
-       ;; (shell-command-to-string "/usr/bin/env zsh -c \"source ~/.zshrc && env | grep \\^PATH | tr -d PATH=\""))
-       (shell-command-to-string "/usr/bin/env fish -c \"source && env | grep \\^PATH | tr -d PATH=\""))
+       (shell-command-to-string "/usr/bin/env zsh -c \"source ~/.zshrc && env | grep \\^PATH | tr -d PATH=\""))
+       ;; (shell-command-to-string "/usr/bin/env fish -c \"source && env | grep \\^PATH | tr -d PATH=\""))
   (setenv "PATH" path)
   (setq exec-path
         (append
@@ -209,16 +210,19 @@
 ;; better key binding
 (use-package general
   :config
-  ;;(setq general-default-prefix "SPC")
+  (general-auto-unbind-keys)
   (general-create-definer custo/leader-key
-    :keymaps '(normal insert visual emacs)
+    :states '(normal insert visual emacs)
+    ;;:keymaps '(normal insert visual emacs)
     :prefix "SPC"
     :global-prefix "C-SPC")
   (general-create-definer custo/local-leader-key
-    :keymaps '(normal insert visual emacs)
+    :states '(normal insert visual emacs)
+    ;;:keymaps '(normal insert visual emacs)
     :prefix "SPC m"
     :global-prefix "C-SPC m")
   )
+
 
 
 ;; define default keybinds
@@ -227,33 +231,33 @@
   ":" '(counsel-M-x :which-key "M-x")
   "a" '(:ignore t :which-key "apps")
   "a e" '(eww :which-key "eww")
-  "b" '(:ignore b :which-key "buffer")
+  "b" '(:ignore t :which-key "buffer")
   "b b" '(counsel-switch-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
   "b i" '(ibuffer-list-buffers :which-key "ibuffer")
-  "c" '(:ignore c :which-key "cursor")
+  "c" '(:ignore t :which-key "cursor")
   "c c" '(comment-line :which-key "comment line")
   "f" '(:ignore f :which-key "file")
   "f f" '(counsel-find-file :which-key "find file")
   "f s" '(save-buffer :which-key "save file")
-  "h" '(:ignore h :which-key "custo help")
-  "h s" '(:ignore s :which-key "straight")
+  "h" '(:ignore t :which-key "custo help")
+  "h s" '(:ignore t :which-key "straight")
   "h s p" '(straight-pull-all :which-key "straight pull packages")
   "h s b" '(straight-rebuild-all :which-key "straight buildpackages")
-  "m" '(:ignore m :which-key "local-leader")
-  "o" '(:ignore o :which-key "open")
+  "m" '(:ignore t :which-key "local-leader")
+  "o" '(:ignore t :which-key "open")
   "o t" '(ansi-term :which-key "open terminal")
-  "q" '(:ignore q :which-key "quit")
+  "q" '(:ignore t :which-key "quit")
   "q q" '(save-buffers-kill-emacs :which-key "save and quit")
   "q Q" '(kill-emacs :which-key "quit no-save")
   "q r" '(restart-emacs :which-key "restart emacs")
-  "s" '(:ignore f :which-key "search")
+  "s" '(:ignore t :which-key "search")
   "s s" '(swiper :which-key "search buffer")
   "s p" '(counsel-projectile-rg :which-key "search project")
   "t" '(:ignore t :which-key "toggles")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
   "t T" '(counsel-load-theme :which-key "choose theme")
-  "w" '(:ignore w :which-key "window")
+  "w" '(:ignore t :which-key "window")
   "w w" '(other-window :which-key "other window")
   "w d" '(delete-window :which-key "delete window")
   "w o" '(delete-other-windows :which-key "delete other windows")
@@ -262,10 +266,11 @@
   )
 
 (custo/local-leader-key
-  "=" '(:ignore = :which-key "format")
-  "d" '(:ignore d :which-key "documentation")
-  "g" '(:ignore g :which-key "goto")'
-  "i" '(:ingore i :which-key "insert")
+  :keymaps 'prog-mode
+  "=" '(:ignore t :which-key "format")
+  "d" '(:ignore t :which-key "documentation")
+  "g" '(:ignore t :which-key "goto")'
+  "i" '(:ingore t :which-key "insert")
   )
 
 ;; hydra to build menus
@@ -344,7 +349,7 @@
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :config
   (custo/leader-key
-    "g" '(:ignore g :which-key "magit")
+    "g" '(:ignore t :which-key "magit")
     "g s" '(magit-status :which-key "magit status")
     "g b" '(magit-branch :which-key "magit branch")
     "g B" '(magit-blame :which-key "magit blame")
@@ -363,8 +368,8 @@
 
 ;; completion mini buffers
 (use-package company
-  :hook
-  (after-init-hook . global-company-mode)
+  ;; :hook
+  ;; (after-init-hook . global-company-mode)
   :config
   (setq company-backends '(company-capf))
   )
@@ -376,10 +381,9 @@
   :hook (company-mode . company-box-mode))
 
 
-
 ;; better javascript mode
 (use-package js2-mode
-  :mode "\\.m?js\\'"
+  :mode "\\/.*\\.js\\'"
   :config
   (setq js-indent-level 2)
   :hook
@@ -388,44 +392,34 @@
 
 ;; teach js2-mode how to jsx
 (use-package rjsx-mode
-  :after js2-mode
-  :mode "components/.+\\.js$"
-  ;; :config
-  ;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
-  ;; :hook
-  ;; (js2-mode . rjsx-minor-mode)
+  :mode "components\\/.*\\.js\\'"
   )
 
 ;; auto-docs :D
 (use-package js-doc
   :after js2-mode
-  :hook
-  (js2-mode . (lambda ()
-                (custo/local-leader-key
-                  "d" '(:ignore d :which-key "jsdoc")
-                  "d f" '(js-doc-insert-function-doc :which-key "jsdoc function"))
-                ))
+  :config
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map rsjx-mode)
+    "d" '(:ignore t :which-key "jsdoc")
+    "d f" '(js-doc-insert-function-doc :which-key "jsdoc function"))
   )
 
 (use-package js-react-redux-yasnippets
   :after (yasnippet js2-mode)
-  :hook
-  (js2-mode . (lambda ()
-                (custo/local-leader-key
-                  "i s" '(yas-insert-snippet :which-key "insert snippet"))
-                ))
+  :config
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map rsjx-mode)
+    "i s" '(yas-insert-snippet :which-key "insert snippet"))
   )
 
 ;; format js and jsx
 (use-package prettier
   :after js2-mode
-  :hook
-  (js2-mode . (lambda () 
-                (custo/local-leader-key
-                  "= =" '(prettier-prettify :which-key "format with prettier"))
-                (message "this hook was called")
-                ))
+  :config
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map rsjx-mode)
+    "= =" '(prettier-prettify :which-key "format with prettier"))
   )
 
 
@@ -439,32 +433,64 @@
         rustic-lsp-server 'rust-analyzer
         rustic-indent-offset 2
         rust-format-on-save t)
+  (custo/local-leader-key
+    :keymaps 'rustic-mode-map
+    "= =" '(rustic-format-buffer :which-key "format with rustfmt"))
+  )
+
+
+(use-package csharp-mode
   :hook
-  (rustic-mode . (lambda ()
-                   (custo/local-leader-key
-                     "= =" '(rustic-format-buffer :which-key "format with rustfmt"))
-                   ))
+  (csharp-mode . rainbow-delimiters-mode)
+  (csharp-mode . company-mode)
+  (csharp-mode . flycheck-mode)
+  )
+
+(use-package omnisharp
+  :after csharp-mode
+  :commands omnisharp-install-server
+  :config
+  (setq indent-tabs-mode nil
+        c-syntactic-indentation t
+        c-basic-offset 2
+        tab-width 2
+        evil-shift-width 2)
+  (custo/local-leader-key
+    :keymaps '(csharp-mode-map omnisharp-mode-map)
+    "o" '(:ignore t :which-key "omnisharp")
+    "o r" '(omnisharp-run-code-action-refactoring :which-key "omnisharp refactor")
+    "o b" '(recompile :which-key "omnisharp build/recompile")
+    )
   )
 
 ;; lsp-mode
 (use-package lsp-mode
   :hook ((js2-mode . lsp)
+         (rsjx-mode . lsp)
          (scss-mode . lsp)
          (web-mode . lsp)
          (typescript-mode . lsp)
          (rustic-mode . lsp)
+         (csharp-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp
   :config
   (setq lsp-completion-provider :capf)
   (setq lsp-rust-server 'rust-analyzer)
   (custo/local-leader-key
+    :keymaps '(js2-mode-map
+               rjsx-mode-map
+               rustic-mode-map
+               typescript-mode-map
+               csharp-mode
+               lsp-mode-map
+               lsp-ui-mode-map)
     "g r" '(lsp-ui-peek-find-references :which-key "goto references")
     "g g" '(lsp-find-definition :which-key "goto definition")
     "o" '(lsp-ui-imenu :which-key "overview")
-    "r" '(:ignore r :which-key "refactor")
+    "r" '(:ignore t :which-key "refactor")
     "r r" '(lsp-rename :which-key "rename")
-    "=" '(:ignore = :which-key "format")
+    "=" '(:ignore t :which-key "format")
     "= l" '(lsp-format-buffer :which-key "format with lsp")
     )
   )
@@ -482,9 +508,14 @@
 ;; error checking
 (use-package flycheck
   ;; :commands flycheck-list-errors flycheck-buffer
-  :hook (after-init-hook . global-flycheck-mode)
+  :hook
+  ;; FIXME we should call these based on mode not globally
+  (after-init-hook . global-flycheck-mode)
   :config
   (custo/local-leader-key
+    ;; FIXME keymaps probably wont work in global mode so try after you fix
+    ;;       the above
+    ;; :keymaps '(js2-mode rsjx-mode typescript-mode rustic-mode csharp-mode)
     "e" '(:ignore t :which-key "errors")
     "e l" '(flycheck-list-errors :which-key "list errors")
     )
@@ -597,7 +628,7 @@
   :hook
   (org-mode . org-superstar-mode)
   :config
-  ;; (org-superstar-configure-like-org-bullets)
+  (org-superstar-configure-like-org-bullets)
   ;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
   )
 
