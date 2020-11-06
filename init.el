@@ -16,7 +16,8 @@
 (tooltip-mode -1)       ;; disable tooltip
 (set-fringe-mode 10)    ;; 'breathing' room
 (menu-bar-mode -1)
-(setq visible-bell nil)   ;; visual bell
+(setq ring-bell-function 'ignore)
+;; (setq visible-bell t)   ;; visual bell
 (setq-default indent-tabs-mode nil) ;; uses spaces and not tabs
 
 ;; for performance
@@ -245,7 +246,7 @@
   "h" '(:ignore t :which-key "custo help")
   "h s" '(:ignore t :which-key "straight")
   "h s p" '(straight-pull-all :which-key "straight pull packages")
-  "h s b" '(straight-rebuild-all :which-key "straight buildpackages")
+  "h s b" '(straight-rebuild-all :which-key "straight build packages")
   "m" '(:ignore t :which-key "local-leader")
   "o" '(:ignore t :which-key "open")
   "o t" '(ansi-term :which-key "open terminal")
@@ -263,8 +264,8 @@
   "w w" '(other-window :which-key "other window")
   "w d" '(delete-window :which-key "delete window")
   "w o" '(delete-other-windows :which-key "delete other windows")
-  "w h" '(evil-window-vsplit :which-key "split window horizontally")
-  "w v" '(evil-window-split :which-key "split window vertically")
+  "w h" '(evil-window-vsplit :which-key "add window horizontally")
+  "w v" '(evil-window-split :which-key "add window vertically")
   )
 
 (custo/local-leader-key
@@ -304,11 +305,15 @@
     )
   )
 
-(use-package multiple-cursors
+;; (use-package multiple-cursors
+(use-package evil-mc
+  :init
+  (global-evil-mc-mode 1)
   :config
   (custo/leader-key
-    "c n" '(mc/mark-next-like-this :which-key "mc-mark and next")
-    "c p" '(mc/mark-prev-like-this :which-key "mc-mark and prev"))
+    "c n" '( evil-mc-make-and-goto-next-match :which-key "mc-mark and next")
+    "c p" '(evil-mc-make-and-goto-prev-match :which-key "mc-mark and prev")
+    "c u" '(evil-mc-undo-all-cursors :which-key "mc-mark undo all"))
   )
 
 ;; setup project management
@@ -340,6 +345,7 @@
    )
   )
 
+;; prettier dired
 (use-package diredfl
   :after dired
   :hook (dired-mode . diredfl-mode))
