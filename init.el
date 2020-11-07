@@ -15,47 +15,57 @@
 (tool-bar-mode -1)      ;; disable the toolbar
 (tooltip-mode -1)       ;; disable tooltip
 (set-fringe-mode 10)    ;; 'breathing' room
-(menu-bar-mode -1)
-(setq ring-bell-function 'ignore)
-;; (setq visible-bell t)   ;; visual bell
+(menu-bar-mode -1)      ;; turn off menus
+(setq ring-bell-function 'ignore) ;; disable all visual and audible bells
 (setq-default indent-tabs-mode nil) ;; uses spaces and not tabs
 
 ;; for performance
 (setq gc-cons-threshold 100000000)
+;; what doom does, but we want lower but this is also an option
 ;; (setq gc-cons-threshold most-positive-fixnum)
+
+;; read process output in 1mb chunks
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
+;; create some font size defaults
 (defvar custo/default-font-size 93)
 (defvar custo/default-variable-font-size 93)
-;; (defvar custo/default-font-size 200)
-;; (defvar custo/default-variable-font-size 200)
 
-;;(set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
-(set-face-attribute 'default 'nil :font "FiraCode Nerd Font" :height custo/default-font-size)
+;; if in macOS, set size appropriately
+;; otherwise assume linux
+(if (eq system-type 'darwin)
+    (progn
+      (setq custo/default-font-size 200)
+      (setq custo/default-variable-font-size 200)
+      ;; set default font
+      (set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
+      ;; Set the fixed pitch face
+      (set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
+      )
+    (progn
+      ;; set default font
+      (set-face-attribute 'default 'nil :font "FiraCode Nerd Font" :height custo/default-font-size)
+      ;; Set the fixed pitch face
+      (set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height custo/default-font-size)
+      )
+    )
 
-;; Set the fixed pitch face
-;;(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
-(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height custo/default-font-size)
-
-;; Set the variable pitch face
-;; (set-face-attribute 'variable-pitch nil :font "DejaVu Sans" :height custo/default-variable-font-size :weight 'regular)
+;; Set the variable pitch face which is the same for mac and linux
 (set-face-attribute 'variable-pitch nil :font "Arial" :height custo/default-variable-font-size :weight 'regular)
 
+;; adjust the startup size of emacs
 (setq initial-frame-alist
       `((width . 120) ; chars
         (height . 45) ; lines
         )
       )
 
-;; make escape qui prompts
-;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
 ;; better line info
-(column-number-mode)
-(global-display-line-numbers-mode t)
-(menu-bar--display-line-numbers-mode-relative)
+(column-number-mode) ;; show column info
+(global-display-line-numbers-mode t) ;; display line numbers to the left
+(menu-bar--display-line-numbers-mode-relative) ;; make those line numbers relative
 
-;; setup straight for package management
+;; setup straight for package management, its much better than use-package
 (setq straight-use-package-by-default t)
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -83,27 +93,27 @@
 ;; use counsel for completions over
 ;; default M-x and some other things
 (use-package counsel
-  :bind (("M-x" . counsel-M-x)
-         ("C-x b" . counsel-ibuffer)
-         ("C-x C-f" . counsel-find-file)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history)
-	 )
+  ;; :bind (("M-x" . counsel-M-x)
+  ;;        ("C-x b" . counsel-ibuffer)
+  ;;        ("C-x C-f" . counsel-find-file)
+  ;;        :map minibuffer-local-map
+  ;;        ("C-r" . 'counsel-minibuffer-history)
+  ;;        )
   )
 (use-package ivy
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
+  ;; :bind (("C-s" . swiper)
+  ;;        :map ivy-minibuffer-map
+  ;;        ("TAB" . ivy-alt-done)
+  ;;        ("C-l" . ivy-alt-done)
+  ;;        ("C-j" . ivy-next-line)
+  ;;        ("C-k" . ivy-previous-line)
+  ;;        :map ivy-switch-buffer-map
+  ;;        ("C-k" . ivy-previous-line)
+  ;;        ("C-l" . ivy-done)
+  ;;        ("C-d" . ivy-switch-buffer-kill)
+  ;;        :map ivy-reverse-i-search-map
+  ;;        ("C-k" . ivy-previous-line)
+  ;;        ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
 
