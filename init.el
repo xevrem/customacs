@@ -25,17 +25,17 @@
 ;; (setq gc-cons-threshold most-positive-fixnum)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
-;; (defvar custo/default-font-size 93)
-;; (defvar custo/default-variable-font-size 93)
-(defvar custo/default-font-size 200)
-(defvar custo/default-variable-font-size 200)
+(defvar custo/default-font-size 93)
+(defvar custo/default-variable-font-size 93)
+;; (defvar custo/default-font-size 200)
+;; (defvar custo/default-variable-font-size 200)
 
 ;;(set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
-(set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
+(set-face-attribute 'default 'nil :font "FiraCode Nerd Font" :height custo/default-font-size)
 
 ;; Set the fixed pitch face
 ;;(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
-(set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
+(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height custo/default-font-size)
 
 ;; Set the variable pitch face
 ;; (set-face-attribute 'variable-pitch nil :font "DejaVu Sans" :height custo/default-variable-font-size :weight 'regular)
