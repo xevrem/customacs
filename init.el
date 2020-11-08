@@ -244,6 +244,7 @@
   ":" '(counsel-M-x :which-key "M-x")
   "a" '(:ignore t :which-key "apps")
   "a e" '(eww :which-key "eww")
+  "a t" '(ansi-term :which-key "terminal")
   "b" '(:ignore t :which-key "buffer")
   "b b" '(counsel-switch-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
@@ -258,8 +259,7 @@
   "h s p" '(straight-pull-all :which-key "straight pull packages")
   "h s b" '(straight-rebuild-all :which-key "straight build packages")
   "m" '(:ignore t :which-key "local-leader")
-  "o" '(:ignore t :which-key "open")
-  "o t" '(ansi-term :which-key "open terminal")
+  "o" '(:ignore t :which-key "org")
   "q" '(:ignore t :which-key "quit")
   "q q" '(save-buffers-kill-emacs :which-key "save and quit")
   "q Q" '(kill-emacs :which-key "quit no-save")
@@ -622,7 +622,7 @@
           ))
   ;; safety save all org buffers after refiling
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
-
+  ;; capture templates
   (setq org-capture-templates
         '(("t" "Tasks")
           ("tt" "Task" entry (file+olp "~/org/tasks.org" "Inbox")
@@ -630,6 +630,36 @@
           
           )
         )
+  ;; global key bindings
+  (custo/leader-key
+    "o a" '(org-agenda :wk "agenda")
+    "o c" '(org-capture :wk "capture")
+    "o t" '(org-todo-list :wk "list todos"))
+  ;; org mode specific bindings
+  (custo/local-leader-key
+    :keymaps 'org-mode-map
+    "a" '(:ignore t :wk "add")
+    "a t" '(org-time-stamp :wk "timetamp")
+    "a s" '(org-schedule :wk "schedule")
+    "a d" '(org-deadline :wk "deadline")
+    "a p" '(org-set-property :wk "property")
+    "a T" '(org-set-tags-command :wk "tag")
+    "s" '(:ignore t :wk "subtree") 
+    "s r" '(org-refile :wk "refile")
+    "s c" '(org-copy-subtree :wk "copy")
+    "s x" '(org-cut-subtree :wk "cut")
+    "s p" '(org-paste-subtree :wk "paste")
+    "s n" '(org-toggle-narrow-to-subtree :wk "toggle narrow")
+    "s <right>" '(org-demote-subtree :wk "demote")
+    "s <left>" '(org-promote-subtree :wk "promote")
+    "s <up>" '(org-move-subtree-up :wk "move up")
+    "s <down>" '(org-move-subtree-down :wk "move down")
+    "i" '(:ignore t :wk "insert")
+    "i RET" '(org-insert-structure-template :wk "insert template")
+    "i s" '((lambda ()
+                (interactive)
+                (org-insert-structure-template "src")) :wk "insert source block")
+    )
   )
 
 
