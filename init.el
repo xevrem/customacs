@@ -28,15 +28,25 @@
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
 ;; create some font size defaults
-(defvar custo/default-font-size 93)
-(defvar custo/default-variable-font-size 93)
+(defvar custo/default-font-size 100)
+(defvar custo/default-variable-font-size 100)
+
+;; if vertical height is over 2k, set to 192dpi otherwise 96dpi
+(if (> (display-pixel-height) 2000)
+    (progn
+      (setq custo/default-font-size 192)
+      (setq custo/default-variable-font-size 192)
+      )
+    (progn
+      (setq custo/default-font-size 96)
+      (setq custo/default-variable-font-size 96)
+      )
+    )
 
 ;; if in macOS, set size appropriately
 ;; otherwise assume linux
 (if (eq system-type 'darwin)
     (progn
-      (setq custo/default-font-size 200)
-      (setq custo/default-variable-font-size 200)
       ;; set default font
       (set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
       ;; Set the fixed pitch face
