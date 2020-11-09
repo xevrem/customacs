@@ -1,15 +1,15 @@
 ;; (setq package-user-dir "~/repos/customacs/packages")
 
 ;; update path variables because stuff may not be set yet
-(let '(path
-       (shell-command-to-string "/usr/bin/env zsh -c \"source ~/.zshrc && env | grep \\^PATH | tr -d PATH=\""))
-       ;; (shell-command-to-string "/usr/bin/env fish -c \"source && env | grep \\^PATH | tr -d PATH=\""))
-  (setenv "PATH" path)
-  (setq exec-path
-        (append
-         (split-string-and-unquote path ":")
-         exec-path)
-        ))
+;; (let '(path
+;;        (shell-command-to-string "/usr/bin/env zsh -c \"source ~/.zshrc && env | grep \\^PATH | tr -d PATH=\""))
+;;        ;; (shell-command-to-string "/usr/bin/env fish -c \"source && env | grep \\^PATH | tr -d PATH=\""))
+;;   (setenv "PATH" path)
+;;   (setq exec-path
+;;         (append
+;;          (split-string-and-unquote path ":")
+;;          exec-path)
+;;         ))
 
 ;; for performance
 (setq gc-cons-threshold 100000000)
@@ -54,18 +54,13 @@
 (defvar custo/default-font-size 153)
 (defvar custo/default-variable-font-size 153)
 
-;; if vertical height is over 2k, set to 192dpi otherwise leave at default
-(unless (< (display-pixel-height) 2000)
-    (progn
-      (setq custo/default-font-size 192)
-      (setq custo/default-variable-font-size 192)
-      )
-    )
 
 ;; if in macOS, set size appropriately
 ;; otherwise assume linux
 (if (eq system-type 'darwin)
     (progn
+      (setq custo/default-font-size 192)
+      (setq custo/default-variable-font-size 192)
       ;; set default font
       (set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
       ;; Set the fixed pitch face
@@ -102,6 +97,16 @@
 ;;
 ;; PACKAGE CONFIGURATION
 ;;
+
+;; get shell variables
+(use-package exec-path-from-shell
+  ;; :init
+  ;; (setq exec-path-from-shell-check-startup-files nil)
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)
+    )
+  )
 
 ;; restart
 (use-package restart-emacs)
@@ -165,6 +170,8 @@
 
 ;; yasnippet
 (use-package yasnippet
+  :commands (yas-minor-mode-on
+             yas-lookup-snippet)
   :hook
   '((text-mode-hook . yas-minor-mode-on)
     (prog-mode-hook . yas-minor-mode-on)
@@ -592,7 +599,7 @@
   ;; (display-line-numbers-mode 0)
   ;; (setq org-directory "~/org/")
   ;; (setq evil-auto-indent nil)
-  ;; (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
+  (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
   )
 
 (use-package org
@@ -625,7 +632,8 @@
            "DONE"
            "PARTIAL"
            "CANCELLED"
-           "OBE")))
+           "OBE"
+           "MOVED")))
   (setq org-todo-keyword-faces
         `(("TODO" . "#88ff88")
           ("DOING" . "#ffff88")
@@ -633,7 +641,8 @@
           ("DONE" . "#8888ff")
           ("PARTIAL" . "#bb88ff")
           ("CANCELLED" . "#ff8888")
-          ("OBE" . "#ffbb88")))
+          ("OBE" . "#ffbb88")
+          ("MOVED" . "#88ffbb")))
   (setq org-tag-alist
         '((:startgroup)
           ;; mutually exclusive tags here
