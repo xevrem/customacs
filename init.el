@@ -375,6 +375,12 @@
 (use-package ranger
   :after dired
   :config
+  (setq ranger-preview-file nil
+        ranger-show-literal t
+        ranger-max-parent-width 0.12
+        ranger-width-preview 0.45
+        ranger-max-preview-size 1
+        ranger-dont-show-binary t)
   (custo/leader-key
    "f d" '(ranger :which-key "file directory")
    )
@@ -617,7 +623,8 @@
   (setq org-agenda-files
         `(
           "~/org/tasks.org"
-          "~/org/birthdays.org"
+          "~/org/ideas.org"
+          "~/org/journal.org"
           )
         )
   (setq org-agenda-start-with-log-mode t)
@@ -628,6 +635,7 @@
            "TODO"
            "DOING"
            "DELAYED"
+           "IN REVIEW"
            "|"
            "DONE"
            "PARTIAL"
@@ -638,8 +646,9 @@
         `(("TODO" . "#88ff88")
           ("DOING" . "#ffff88")
           ("DELAYED" . "#ffbb88")
+          ("IN REVIEW" . "#bb55ff")
           ("DONE" . "#8888ff")
-          ("PARTIAL" . "#bb88ff")
+          ("PARTIAL" . "#8855ff")
           ("CANCELLED" . "#ff8888")
           ("OBE" . "#ffbb88")
           ("MOVED" . "#88ffbb")))
@@ -656,8 +665,9 @@
           )
         )
   (setq org-refile-targets
-        '(("archive.org" :maxlevel . 2)
-          ("tasks.org" :maxlevel . 1)
+        '(("~/org/archive.org" :maxlevel . 1)
+          ("~/org/tasks.org" :maxlevel . 1)
+          ("~/org/ideas.org" :maxlevel . 1)
           ))
   ;; safety save all org buffers after refiling
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
@@ -734,14 +744,14 @@
   ;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
   )
 
-(dolist (face '((org-level-1 . 1.2)
-                (org-level-2 . 1.1)
-                (org-level-3 . 1.05)
-                (org-level-4 . 1.0)
-                (org-level-5 . 1.1)
-                (org-level-6 . 1.1)
-                (org-level-7 . 1.1)
-                (org-level-8 . 1.1)))
+(dolist (face '((org-level-1 . 1.3)
+                (org-level-2 . 1.25)
+                (org-level-3 . 1.20)
+                (org-level-4 . 1.15)
+                (org-level-5 . 1.10)
+                (org-level-6 . 1.05)
+                (org-level-7 . 1.0)
+                (org-level-8 . 1.0)))
   ;; (set-face-attribute (car face) nil :font "DejaVu Sans" :weight 'regular :height (cdr face)))
   (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face)))
 

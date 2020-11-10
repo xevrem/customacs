@@ -12,3 +12,6 @@
 
 straight/
 transient/
+eshell/
+elpa/
+eln-cache/
