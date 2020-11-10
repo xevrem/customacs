@@ -51,8 +51,8 @@
 
 ;; create some font size defaults
 ;; may need to customize
-(defvar custo/default-font-size 153)
-(defvar custo/default-variable-font-size 153)
+(defvar custo/default-font-size 93)
+(defvar custo/default-variable-font-size 93)
 
 
 ;; if in macOS, set size appropriately
@@ -784,14 +784,16 @@
    :host github :repo "h0d/term-cursor.el")
   )
 
+(load "~/.emacs.d/private.el")
+
 (use-package circe
   :config
   (setq circe-network-options
         `(("irc.chat.twitch.tv"
            :tls t
            :port 6697
-           :nick ""
-           :pass ""
+           :nick ,private/circe-nick
+           :pass ,private/circe-pass
            ))
         )
   (require 'circe-color-nicks)
