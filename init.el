@@ -794,7 +794,7 @@
    :host github :repo "h0d/term-cursor.el")
   )
 
-(load "~/.emacs.d/private.el")
+(load "~/.private.el")
 
 (use-package circe
   :config
