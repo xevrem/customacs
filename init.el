@@ -12,7 +12,7 @@
 ;;         ))
 
 ;; for performance
-(setq gc-cons-threshold 100000000)
+(setq gc-cons-threshold (* 100 1024 1024))
 ;; what doom does, but we want lower but this is also an option
 ;; (setq gc-cons-threshold most-positive-fixnum)
 
@@ -420,7 +420,9 @@
   :hook
   (lsp-mode . company-mode)
   :config
-  (setq company-backends '(company-capf))
+  (setq company-backends '(company-capf)
+        company-idle-delay 0.0
+        company-minimum-prefix-length 1)
   )
 
 (use-package company-prescient
