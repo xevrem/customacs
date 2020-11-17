@@ -811,6 +811,9 @@
   (require 'circe-color-nicks)
   (setq circe-color-nicks-min-constrast-ratio 4.5
         circe-color-nicks-everywhere t)
+  (custo/leader-key
+    "a c" '(circe :wk "circe")
+    )
   :hook (circe-channel-mode . enable-circe-color-nicks)
   )
 
