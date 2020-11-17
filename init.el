@@ -27,6 +27,7 @@
 (menu-bar-mode -1)      ;; turn off menus
 (setq ring-bell-function 'ignore) ;; disable all visual and audible bells
 (setq-default indent-tabs-mode nil) ;; uses spaces and not tabs
+(setq create-lockfiles nil)
 
 ;; adjust the startup size of emacs
 (setq initial-frame-alist
