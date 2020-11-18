@@ -12,12 +12,12 @@
 ;;         ))
 
 ;; for performance
-(setq gc-cons-threshold (* 100 1024 1024))
+;; (setq gc-cons-threshold (* 100 1024 1024))
 ;; what doom does, but we want lower but this is also an option
 ;; (setq gc-cons-threshold most-positive-fixnum)
 
 ;; read process output in 1mb chunks
-(setq read-process-output-max (* 1024 1024)) ;; 1mb
+;; (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
 (setq inhibit-startup-message t)
 (scroll-bar-mode -1)    ;; disable vis scrollbar
@@ -139,11 +139,46 @@
   ;;        ("C-k" . ivy-previous-line)
   ;;        ("C-d" . ivy-reverse-i-search-kill))
   :config
-  (ivy-mode 1))
+  (setq ivy-sort-max-size 7500
+        ivy-height 17
+        ivy-wrap t
+        ivy-fixed-height-minibuffer t
+        ;; disable magic slash on non-match
+        ivy-magic-slash-non-match-action nil
+        ;; don't show recent files in switch-buffer
+        ivy-use-virtual-buffers nil
+        ;; ...but if that ever changes, show their full path
+        ivy-virtual-abbreviate 'full
+        ;; don't quit minibuffer on delete-error
+        ivy-on-del-error-function #'ignore
+        ;; enable ability to select prompt (alternative to `ivy-immediate-done')
+        ivy-use-selectable-prompt t)
+  (ivy-mode 1)
+  )
 
 (use-package prescient)
 (use-package ivy-prescient
-  :init (ivy-prescient-mode 1))
+  :init (ivy-prescient-mode 1)
+  :config
+  ;;good ideas from doom:
+  (defun +ivy-prescient-non-fuzzy (str)
+    (let ((prescient-filter-method '(literal regexp)))
+      (ivy-prescient-re-builder str)))
+  (let ((standard-search-fn
+         #'+ivy-prescient-non-fuzzy)
+        (alt-search-fn
+         ;; Ignore order for non-fuzzy searches by default
+         #'ivy--regex-ignore-order))
+    (setq ivy-re-builders-alist
+          `((counsel-rg     . ,standard-search-fn)
+            (swiper         . ,standard-search-fn)
+            (swiper-isearch . ,standard-search-fn)
+            (t . ,alt-search-fn))
+          ivy-more-chars-alist
+          '((counsel-rg . 1)
+            (counsel-search . 2)
+            (t . 3))))
+  )
 
 ;; load all-the-icons only if in GUI mode
 ;; and install them if not present
@@ -274,7 +309,7 @@
   "b" '(:ignore t :which-key "buffer")
   "b b" '(counsel-switch-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
-  "b i" '(ibuffer-list-buffers :which-key "ibuffer")
+  "b i" '(counsel-ibuffer :which-key "ibuffer")
   "c" '(:ignore t :which-key "cursor")
   "c c" '(comment-line :which-key "comment line")
   "f" '(:ignore f :which-key "file")
@@ -369,6 +404,8 @@
 ;; add counsel capability
 (use-package counsel-projectile
   :after projectile
+  :bind
+  ([remap projectile-find-file] . counsel-projectile-find-file)
   :config (counsel-projectile-mode)
   )
 
