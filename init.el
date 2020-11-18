@@ -459,7 +459,7 @@
   (lsp-mode . company-mode)
   :config
   (setq company-backends '(company-capf)
-        company-idle-delay 0.0
+        company-idle-delay 0.1
         company-minimum-prefix-length 1)
   )
 
