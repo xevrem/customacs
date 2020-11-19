@@ -733,6 +733,9 @@
     "a d" '(org-deadline :wk "deadline")
     "a p" '(org-set-property :wk "property")
     "a T" '(org-set-tags-command :wk "tag")
+    "e" '(:ignore t :wk "export")
+    "e d" '(org-export-dispatch :wk "export dispatch")
+    "e m" '(org-md-export-as-markdown :wk "export as markdown")
     "i" '(:ignore t :wk "insert")
     "i RET" '(org-insert-structure-template :wk "insert template")
     "i s" '((lambda ()
@@ -767,6 +770,9 @@
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
 (add-to-list 'org-structure-template-alist '("js" . "src js"))
+
+(use-package ox-gfm
+  :after org)
 
 ;; (use-package org-projectile
 ;;   :config
