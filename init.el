@@ -165,10 +165,12 @@
 (use-package prescient
   :defer t)
 (use-package ivy-prescient
-  :defer t
+  :after ivy
+  ;; :defer t
   ;; :init (ivy-prescient-mode 1)
-  :hook
-  (after-init-hook . ivy-prescient-mode)
+  ;; :hook
+  ;; (ivy-mode-hook . ivy-prescient-mode)
+  ;; (after-init-hook . ivy-prescient-mode)
   :config
   ;;good ideas from doom:
   (defun +ivy-prescient-non-fuzzy (str)
@@ -188,6 +190,7 @@
           '((counsel-rg . 1)
             (counsel-search . 2)
             (t . 3))))
+  (ivy-prescient-mode 1)
   )
 
 ;; load all-the-icons only if in GUI mode
@@ -409,6 +412,7 @@
 
 ;; setup project management
 (use-package projectile
+  :defer t
   :diminish projectile-mode
   :custom
   (projectile-completion-system 'ivy)
@@ -423,10 +427,16 @@
   
 ;; add counsel capability
 (use-package counsel-projectile
+  :defer t
   :after projectile
+  :hook
+  (projectile-mode-hook .  counsel-projectile-mode)
   :bind
   ([remap projectile-find-file] . counsel-projectile-find-file)
-  :config (counsel-projectile-mode)
+  ([remap projectile-switch-project] . counsel-projectile-switch-project)
+  ([remap projectile-switch-to-buffer] . counsel-projectile-switch-to-buffer)
+  ;; :config
+  ;; (counsel-projectile-mode)
   )
 
 ;; make dired more like ranger
