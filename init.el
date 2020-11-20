@@ -20,11 +20,11 @@
 ;; (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
 (setq inhibit-startup-message t)
-(scroll-bar-mode -1)    ;; disable vis scrollbar
-(tool-bar-mode -1)      ;; disable the toolbar
-(tooltip-mode -1)       ;; disable tooltip
+;; (scroll-bar-mode -1)    ;; disable vis scrollbar
+;; (tool-bar-mode -1)      ;; disable the toolbar
+;; (tooltip-mode -1)       ;; disable tooltip
 (set-fringe-mode 10)    ;; 'breathing' room
-(menu-bar-mode -1)      ;; turn off menus
+;; (menu-bar-mode -1)      ;; turn off menus
 (setq ring-bell-function 'ignore) ;; disable all visual and audible bells
 (setq-default indent-tabs-mode nil) ;; uses spaces and not tabs
 (setq create-lockfiles nil)
