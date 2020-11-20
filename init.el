@@ -1,4 +1,4 @@
-;; (setq package-user-dir "~/repos/customacs/packages")
+;; (setq package-user-dir "~/repos/customacs/packages") 
 
 ;; update path variables because stuff may not be set yet
 ;; (let '(path
@@ -52,8 +52,8 @@
 
 ;; create some font size defaults
 ;; may need to customize
-(defvar custo/default-font-size 93)
-(defvar custo/default-variable-font-size 93)
+(defvar custo/default-font-size 153)
+(defvar custo/default-variable-font-size 153)
 
 
 ;; if in macOS, set size appropriately
@@ -110,13 +110,16 @@
   )
 
 ;; restart
-(use-package restart-emacs)
+(use-package restart-emacs
+  :defer t)
 
 ;; ivy trio
-(use-package swiper)
+(use-package swiper
+  :defer t)
 ;; use counsel for completions over
 ;; default M-x and some other things
 (use-package counsel
+  :defer t
   ;; :bind (("M-x" . counsel-M-x)
   ;;        ("C-x b" . counsel-ibuffer)
   ;;        ("C-x C-f" . counsel-find-file)
@@ -125,6 +128,9 @@
   ;;        )
   )
 (use-package ivy
+  :defer t
+  ;; :hook
+  ;; (after-init-hook . ,(ivy-mode 1))
   ;; :bind (("C-s" . swiper)
   ;;        :map ivy-minibuffer-map
   ;;        ("TAB" . ivy-alt-done)
@@ -156,9 +162,13 @@
   (ivy-mode 1)
   )
 
-(use-package prescient)
+(use-package prescient
+  :defer t)
 (use-package ivy-prescient
-  :init (ivy-prescient-mode 1)
+  :defer t
+  ;; :init (ivy-prescient-mode 1)
+  :hook
+  (after-init-hook . ivy-prescient-mode)
   :config
   ;;good ideas from doom:
   (defun +ivy-prescient-non-fuzzy (str)
@@ -191,7 +201,11 @@
 
 ;; add a better modeline
 (use-package doom-modeline
-  :init (doom-modeline-mode 1))
+  :defer t
+  ;; :hook
+  ;; (after-init-hook . doom-modeline-mode)
+  :init (doom-modeline-mode 1)
+  )
 
 ;; enable better themes
 (use-package doom-themes
@@ -202,10 +216,12 @@
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
+  :defer t
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; yasnippet
 (use-package yasnippet
+  :defer t
   :commands (yas-minor-mode-on
              yas-lookup-snippet)
   :hook
@@ -217,7 +233,10 @@
   )
 
 (use-package smartparens
-  :init (smartparens-global-mode 1)
+  :defer t
+  :hook
+  (prog-mode-hook . smartparents-global-mode)
+  ;; :init (smartparens-global-mode 1)
   :config
   ;; don't interfere with yasnippets
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
@@ -227,10 +246,11 @@
 ;; setup a special menu that tells us what keys are available
 ;; based on the current mode, set pop-up delay to 0.1s
 (use-package which-key
-  :init (which-key-mode)
+  ;; :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.1)
+  (which-key-mode)
   )
 
 ;; provide more helpful info in ivy panels
