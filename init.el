@@ -74,9 +74,9 @@
       )
     (progn
       ;; set default font
-      (set-face-attribute 'default 'nil :font "FiraCode Nerd Font" :height custo/default-font-size)
+      (set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
       ;; Set the fixed pitch face
-      (set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font" :height custo/default-font-size)
+      (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
       )
     )
 
@@ -355,9 +355,10 @@
 (custo/leader-key
   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
   ":" '(counsel-M-x :which-key "M-x")
-  "a" '(:ignore t :which-key "apps")
-  "a e" '(eww :which-key "eww")
-  "a t" '(ansi-term :which-key "terminal")
+  "a" '(:ignore t :wk "apps")
+  "a c" '(circe :wk "circe")
+  "a e" '(eww :wk "eww")
+  "a t" '(ansi-term :wk "terminal")
   "b" '(:ignore t :which-key "buffer")
   "b b" '(counsel-switch-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
@@ -392,7 +393,7 @@
   )
 
 (custo/local-leader-key
-  ;; :keymaps 'prog-mode
+  :keymaps 'prog-mode-map
   "=" '(:ignore t :which-key "format")
   "d" '(:ignore t :which-key "documentation")
   "g" '(:ignore t :which-key "goto")
@@ -471,6 +472,18 @@
   ([remap projectile-find-file] . counsel-projectile-find-file)
   ([remap projectile-switch-project] . counsel-projectile-switch-project)
   ([remap projectile-switch-to-buffer] . counsel-projectile-switch-to-buffer)
+  )
+
+(use-package find-file-in-project
+  :defer t
+  :after projectile
+  :config
+  (setq ffip-use-rust-fd t)
+  (custo/leader-key
+    "f p" '(find-file-in-project :wk "find file in project")
+    )
+  ;; :bind
+  ;; ([remap projectile-find-file] . )
   )
 
 ;; make dired more like ranger
@@ -571,7 +584,7 @@
   :after js2-mode
   :config
   (custo/local-leader-key
-    :keymaps '(js2-mode-map rsjx-mode)
+    :keymaps '(js2-mode-map rsjx-mode-map)
     "d" '(:ignore t :which-key "jsdoc")
     "d f" '(js-doc-insert-function-doc :which-key "jsdoc function"))
   )
@@ -580,16 +593,16 @@
   :after (yasnippet js2-mode)
   :config
   (custo/local-leader-key
-    :keymaps '(js2-mode-map rsjx-mode)
+    :keymaps '(js2-mode-map rsjx-mode-map)
     "i s" '(yas-insert-snippet :which-key "insert snippet"))
   )
 
 ;; format js and jsx
 (use-package prettier
-  :after js2-mode
+  :after (:any js2-mode rsjx-mode typescript-mode)
   :config
   (custo/local-leader-key
-    :keymaps '(js2-mode-map rsjx-mode)
+    :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
     "= =" '(prettier-prettify :which-key "format with prettier"))
   )
 
@@ -602,6 +615,7 @@
   )
 
 (use-package typescript-mode
+  :mode "\\/.*\\.ts\\'"
   :config
   (setq typescript-indent-level 2)
   )
@@ -693,6 +707,7 @@
 
 ;; error checking
 (use-package flycheck
+  :defer t
   ;; :commands flycheck-list-errors flycheck-buffer
   :hook
   ;; FIXME we should call these based on mode not globally
@@ -702,7 +717,11 @@
   (custo/local-leader-key
     ;; FIXME keymaps probably wont work in global mode so try after you fix
     ;;       the above
-    ;; :keymaps '(js2-mode rsjx-mode typescript-mode rustic-mode csharp-mode)
+    :keymaps '(js2-mode-map
+               rsjx-mode-map
+               typescript-mode-map
+               rustic-mode-map
+               csharp-mode-map)
     "e" '(:ignore t :which-key "errors")
     "e l" '(flycheck-list-errors :which-key "list errors")
     )
@@ -933,11 +952,16 @@
  '(global-term-cursor
    :host github :repo "h0d/term-cursor.el")
  :defer t
-  )
+ :config
+ (custo/leader-key
+   "c t" '(global-term-cursor-mode :wk "toggle term cursor")
+   )
+ )
 
 (load "~/.private.el")
 
 (use-package circe
+  :defer t
   :config
   (setq circe-network-options
         `(("irc.chat.twitch.tv"
@@ -950,9 +974,6 @@
   (require 'circe-color-nicks)
   (setq circe-color-nicks-min-constrast-ratio 4.5
         circe-color-nicks-everywhere t)
-  (custo/leader-key
-    "a c" '(circe :wk "circe")
-    )
   :hook (circe-channel-mode . enable-circe-color-nicks)
   )
 
