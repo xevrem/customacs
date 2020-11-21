@@ -19,6 +19,8 @@
 ;; read process output in 1mb chunks
 ;; (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
+;;; Code:
+
 (setq inhibit-startup-message t)
 ;; (scroll-bar-mode -1)    ;; disable vis scrollbar
 ;; (tool-bar-mode -1)      ;; disable the toolbar
@@ -46,7 +48,10 @@
                 term-mode-hook
                 eshell-mode-hook
                 ansi-term-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+  (add-hook mode (lambda () (display-line-numbers-mode 0)
+                   )
+            )
+  )
 
 
 
@@ -84,15 +89,19 @@
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
+      (bootstrap-version 5)
+      )
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
          'silent 'inhibit-cookies)
       (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+      (eval-print-last-sexp)
+      )
+    )
+  (load bootstrap-file nil 'nomessage)
+  )
 (straight-use-package 'use-package)
 
 ;;
@@ -120,17 +129,18 @@
 ;; default M-x and some other things
 (use-package counsel
   :defer t
-  ;; :bind (("M-x" . counsel-M-x)
-  ;;        ("C-x b" . counsel-ibuffer)
-  ;;        ("C-x C-f" . counsel-find-file)
-  ;;        :map minibuffer-local-map
-  ;;        ("C-r" . 'counsel-minibuffer-history)
-  ;;        )
+  :bind (("M-x" . counsel-M-x)
+         ("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history)
+         )
   )
+
 (use-package ivy
   :defer t
-  ;; :hook
-  ;; (after-init-hook . ,(ivy-mode 1))
+  :hook
+  (after-init . ivy-mode)
   ;; :bind (("C-s" . swiper)
   ;;        :map ivy-minibuffer-map
   ;;        ("TAB" . ivy-alt-done)
@@ -159,23 +169,26 @@
         ivy-on-del-error-function #'ignore
         ;; enable ability to select prompt (alternative to `ivy-immediate-done')
         ivy-use-selectable-prompt t)
-  (ivy-mode 1)
+  ;; (ivy-mode 1)
   )
 
 (use-package prescient
-  :defer t)
-(use-package ivy-prescient
+  :defer t
   :after ivy
-  ;; :defer t
-  ;; :init (ivy-prescient-mode 1)
-  ;; :hook
-  ;; (ivy-mode-hook . ivy-prescient-mode)
-  ;; (after-init-hook . ivy-prescient-mode)
+ )
+
+(use-package ivy-prescient
+  :defer t
+  :after ivy
+  :hook
+  (ivy-mode . ivy-prescient-mode)
   :config
   ;;good ideas from doom:
   (defun +ivy-prescient-non-fuzzy (str)
     (let ((prescient-filter-method '(literal regexp)))
-      (ivy-prescient-re-builder str)))
+      (ivy-prescient-re-builder str)
+      )
+    )
   (let ((standard-search-fn
          #'+ivy-prescient-non-fuzzy)
         (alt-search-fn
@@ -189,8 +202,11 @@
           ivy-more-chars-alist
           '((counsel-rg . 1)
             (counsel-search . 2)
-            (t . 3))))
-  (ivy-prescient-mode 1)
+            (t . 3)
+            )
+          )
+    )
+  ;; (ivy-prescient-mode 1)
   )
 
 ;; load all-the-icons only if in GUI mode
@@ -200,14 +216,16 @@
   :commands all-the-icons-install-fonts
   :init
   (unless (find-font (font-spec :name "all-the-icons"))
-    (all-the-icons-install-fonts t)))
+    (all-the-icons-install-fonts t)
+    )
+  )
 
 ;; add a better modeline
 (use-package doom-modeline
   :defer t
-  ;; :hook
-  ;; (after-init-hook . doom-modeline-mode)
-  :init (doom-modeline-mode 1)
+  :hook
+  (after-init . doom-modeline-mode)
+  ;; :init (doom-modeline-mode 1)
   )
 
 ;; enable better themes
@@ -220,7 +238,9 @@
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
   :defer t
-  :hook (prog-mode . rainbow-delimiters-mode))
+  :hook
+  (prog-mode . rainbow-delimiters-mode)
+  )
 
 ;; yasnippet
 (use-package yasnippet
@@ -228,18 +248,16 @@
   :commands (yas-minor-mode-on
              yas-lookup-snippet)
   :hook
-  '((text-mode-hook . yas-minor-mode-on)
-    (prog-mode-hook . yas-minor-mode-on)
-    (conf-mode-hook . yas-minor-mode-on)
-    (snippet-mode-hook . yas-minor-mode-on)
-    )
+  (text-mode . yas-minor-mode-on)
+  (prog-mode . yas-minor-mode-on)
+  (conf-mode . yas-minor-mode-on)
+  (snippet-mode . yas-minor-mode-on)
   )
 
 (use-package smartparens
   :defer t
   :hook
-  (prog-mode-hook . smartparents-global-mode)
-  ;; :init (smartparens-global-mode 1)
+  (prog-mode . smartparens-mode)
   :config
   ;; don't interfere with yasnippets
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
@@ -249,20 +267,26 @@
 ;; setup a special menu that tells us what keys are available
 ;; based on the current mode, set pop-up delay to 0.1s
 (use-package which-key
-  ;; :init (which-key-mode)
+  :defer t
+  :hook
+  (after-init . which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.1)
-  (which-key-mode)
   )
 
 ;; provide more helpful info in ivy panels
 (use-package ivy-rich
-  :init (ivy-rich-mode 1))
+  :defer t
+  :after ivy
+  :hook
+  (ivy-mode . ivy-rich-mode)
+  )
 
 
 ;; more better help menus
 (use-package helpful
+  :defer t
   :custom
   (counsel-describe-function-function #'helpful-callable)
   (counsel-describe-variable-function #'helpful-variable)
@@ -286,14 +310,18 @@
 
 ;; the very best mode
 (use-package evil
+  :defer t
+  :hook
+  (after-init . evil-mode)
+  (evil-mode . custo/evil-hook)
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
   (setq evil-want-C-u-scroll t)
   (setq evil-want-C-d-scroll t)
-  :hook (evil-mode . custo/evil-hook)
+  ;;:hook (evil-mode . custo/evil-hook)
   :config
-  (evil-mode 1)
+  ;; (evil-mode 1)
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
  )
 
@@ -301,7 +329,8 @@
 (use-package evil-collection
   :after evil
   :config
-  (evil-collection-init))
+  (evil-collection-init)
+  )
 
 
 ;; better key binding
@@ -386,7 +415,9 @@
   )
 
 (use-package undo-tree
-  :init (global-undo-tree-mode 1)
+  :defer t
+  :hook
+  (prog-mode . undo-tree-mode)
   :config
   (defhydra hydra-undo-tree (:timeout 4)
     "undo / redo"
@@ -401,28 +432,33 @@
 
 ;; (use-package multiple-cursors
 (use-package evil-mc
-  :init
-  (global-evil-mc-mode 1)
+  :defer t
+  :hook
+  (prog-mode . evil-mc-mode)
+  ;; :init
+  ;; (global-evil-mc-mode 1)
   :config
   (custo/leader-key
     "c n" '( evil-mc-make-and-goto-next-match :which-key "mc-mark and next")
     "c p" '(evil-mc-make-and-goto-prev-match :which-key "mc-mark and prev")
-    "c u" '(evil-mc-undo-all-cursors :which-key "mc-mark undo all"))
+    "c u" '(evil-mc-undo-all-cursors :which-key "mc-mark undo all")
+    )
   )
 
 ;; setup project management
 (use-package projectile
   :defer t
+  :hook
+  (after-init . projectile-mode)
   :diminish projectile-mode
   :custom
   (projectile-completion-system 'ivy)
-  :init
-  (setq projectile-switch-project-action #'projectile-dired)
+  ;; :init
+  ;; (setq projectile-switch-project-action #'projectile-dired)
   :config
   (custo/leader-key
     "p" '(projectile-command-map :which-key "projectile")
     "p a" '(projectile-add-known-project :which-key "add project"))
-  (projectile-mode 1)
   )
   
 ;; add counsel capability
@@ -430,13 +466,11 @@
   :defer t
   :after projectile
   :hook
-  (projectile-mode-hook .  counsel-projectile-mode)
+  (after-init .  counsel-projectile-mode)
   :bind
   ([remap projectile-find-file] . counsel-projectile-find-file)
   ([remap projectile-switch-project] . counsel-projectile-switch-project)
   ([remap projectile-switch-to-buffer] . counsel-projectile-switch-to-buffer)
-  ;; :config
-  ;; (counsel-projectile-mode)
   )
 
 ;; make dired more like ranger
@@ -456,8 +490,17 @@
 
 ;; prettier dired
 (use-package diredfl
+  :defer t
   :after dired
-  :hook (dired-mode . diredfl-mode))
+  :hook
+  (dired-mode . diredfl-mode)
+  )
+
+(use-package git-gutter-fringe
+  :defer t
+  :hook
+  (prog-mode . git-gutter-mode)
+  )
 
 ;; magit
 (use-package magit
@@ -485,6 +528,7 @@
 
 ;; completion mini buffers
 (use-package company
+  :defer t
   :hook
   (lsp-mode . company-mode)
   :config
@@ -494,10 +538,18 @@
   )
 
 (use-package company-prescient
-  :init (company-prescient-mode 1))
+  :defer t
+  :after company
+  :hook
+  (company-mode . company-prescient-mode)
+  ;; :init (company-prescient-mode 1)
+  )
 
 (use-package company-box
-  :hook (company-mode . company-box-mode))
+  :defer t
+  :after company
+  :hook (company-mode . company-box-mode)
+  )
 
 
 ;; better javascript mode
@@ -506,7 +558,7 @@
   :config
   (setq js-indent-level 2)
   :hook
-  (js-mode . yas-minor-mode)
+  (js2-mode . yas-minor-mode)
   )
 
 ;; teach js2-mode how to jsx
@@ -555,6 +607,7 @@
   )
 
 (use-package rustic 
+  :mode "\\/.*\\.rs\\'"
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-server 'rust-analyzer
@@ -567,6 +620,7 @@
 
 
 (use-package csharp-mode
+  :mode "\\/.*\\.cs\\'"
   :hook
   (csharp-mode . rainbow-delimiters-mode)
   (csharp-mode . company-mode)
@@ -627,11 +681,13 @@
 
 ;; prettier lsp
 (use-package lsp-ui
+  :after lsp
   :commands lsp-ui-mode
   )
 
 ;; better lsp
 (use-package lsp-ivy
+  :after lsp
   :commands lsp-ivy-workspace-symbol
   )
 
@@ -640,7 +696,8 @@
   ;; :commands flycheck-list-errors flycheck-buffer
   :hook
   ;; FIXME we should call these based on mode not globally
-  (after-init-hook . global-flycheck-mode)
+  ;; (after-init . global-flycheck-mode)
+  (prog-mode . flycheck-mode)
   :config
   (custo/local-leader-key
     ;; FIXME keymaps probably wont work in global mode so try after you fix
@@ -652,6 +709,9 @@
   )
 
 (use-package hl-todo
+  :defer t
+  :hook
+  (prog-mode . hl-todo-mode)
   :config
   (setq hl-todo-keyword-faces
         '(("TODO" . ,(face-foreground 'warning))
@@ -663,7 +723,7 @@
           ("FIXME" . ,(face-foreground 'error ))
           ("WARNING" . ,(face-foreground 'warning))
           ))
-  (global-hl-todo-mode 1)
+  ;; (global-hl-todo-mode 1)
   )
 
 ;; org stuff
@@ -786,20 +846,19 @@
   )
 
 (require 'ob-js)
-(org-babel-do-load-languages
-  'org-babel-load-languages
-  '((emacs-lisp . t)
-    (python . t)
-    (js . t)
-    )
-  )
-
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)
+     (js . t)
+     )
+   )
 (require 'org-tempo)
-
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
 (add-to-list 'org-structure-template-alist '("js" . "src js"))
+
 
 (use-package ox-gfm
   :after org)
@@ -813,6 +872,7 @@
 
 ;; make org look nicer
 (use-package org-superstar
+  :defer t
   :hook
   (org-mode . org-superstar-mode)
   :config
@@ -846,6 +906,7 @@
   (visual-fill-column-mode 1))
 
 (use-package visual-fill-column
+  :defer t
   :hook
   (org-mode . custo/mode-visual-fill)
   ;; (prog-mode . custo/mode-visual-fill)  
@@ -853,6 +914,9 @@
 
 
 (use-package centaur-tabs
+  :defer t
+  :hook
+  (after-init . centaur-tabs-mode)
   :config
   (setq centaur-tabs-height 32)
   (setq centaur-tabs-bar-height 43)
@@ -862,12 +926,13 @@
   (setq centaur-tabs-icon-scale-factor 0.75)
   ;; (setq centaur-tabs-icon-v-adjust -0.1)
   (setq x-underline-at-descent-line t)
-  (centaur-tabs-mode 1)
+  ;; (centaur-tabs-mode 1)
   )
 
 (straight-use-package
  '(global-term-cursor
    :host github :repo "h0d/term-cursor.el")
+ :defer t
   )
 
 (load "~/.private.el")
@@ -890,5 +955,6 @@
     )
   :hook (circe-channel-mode . enable-circe-color-nicks)
   )
+
 
 

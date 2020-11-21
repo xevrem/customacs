@@ -3,12 +3,19 @@
 
 ;; Firstly I put this in my init.el to make sure the early init file is always loaded.
 (when (version< emacs-version "27")
-  (load (concat user-emacs-directory "early-init.el")))
+  (load (concat user-emacs-directory "early-init.el")
+        )
+  )
 
 ;;Then some speed up tips from doom
 (defvar default-gc-cons-threshold 16777216 ; 16mb
   "my default desired value of `gc-cons-threshold'
 during normal emacs operations.")
+
+;; for debugging
+;; (setq max-lisp-eval-depth 10000)
+;; (setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
+;; (setq debug-on-error t)    ; now you should get a backtrace
 
 ;; make garbage collector less invasive
 (setq gc-cons-threshold  most-positive-fixnum
@@ -34,4 +41,6 @@ during normal emacs operations.")
                   file-name-handler-alist default-file-name-handler-alist)
 
             ;; delete no longer necessary startup variable
-            (makunbound 'default-file-name-handler-alist)))
+            (makunbound 'default-file-name-handler-alist)
+            )
+          )
