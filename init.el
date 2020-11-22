@@ -1,23 +1,3 @@
-;; (setq package-user-dir "~/repos/customacs/packages") 
-
-;; update path variables because stuff may not be set yet
-;; (let '(path
-;;        (shell-command-to-string "/usr/bin/env zsh -c \"source ~/.zshrc && env | grep \\^PATH | tr -d PATH=\""))
-;;        ;; (shell-command-to-string "/usr/bin/env fish -c \"source && env | grep \\^PATH | tr -d PATH=\""))
-;;   (setenv "PATH" path)
-;;   (setq exec-path
-;;         (append
-;;          (split-string-and-unquote path ":")
-;;          exec-path)
-;;         ))
-
-;; for performance
-;; (setq gc-cons-threshold (* 100 1024 1024))
-;; what doom does, but we want lower but this is also an option
-;; (setq gc-cons-threshold most-positive-fixnum)
-
-;; read process output in 1mb chunks
-;; (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
 ;;; Code:
 
@@ -233,7 +213,7 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italics t)
-  (load-theme 'doom-palenight t))
+  (load-theme 'doom-tomorrow-night t))
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
@@ -584,7 +564,7 @@
   :after js2-mode
   :config
   (custo/local-leader-key
-    :keymaps '(js2-mode-map rsjx-mode-map)
+    :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
     "d" '(:ignore t :which-key "jsdoc")
     "d f" '(js-doc-insert-function-doc :which-key "jsdoc function"))
   )
@@ -615,13 +595,11 @@
   )
 
 (use-package typescript-mode
-  :mode "\\/.*\\.ts\\'"
   :config
   (setq typescript-indent-level 2)
   )
 
 (use-package rustic 
-  :mode "\\/.*\\.rs\\'"
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-server 'rust-analyzer
@@ -634,7 +612,6 @@
 
 
 (use-package csharp-mode
-  :mode "\\/.*\\.cs\\'"
   :hook
   (csharp-mode . rainbow-delimiters-mode)
   (csharp-mode . company-mode)
@@ -660,6 +637,8 @@
     "o b" '(recompile :which-key "omnisharp build/recompile")
     )
   )
+
+(use-package elixir-mode)
 
 ;; lsp-mode
 (use-package lsp-mode
