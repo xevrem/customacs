@@ -399,6 +399,7 @@
   :defer t
   :hook
   (prog-mode . undo-tree-mode)
+  (org-mode . undo-tree-mode)
   :config
   (defhydra hydra-undo-tree (:timeout 4)
     "undo / redo"
@@ -597,6 +598,9 @@
 (use-package typescript-mode
   :config
   (setq typescript-indent-level 2)
+  (progn
+      (define-derived-mode typescript-tsx-mode web-mode "TypeScript-tsx")
+      (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode)))
   )
 
 (use-package rustic 
@@ -955,6 +959,3 @@
         circe-color-nicks-everywhere t)
   :hook (circe-channel-mode . enable-circe-color-nicks)
   )
-
-
-
