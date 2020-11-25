@@ -450,7 +450,7 @@
   :hook
   (after-init .  counsel-projectile-mode)
   :bind
-  ([remap projectile-find-file] . counsel-projectile-find-file)
+  ;; ([remap projectile-find-file] . counsel-projectile-find-file)
   ([remap projectile-switch-project] . counsel-projectile-switch-project)
   ([remap projectile-switch-to-buffer] . counsel-projectile-switch-to-buffer)
   )
@@ -463,8 +463,8 @@
   (custo/leader-key
     "f p" '(find-file-in-project :wk "find file in project")
     )
-  ;; :bind
-  ;; ([remap projectile-find-file] . )
+  :bind
+  ([remap projectile-find-file] . find-file-in-project)
   )
 
 ;; make dired more like ranger
@@ -527,7 +527,7 @@
   (lsp-mode . company-mode)
   :config
   (setq company-backends '(company-capf)
-        company-idle-delay 0.1
+        company-idle-delay 0.5
         company-minimum-prefix-length 1)
   )
 
@@ -614,7 +614,6 @@
     "= =" '(rustic-format-buffer :which-key "format with rustfmt"))
   )
 
-
 (use-package csharp-mode
   :hook
   (csharp-mode . rainbow-delimiters-mode)
@@ -644,8 +643,23 @@
 
 (use-package elixir-mode)
 
+(use-package json-mode
+  :hook
+  (json-mdoe . yas-minor-mode)
+  :config
+  (setq json-indent-offset 2)
+  )
+
+(use-package yaml-mode
+  :hook
+  (yaml-mode . yas-minor-mode)
+  :config
+  (setq yaml-indent-offset 2)
+  )
+
 ;; lsp-mode
 (use-package lsp-mode
+  :defer t
   :hook ((js2-mode . lsp-deferred)
          (rsjx-mode . lsp-deferred)
          (scss-mode . lsp-deferred)
@@ -653,6 +667,8 @@
          (typescript-mode . lsp-deferred)
          (rustic-mode . lsp-deferred)
          (csharp-mode . lsp-deferred)
+         (yaml-mode . lsp-deferred)
+         (json-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred)
   :config
@@ -664,6 +680,8 @@
                rustic-mode-map
                typescript-mode-map
                csharp-mode
+               yaml-mode
+               json-mode
                lsp-mode-map
                lsp-ui-mode-map)
     "g r" '(lsp-ui-peek-find-references :which-key "goto references")
@@ -742,7 +760,7 @@
 
 (use-package org
   :straight
-  `(org
+  '(org
     :local-repo nil
     )
   :hook
@@ -931,15 +949,28 @@
   ;; (centaur-tabs-mode 1)
   )
 
-(straight-use-package
- '(global-term-cursor
-   :host github :repo "h0d/term-cursor.el")
- :defer t
- :config
- (custo/leader-key
-   "c t" '(global-term-cursor-mode :wk "toggle term cursor")
-   )
- )
+;; terminal related package
+
+(use-package evil-terminal-cursor-changer
+  :defer t
+  :hook
+  (tty-setup . evil-terminal-cursor-changer-activate)
+  :config
+  (setq evil-motion-state-cursor 'box)  ; █
+  (setq evil-visual-state-cursor 'box)  ; █
+  (setq evil-normal-state-cursor 'box)  ; █
+  (setq evil-insert-state-cursor 'bar)  ; ⎸
+  (setq evil-emacs-state-cursor  'hbar) ; _ 
+  )
+
+(use-package clipetty
+  :defer t
+  :hook
+  (tty-setup . global-clipetty-mode)
+  )
+
+
+;; IRC
 
 (load "~/.private.el")
 
