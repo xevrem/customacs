@@ -205,7 +205,8 @@
   :defer t
   :hook
   (after-init . doom-modeline-mode)
-  ;; :init (doom-modeline-mode 1)
+  :config
+  (setq doom-modeline-height 32)
   )
 
 ;; enable better themes
@@ -280,10 +281,11 @@
 
 (defun custo/evil-hook ()
   (dolist (mode '(custom-mode
-                  eshell-mode
+                  ;; eshell-mode
                   git-rebase-mode
-                  term-mode
-                  ansi-term-mode))
+                  ;; term-mode
+                  ;; ansi-term-mode
+                  ))
     (add-to-list 'evil-emacs-state-modes mode)
     )
   )
@@ -295,21 +297,20 @@
   (after-init . evil-mode)
   (evil-mode . custo/evil-hook)
   :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-d-scroll t)
-  ;;:hook (evil-mode . custo/evil-hook)
-  :config
-  ;; (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  (setq evil-want-integration t
+        evil-want-keybinding nil
+        evil-want-C-u-scroll t
+        evil-want-C-d-scroll t)
+  :bind (:map evil-insert-state-map
+         ("C-g" . evil-normal-state))
+  ;; (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
  )
 
 ;; better evil stuff
 (use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init)
+  :defer t
+  :hook
+  (evil-mode . evil-collection-init)
   )
 
 
@@ -456,7 +457,6 @@
   )
 
 (use-package find-file-in-project
-  :defer t
   :after projectile
   :config
   (setq ffip-use-rust-fd t)
@@ -519,6 +519,7 @@
 ;; (use-package forge
 ;;   :after magit
 ;;   )
+
 
 ;; completion mini buffers
 (use-package company
@@ -645,7 +646,7 @@
 
 (use-package json-mode
   :hook
-  (json-mdoe . yas-minor-mode)
+  (json-mode . yas-minor-mode)
   :config
   (setq json-indent-offset 2)
   )
@@ -656,6 +657,7 @@
   :config
   (setq yaml-indent-offset 2)
   )
+
 
 ;; lsp-mode
 (use-package lsp-mode
@@ -709,15 +711,10 @@
 ;; error checking
 (use-package flycheck
   :defer t
-  ;; :commands flycheck-list-errors flycheck-buffer
   :hook
-  ;; FIXME we should call these based on mode not globally
-  ;; (after-init . global-flycheck-mode)
   (prog-mode . flycheck-mode)
   :config
   (custo/local-leader-key
-    ;; FIXME keymaps probably wont work in global mode so try after you fix
-    ;;       the above
     :keymaps '(js2-mode-map
                rsjx-mode-map
                typescript-mode-map
@@ -743,7 +740,6 @@
           ("FIXME" . ,(face-foreground 'error ))
           ("WARNING" . ,(face-foreground 'warning))
           ))
-  ;; (global-hl-todo-mode 1)
   )
 
 ;; org stuff
@@ -897,7 +893,6 @@
   (org-mode . org-superstar-mode)
   :config
   (org-superstar-configure-like-org-bullets)
-  ;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
   )
 
 (dolist (face '((org-level-1 . 1.3)
@@ -908,7 +903,6 @@
                 (org-level-6 . 1.05)
                 (org-level-7 . 1.0)
                 (org-level-8 . 1.0)))
-  ;; (set-face-attribute (car face) nil :font "DejaVu Sans" :weight 'regular :height (cdr face)))
   (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face)))
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way
@@ -944,9 +938,7 @@
   (setq centaur-tabs-set-icons t)
   (setq centaur-tabs-set-greyout-icons t)
   (setq centaur-tabs-icon-scale-factor 0.75)
-  ;; (setq centaur-tabs-icon-v-adjust -0.1)
   (setq x-underline-at-descent-line t)
-  ;; (centaur-tabs-mode 1)
   )
 
 ;; terminal related package
@@ -956,11 +948,11 @@
   :hook
   (tty-setup . evil-terminal-cursor-changer-activate)
   :config
-  (setq evil-motion-state-cursor 'box)  ; █
-  (setq evil-visual-state-cursor 'box)  ; █
-  (setq evil-normal-state-cursor 'box)  ; █
-  (setq evil-insert-state-cursor 'bar)  ; ⎸
-  (setq evil-emacs-state-cursor  'hbar) ; _ 
+  (setq evil-motion-state-cursor 'box  ; █
+        evil-visual-state-cursor 'box  ; █
+        evil-normal-state-cursor 'box  ; █
+        evil-insert-state-cursor 'bar  ; ⎸
+        evil-emacs-state-cursor  'hbar) ; _ 
   )
 
 (use-package clipetty
