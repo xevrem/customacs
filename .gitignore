@@ -16,3 +16,5 @@ transient/
 eshell/
 elpa/
 eln-cache/
+.cache/
+auto-save-list/
