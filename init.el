@@ -223,6 +223,18 @@
   (prog-mode . rainbow-delimiters-mode)
   )
 
+(use-package paren
+  :defer t
+  ;; highlight matching delimiters
+  :hook (prog-mode . show-paren-mode)
+  :config
+  (setq show-paren-delay 0.1
+        show-paren-highlight-openparen t
+        show-paren-when-point-inside-paren t
+        show-paren-when-point-in-periphery t)
+  )
+
+
 ;; yasnippet
 (use-package yasnippet
   :defer t
