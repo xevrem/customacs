@@ -523,9 +523,9 @@
   )
 
 ;; evil keys with magit  
-(use-package evil-magit
-  :after magit
-  )
+;; (use-package evil-magit
+;;   :after magit
+;;   )
 
 ;; magit integration with github and gitlab
 ;; (use-package forge
@@ -681,6 +681,7 @@
          (typescript-mode . lsp-deferred)
          (rustic-mode . lsp-deferred)
          (csharp-mode . lsp-deferred)
+         (elixir-mode . lsp-deferred)
          (yaml-mode . lsp-deferred)
          (json-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration))
@@ -693,9 +694,10 @@
                rjsx-mode-map
                rustic-mode-map
                typescript-mode-map
-               csharp-mode
-               yaml-mode
-               json-mode
+               csharp-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
                lsp-mode-map
                lsp-ui-mode-map)
     "g r" '(lsp-ui-peek-find-references :which-key "goto references")
