@@ -44,3 +44,7 @@ during normal emacs operations.")
             (makunbound 'default-file-name-handler-alist)
             )
           )
+
+(if (native-comp-available-p)
+    (setq comp-deferred-compilation t)
+    )

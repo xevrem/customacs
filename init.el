@@ -351,7 +351,6 @@
   "a" '(:ignore t :wk "apps")
   "a c" '(circe :wk "circe")
   "a e" '(eww :wk "eww")
-  "a t" '(ansi-term :wk "terminal")
   "b" '(:ignore t :which-key "buffer")
   "b b" '(counsel-switch-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
@@ -429,12 +428,11 @@
 (use-package evil-mc
   :defer t
   :hook
-  (prog-mode . evil-mc-mode)
-  ;; :init
-  ;; (global-evil-mc-mode 1)
+  (evil-mode . evil-mc-mode)
   :config
   (custo/leader-key
-    "c n" '( evil-mc-make-and-goto-next-match :which-key "mc-mark and next")
+    :keymaps 'prog-mode-map
+    "c n" '(evil-mc-make-and-goto-next-match :which-key "mc-mark and next")
     "c p" '(evil-mc-make-and-goto-prev-match :which-key "mc-mark and prev")
     "c u" '(evil-mc-undo-all-cursors :which-key "mc-mark undo all")
     )
@@ -463,21 +461,21 @@
   :hook
   (after-init .  counsel-projectile-mode)
   :bind
-  ;; ([remap projectile-find-file] . counsel-projectile-find-file)
+  ([remap projectile-find-file] . counsel-projectile-find-file)
   ([remap projectile-switch-project] . counsel-projectile-switch-project)
   ([remap projectile-switch-to-buffer] . counsel-projectile-switch-to-buffer)
   )
 
-(use-package find-file-in-project
-  :after projectile
-  :config
-  (setq ffip-use-rust-fd t)
-  (custo/leader-key
-    "f p" '(find-file-in-project :wk "find file in project")
-    )
-  :bind
-  ([remap projectile-find-file] . find-file-in-project)
-  )
+;; (use-package find-file-in-project
+;;   :after projectile
+;;   :config
+;;   (setq ffip-use-rust-fd t)
+;;   (custo/leader-key
+;;     "f p" '(find-file-in-project :wk "find file in project")
+;;     )
+;;   :bind
+;;   ([remap projectile-find-file] . find-file-in-project)
+;;   )
 
 ;; make dired more like ranger
 (use-package ranger
@@ -759,6 +757,7 @@
                rsjx-mode-map
                typescript-mode-map
                rustic-mode-map
+               elixir-mode-map
                csharp-mode-map)
     "e" '(:ignore t :which-key "errors")
     "e l" '(flycheck-list-errors :which-key "list errors")
@@ -1021,4 +1020,11 @@
   (setq circe-color-nicks-min-constrast-ratio 4.5
         circe-color-nicks-everywhere t)
   :hook (circe-channel-mode . enable-circe-color-nicks)
+  )
+
+(use-package vterm
+  :config
+  (custo/leader-key
+    "a t" '(vterm :wk "terminal")
+    )
   )
