@@ -1,6 +1,8 @@
 
 ;;; Code:
 
+(message (number-to-string gc-cons-threshold))
+
 (setq inhibit-startup-message t)
 ;; (scroll-bar-mode -1)    ;; disable vis scrollbar
 ;; (tool-bar-mode -1)      ;; disable the toolbar
@@ -461,21 +463,23 @@
   :hook
   (after-init .  counsel-projectile-mode)
   :bind
-  ([remap projectile-find-file] . counsel-projectile-find-file)
+  ;; ([remap projectile-find-file] . counsel-projectile-find-file)
   ([remap projectile-switch-project] . counsel-projectile-switch-project)
   ([remap projectile-switch-to-buffer] . counsel-projectile-switch-to-buffer)
   )
 
-;; (use-package find-file-in-project
-;;   :after projectile
-;;   :config
-;;   (setq ffip-use-rust-fd t)
-;;   (custo/leader-key
-;;     "f p" '(find-file-in-project :wk "find file in project")
-;;     )
-;;   :bind
-;;   ([remap projectile-find-file] . find-file-in-project)
-;;   )
+(use-package find-file-in-project
+  :after projectile
+  :config
+  (setq ffip-use-rust-fd t)
+  (custo/leader-key
+    "f p" '(find-file-in-project :wk "find file in project")
+    "p f" '(find-file-in-project :wk "find file in project")
+    )
+  :bind
+  ([remap projectile-find-file] . find-file-in-project)
+  ([remap counsel-projectile-find-file] . find-file-in-project)
+  )
 
 ;; make dired more like ranger
 (use-package ranger
@@ -1028,3 +1032,16 @@
     "a t" '(vterm :wk "terminal")
     )
   )
+
+(use-package gcmh
+  :defer t
+  :hook (emacs-startup . gcmh-mode)
+  :config
+  (setq gcmh-high-cons-threashold (* 1024 1024 100)
+        gcmh-idle-delay 60)
+  )
+
+
+
+;; reset gc-cons incase it never got reset
+;; (setq gc-cons-threshold  (* 1024 1024 100)) ;; 100MiB

@@ -1,4 +1,5 @@
 ;; based on this post: 
+
 ;; https://www.reddit.com/r/emacs/comments/jw19dy/emacs_271_earlyinit_file/gcno7i8?utm_source=share&utm_medium=web2x&context=3
 
 ;; Firstly I put this in my init.el to make sure the early init file is always loaded.
@@ -8,7 +9,7 @@
   )
 
 ;;Then some speed up tips from doom
-(defvar default-gc-cons-threshold 16777216 ; 16mb
+(defvar default-gc-cons-threshold (* 1024 1000 100); 100MB
   "my default desired value of `gc-cons-threshold'
 during normal emacs operations.")
 
@@ -45,6 +46,6 @@ during normal emacs operations.")
             )
           )
 
-(if (native-comp-available-p)
-    (setq comp-deferred-compilation t)
-    )
+;; (if (native-comp-available-p)
+;;     (setq comp-deferred-compilation t)
+;;     )
