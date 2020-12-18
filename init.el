@@ -597,10 +597,10 @@
 
 ;; auto-docs :D
 (use-package js-doc
-  :after js2-mode
+  :after (:any js2-mode rjsx-mode typescript-mode)
   :config
   (custo/local-leader-key
-    :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
+    :keymaps '(js2-mode-map rjsx-mode-map typescript-mode-map)
     "d" '(:ignore t :which-key "jsdoc")
     "d f" '(js-doc-insert-function-doc :which-key "jsdoc function"))
   )
