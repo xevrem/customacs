@@ -234,6 +234,7 @@
         show-paren-highlight-openparen t
         show-paren-when-point-inside-paren t
         show-paren-when-point-in-periphery t)
+  (setq blink-matching-paren t)
   )
 
 
