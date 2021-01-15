@@ -90,6 +90,14 @@
 ;; PACKAGE CONFIGURATION
 ;;
 
+(use-package gcmh
+  :defer t
+  :hook (emacs-startup . gcmh-mode)
+  :config
+  (setq gcmh-high-cons-threashold (* 1024 1024 100)
+        gcmh-idle-delay 60)
+  )
+
 ;; get shell variables
 (use-package exec-path-from-shell
   ;; :init
@@ -98,6 +106,11 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)
     )
+  )
+
+(use-package recentf
+  :defer t
+  :hook (after-init . recentf-mode)
   )
 
 ;; restart
@@ -363,6 +376,7 @@
   "f" '(:ignore f :which-key "file")
   "f f" '(counsel-find-file :which-key "find file")
   "f s" '(save-buffer :which-key "save file")
+  "f r" '(counsel-recentf :wk "recent files")
   "h" '(:ignore t :which-key "custo help")
   "h s" '(:ignore t :which-key "straight")
   "h s p" '(straight-pull-all :which-key "straight pull packages")
@@ -1033,16 +1047,6 @@
     "a t" '(vterm :wk "terminal")
     )
   )
-
-(use-package gcmh
-  :defer t
-  :hook (emacs-startup . gcmh-mode)
-  :config
-  (setq gcmh-high-cons-threashold (* 1024 1024 100)
-        gcmh-idle-delay 60)
-  )
-
-
 
 ;; reset gc-cons incase it never got reset
 ;; (setq gc-cons-threshold  (* 1024 1024 100)) ;; 100MiB
