@@ -707,6 +707,18 @@
   (setq yaml-indent-offset 2)
   )
 
+(use-package plantuml-mode
+  :straight '(:type git :host github
+              :repo "skuro/plantuml-mode"
+              :branch "develop")
+  :defer t
+  :mode "\\.puml\\'"
+  :config
+  (setq plantuml-default-exec-mode 'server
+        plantuml-server-url "http://localhost:8080"
+        plantuml-indent-level 2)
+  )
+
 
 ;; lsp-mode
 (use-package lsp-mode
@@ -735,6 +747,7 @@
                elixir-mode-map
                yaml-mode-map
                json-mode-map
+               web-mode-map
                lsp-mode-map
                lsp-ui-mode-map)
     "a" '(lsp-execute-code-action :wk "excute code action")
@@ -920,14 +933,18 @@
   )
 
 (require 'ob-js)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (python . t)
-     (js . t)
-     )
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (python . t)
+   (js . t)
+   (plantuml . t)
    )
+ )
+
 (require 'org-tempo)
+
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
@@ -981,6 +998,7 @@
   :defer t
   :hook
   (org-mode . custo/mode-visual-fill)
+  (markdown-mode . custo/mode-visual-fill)
   ;; (prog-mode . custo/mode-visual-fill)  
   )
 
