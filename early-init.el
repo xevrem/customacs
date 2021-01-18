@@ -50,6 +50,6 @@ during normal emacs operations.")
             )
           )
 
-;; (if (native-comp-available-p)
-;;     (setq comp-deferred-compilation t)
-;;     )
+(setq frame-inhibit-implied-resize t)
+
+(setq comp-deferred-compilation nil)

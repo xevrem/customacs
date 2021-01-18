@@ -841,6 +841,7 @@
   (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
   )
 
+
 (use-package org
   :straight
   '(org
@@ -966,6 +967,11 @@
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
 (add-to-list 'org-structure-template-alist '("js" . "src js"))
 
+;; we'll setup this directory so that ox-gfm doesnt freak out when
+;; it doesnt see an actual `org` directory
+(unless (file-directory-p (expand-file-name "straight/repos/org/" user-emacs-directory))
+  (make-directory (expand-file-name "straight/repos/org/" user-emacs-directory))
+  )
 
 (use-package ox-gfm
   :after org)
