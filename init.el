@@ -1,7 +1,4 @@
-
-;;; Code:
-
-(message (number-to-string gc-cons-threshold))
+;; Code:
 
 (setq inhibit-startup-message t)
 ;; (scroll-bar-mode -1)    ;; disable vis scrollbar
@@ -35,6 +32,25 @@
             )
   )
 
+;; set user caching directory
+(unless (file-directory-p (expand-file-name ".cache/" user-emacs-directory))
+  (make-directory (expand-file-name ".cache/" user-emacs-directory))
+  )
+(setq user-emacs-directory (expand-file-name ".cache/" user-emacs-directory))
+
+;; set global backup directory
+(setq backup-directory-alist `(("." . ,(expand-file-name "backups/" user-emacs-directory))))
+
+;; setup auto-save
+(unless (file-directory-p (expand-file-name "auto-saves/" user-emacs-directory))
+  (make-directory (expand-file-name "auto-saves/" user-emacs-directory))
+  )
+
+(setq auto-save-list-file-prefix (expand-file-name "auto-saves/sessions/" user-emacs-directory)
+     auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+
+;; disable lockfiles
+;;(setq create-lockfiles nil)
 
 
 ;; create some font size defaults

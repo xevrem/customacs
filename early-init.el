@@ -30,6 +30,10 @@ during normal emacs operations.")
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
 
+;; set user emacs directory
+;;(make-directory "~/.cache/emacs")
+;;(setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
+
 ;;Another tip from doom.
 (setq default-file-name-handler-alist file-name-handler-alist
       file-name-handler-alist nil)
