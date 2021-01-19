@@ -67,23 +67,23 @@
       (setq custo/default-variable-font-size 192)
       ;; set default font
       ;; (set-face-attribute 'default nil :font "FiraCode NF" :height custo/default-font-size)
-      (set-face-attribute 'default nil :font (font-spec :family "FiraCode NF" :size 22 :weight 'regular))
+      (set-face-attribute 'default nil :font (font-spec :family "FiraCode NF" :size 20 :weight 'regular))
       ;; Set the fixed pitch face
       ;; (set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
-      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode NF" :size 22 :weight 'regular))
+      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode NF" :size 20 :weight 'regular))
       )
     (progn
       ;; set default font
       ;; (set-face-attribute 'default nil :font "Fira Code" :height custo/default-font-size)
-      (set-face-attribute 'default nil :font (font-spec :family "Fira Code" :size 22 :weight 'regular))
+      (set-face-attribute 'default nil :font (font-spec :family "Fira Code" :size 20 :weight 'regular))
       ;; Set the fixed pitch face
       ;; (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
-      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "Fira Code" :size 22 :weight 'regular))
+      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "Fira Code" :size 20 :weight 'regular))
       )
     )
 
 ;; Set the variable pitch face which is the same for mac and linux
-(set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 22 :weight 'regular))
+(set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
 
 
 ;; setup straight for package management, its much better than use-package
