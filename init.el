@@ -66,20 +66,24 @@
       (setq custo/default-font-size 192)
       (setq custo/default-variable-font-size 192)
       ;; set default font
-      (set-face-attribute 'default 'nil :font "FiraCode NF" :height custo/default-font-size)
+      ;; (set-face-attribute 'default nil :font "FiraCode NF" :height custo/default-font-size)
+      (set-face-attribute 'default nil :font (font-spec :family "FiraCode NF" :size 22 :weight 'regular))
       ;; Set the fixed pitch face
-      (set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
+      ;; (set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
+      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode NF" :size 22 :weight 'regular))
       )
     (progn
       ;; set default font
-      (set-face-attribute 'default 'nil :font "Fira Code" :height custo/default-font-size)
+      ;; (set-face-attribute 'default nil :font "Fira Code" :height custo/default-font-size)
+      (set-face-attribute 'default nil :font (font-spec :family "Fira Code" :size 22 :weight 'regular))
       ;; Set the fixed pitch face
-      (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
+      ;; (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
+      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "Fira Code" :size 22 :weight 'regular))
       )
     )
 
 ;; Set the variable pitch face which is the same for mac and linux
-(set-face-attribute 'variable-pitch nil :font "Arial" :height custo/default-variable-font-size :weight 'regular)
+(set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 22 :weight 'regular))
 
 
 ;; setup straight for package management, its much better than use-package
@@ -1000,7 +1004,8 @@
                 (org-level-6 . 1.05)
                 (org-level-7 . 1.0)
                 (org-level-8 . 1.0)))
-  (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face)))
+  (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face))
+  )
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way
 (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
