@@ -26,7 +26,8 @@
 (dolist (mode '(org-mode-hook
                 term-mode-hook
                 eshell-mode-hook
-                ansi-term-mode-hook))
+                ansi-term-mode-hook
+                treemacs-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0)
                    )
             )
@@ -395,8 +396,9 @@
   "c c" '(comment-line :which-key "comment line")
   "f" '(:ignore f :which-key "file")
   "f f" '(counsel-find-file :which-key "find file")
-  "f s" '(save-buffer :which-key "save file")
   "f r" '(counsel-recentf :wk "recent files")
+  "f s" '(save-buffer :which-key "save file")
+  "f t" '(treemacs :wk "treemacs")
   "h" '(:ignore t :which-key "custo help")
   "h s" '(:ignore t :which-key "straight")
   "h s p" '(straight-pull-all :which-key "straight pull packages")
@@ -758,6 +760,9 @@
   :config
   (setq lsp-completion-provider :capf)
   (setq lsp-rust-server 'rust-analyzer)
+  ;; (setq lsp-keymap-prefix "SPC-m")
+  (setq lsp-headerline-breadcrumb-enable nil)
+  ;; (setq lsp-headerline-breadcrumb-segments '(project file symbols))
   (custo/local-leader-key
     :keymaps '(js2-mode-map
                rjsx-mode-map
@@ -1086,12 +1091,25 @@
   :hook (circe-channel-mode . enable-circe-color-nicks)
   )
 
+(use-package treemacs
+  :defer t)
+
+(use-package lsp-treemacs
+  :defer t
+  :after treemacs
+  :commands lsp-treemacs-errors-list)
+
+(use-package treemacs-evil
+  :after treemacs evil
+  :defer t)
+
+(use-package treemacs-projectile
+  :after treemacs projectile
+  :defer t)
+
 (use-package vterm
   :config
   (custo/leader-key
     "a t" '(vterm :wk "terminal")
     )
   )
-
-;; reset gc-cons incase it never got reset
-;; (setq gc-cons-threshold  (* 1024 1024 100)) ;; 100MiB
