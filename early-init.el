@@ -9,9 +9,8 @@
   )
 
 ;;Then some speed up tips from doom
-(defvar default-gc-cons-threshold (* 1024 1000 100); 100MB
-  "my default desired value of `gc-cons-threshold'
-during normal emacs operations.")
+(defvar default-gc-cons-threshold gc-cons-threshold)
+(defvar default-gc-cons-percentage gc-cons-percentage)
 
 ;; for debugging
 ;; (setq max-lisp-eval-depth 10000)
@@ -41,8 +40,9 @@ during normal emacs operations.")
 ;; And then finally a hook to reset everything.
 (add-hook 'emacs-startup-hook
           (lambda (&rest _)
+            (message "startup hook was fired")
             (setq gc-cons-threshold default-gc-cons-threshold
-                  gc-cons-percentage 0.1
+                  gc-cons-percentage default-gc-cons-percentage
                   file-name-handler-alist default-file-name-handler-alist)
 
             ;; delete no longer necessary startup variable

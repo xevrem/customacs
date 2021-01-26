@@ -111,13 +111,6 @@
 ;; PACKAGE CONFIGURATION
 ;;
 
-(use-package gcmh
-  :defer t
-  :hook (emacs-startup . gcmh-mode)
-  :config
-  (setq gcmh-high-cons-threashold (* 1024 1024 100)
-        gcmh-idle-delay 60)
-  )
 
 ;; get shell variables
 (use-package exec-path-from-shell
@@ -1112,4 +1105,12 @@
   (custo/leader-key
     "a t" '(vterm :wk "terminal")
     )
+  )
+
+(use-package gcmh
+  :defer t
+  :hook (after-init . gcmh-mode)
+  :config
+  (setq gcmh-high-cons-threashold (* 1024 1024 100)
+        gcmh-idle-delay 60)
   )
