@@ -40,7 +40,7 @@
 ;; And then finally a hook to reset everything.
 (add-hook 'emacs-startup-hook
           (lambda (&rest _)
-            (message "startup hook was fired")
+            ;; (message "startup hook was fired")
             (setq gc-cons-threshold default-gc-cons-threshold
                   gc-cons-percentage default-gc-cons-percentage
                   file-name-handler-alist default-file-name-handler-alist)

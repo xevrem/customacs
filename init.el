@@ -1,5 +1,14 @@
 ;; Code:
 
+;; lets us know how long it takes to startup
+(defun custo/display-startup-time ()
+  (message "Emacs loaded in %s with %d garbage collections."
+           (format "%.2f seconds"
+                   (float-time
+                    (time-subtract after-init-time before-init-time)))
+           gcs-done))
+(add-hook 'emacs-startup-hook #'custo/display-startup-time)
+
 (setq inhibit-startup-message t)
 ;; (scroll-bar-mode -1)    ;; disable vis scrollbar
 ;; (tool-bar-mode -1)      ;; disable the toolbar
@@ -68,10 +77,10 @@
       (setq custo/default-variable-font-size 192)
       ;; set default font
       ;; (set-face-attribute 'default nil :font "FiraCode NF" :height custo/default-font-size)
-      (set-face-attribute 'default nil :font (font-spec :family "FiraCode NF" :size 20 :weight 'regular))
+      (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
       ;; Set the fixed pitch face
       ;; (set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
-      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode NF" :size 20 :weight 'regular))
+      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
       )
     (progn
       ;; set default font
@@ -122,18 +131,17 @@
     )
   )
 
-(use-package recentf
-  :defer t
-  :hook (after-init . recentf-mode)
-  )
 
 ;; restart
 (use-package restart-emacs
-  :defer t)
+  :commands restart-emacs
+  )
 
 ;; ivy trio
 (use-package swiper
-  :defer t)
+  ;; :defer t
+  :commands swiper
+  )
 ;; use counsel for completions over
 ;; default M-x and some other things
 (use-package counsel
@@ -146,23 +154,16 @@
          )
   )
 
+;; show recently used files
+(use-package recentf
+  :after counsel
+  :commands counsel-recentf
+  )
+
 (use-package ivy
   :defer t
   :hook
   (after-init . ivy-mode)
-  ;; :bind (("C-s" . swiper)
-  ;;        :map ivy-minibuffer-map
-  ;;        ("TAB" . ivy-alt-done)
-  ;;        ("C-l" . ivy-alt-done)
-  ;;        ("C-j" . ivy-next-line)
-  ;;        ("C-k" . ivy-previous-line)
-  ;;        :map ivy-switch-buffer-map
-  ;;        ("C-k" . ivy-previous-line)
-  ;;        ("C-l" . ivy-done)
-  ;;        ("C-d" . ivy-switch-buffer-kill)
-  ;;        :map ivy-reverse-i-search-map
-  ;;        ("C-k" . ivy-previous-line)
-  ;;        ("C-d" . ivy-reverse-i-search-kill))
   :config
   (setq ivy-sort-max-size 7500
         ivy-height 17
@@ -178,16 +179,13 @@
         ivy-on-del-error-function #'ignore
         ;; enable ability to select prompt (alternative to `ivy-immediate-done')
         ivy-use-selectable-prompt t)
-  ;; (ivy-mode 1)
   )
 
 (use-package prescient
-  :defer t
   :after ivy
  )
 
 (use-package ivy-prescient
-  :defer t
   :after ivy
   :hook
   (ivy-mode . ivy-prescient-mode)
@@ -215,7 +213,6 @@
             )
           )
     )
-  ;; (ivy-prescient-mode 1)
   )
 
 ;; load all-the-icons only if in GUI mode
@@ -231,11 +228,9 @@
 
 ;; add a better modeline
 (use-package doom-modeline
-  :defer t
-  :hook
-  (after-init . doom-modeline-mode)
   :config
   (setq doom-modeline-height 32)
+  (doom-modeline-mode)
   )
 
 ;; enable better themes
@@ -252,9 +247,9 @@
   (prog-mode . rainbow-delimiters-mode)
   )
 
+;; highlight matching delimiters
 (use-package paren
   :defer t
-  ;; highlight matching delimiters
   :hook (prog-mode . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
@@ -291,8 +286,7 @@
 ;; based on the current mode, set pop-up delay to 0.1s
 (use-package which-key
   :defer t
-  :hook
-  (after-init . which-key-mode)
+  :hook (after-init . which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.1)
@@ -310,6 +304,7 @@
 ;; more better help menus
 (use-package helpful
   :defer t
+  :commands (helpful-callable helpful-variable helpful-command helpful-key)
   :custom
   (counsel-describe-function-function #'helpful-callable)
   (counsel-describe-variable-function #'helpful-variable)
@@ -381,6 +376,7 @@
   "a" '(:ignore t :wk "apps")
   "a c" '(circe :wk "circe")
   "a e" '(eww :wk "eww")
+  "a t" '(vterm :wk "terminal")
   "b" '(:ignore t :which-key "buffer")
   "b b" '(counsel-switch-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
@@ -388,10 +384,15 @@
   "c" '(:ignore t :which-key "cursor")
   "c c" '(comment-line :which-key "comment line")
   "f" '(:ignore f :which-key "file")
+  "f d" '(ranger :which-key "file directory")
   "f f" '(counsel-find-file :which-key "find file")
   "f r" '(counsel-recentf :wk "recent files")
   "f s" '(save-buffer :which-key "save file")
   "f t" '(treemacs :wk "treemacs")
+  "g" '(:ignore t :which-key "magit")
+  "g s" '(magit-status :which-key "magit status")
+  "g b" '(magit-branch :which-key "magit branch")
+  "g B" '(magit-blame :which-key "magit blame")
   "h" '(:ignore t :which-key "custo help")
   "h s" '(:ignore t :which-key "straight")
   "h s p" '(straight-pull-all :which-key "straight pull packages")
@@ -426,6 +427,7 @@
 
 ;; hydra to build menus
 (use-package hydra
+  :defer t
   :config
   (defhydra hydra-text-scale (:timeout 4)
     "scale text"
@@ -472,14 +474,9 @@
 
 ;; setup project management
 (use-package projectile
-  :defer t
-  :hook
-  (after-init . projectile-mode)
   :diminish projectile-mode
   :custom
   (projectile-completion-system 'ivy)
-  ;; :init
-  ;; (setq projectile-switch-project-action #'projectile-dired)
   :config
   (custo/leader-key
     "p" '(projectile-command-map :which-key "projectile")
@@ -511,8 +508,16 @@
   ([remap counsel-projectile-find-file] . find-file-in-project)
   )
 
+(use-package all-the-icons-dired
+  :defer t
+  :after dired
+  :hook (dired-mode . all-the-icons-dired-mode)
+  )
+
 ;; make dired more like ranger
 (use-package ranger
+  :defer t
+  :commands ranger
   :after dired
   :config
   (setq ranger-preview-file nil
@@ -521,9 +526,6 @@
         ranger-width-preview 0.45
         ranger-max-preview-size 1
         ranger-dont-show-binary t)
-  (custo/leader-key
-   "f d" '(ranger :which-key "file directory")
-   )
   )
 
 ;; prettier dired
@@ -542,22 +544,10 @@
 
 ;; magit
 (use-package magit
-  ;;:commands (magit-status magit-get-current-branch)
+  :commands magit-status
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
-  :config
-  (custo/leader-key
-    "g" '(:ignore t :which-key "magit")
-    "g s" '(magit-status :which-key "magit status")
-    "g b" '(magit-branch :which-key "magit branch")
-    "g B" '(magit-blame :which-key "magit blame")
-    )
   )
-
-;; evil keys with magit  
-;; (use-package evil-magit
-;;   :after magit
-;;   )
 
 ;; magit integration with github and gitlab
 ;; (use-package forge
@@ -568,10 +558,9 @@
 ;; completion mini buffers
 (use-package company
   :defer t
+  :after lsp-mode
   :hook
   (lsp-mode . company-mode)
-  ;; :bind (:map company-active-map
-  ;;             ("RET" . company-complete-selection))
   :config
   (setq company-backends '(company-capf)
         company-idle-delay 0.2
@@ -668,7 +657,7 @@
       (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode)))
   )
 
-(use-package rustic 
+(use-package rustic
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-server 'rust-analyzer
@@ -708,6 +697,16 @@
 
 (use-package elixir-mode)
 
+(use-package python
+  :defer t
+  :hook (python-mode . lsp-deferred)
+  )
+
+(use-package pyenv-mode
+  :after python
+  :hook (python-mode . pyenv-mode)
+  )
+
 (use-package json-mode
   :hook
   (json-mode . yas-minor-mode)
@@ -735,7 +734,7 @@
   )
 
 
-;; lsp-mode
+;;lsp-mode
 (use-package lsp-mode
   :defer t
   :hook ((js2-mode . lsp-deferred)
@@ -849,6 +848,8 @@
   '(org
     :local-repo nil
     )
+  :defer t
+  :commands (org-capture org-agenda)
   :hook
   (org-mode . custo/org-mode-setup)
   :config
@@ -951,24 +952,25 @@
     )
   )
 
-(require 'ob-js)
+(with-eval-after-load 'org
+  (require 'ob-js)
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (python . t)
-   (js . t)
-   (plantuml . t)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)
+     (js . t)
+     (plantuml . t)
+     )
    )
- )
 
-(require 'org-tempo)
+  (require 'org-tempo)
 
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
-(add-to-list 'org-structure-template-alist '("js" . "src js"))
-
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("js" . "src js"))
+)
 ;; we'll setup this directory so that ox-gfm doesnt freak out when
 ;; it doesnt see an actual `org` directory
 (unless (file-directory-p (expand-file-name "straight/repos/org/" user-emacs-directory))
@@ -978,53 +980,50 @@
 (use-package ox-gfm
   :after org)
 
-;; (use-package org-projectile
-;;   :config
-;;   (org-projectile-per-project)
-;;   (setq org-projectile-per-project-filepath "todo.org")
-;;   (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
-;;   )
-
 ;; make org look nicer
 (use-package org-superstar
   :defer t
+  :after org
   :hook
   (org-mode . org-superstar-mode)
   :config
   (org-superstar-configure-like-org-bullets)
   )
 
-(dolist (face '((org-level-1 . 1.3)
-                (org-level-2 . 1.25)
-                (org-level-3 . 1.20)
-                (org-level-4 . 1.15)
-                (org-level-5 . 1.10)
-                (org-level-6 . 1.05)
-                (org-level-7 . 1.0)
-                (org-level-8 . 1.0)))
-  (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face))
+(with-eval-after-load 'org
+  (dolist (face '((org-level-1 . 1.3)
+                  (org-level-2 . 1.25)
+                  (org-level-3 . 1.20)
+                  (org-level-4 . 1.15)
+                  (org-level-5 . 1.10)
+                  (org-level-6 . 1.05)
+                  (org-level-7 . 1.0)
+                  (org-level-8 . 1.0)))
+    (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face))
+    )
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
   )
 
-;; Ensure that anything that should be fixed-pitch in Org files appears that way
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-
-(defun custo/mode-visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
+(with-eval-after-load 'visual-fill-column
+  (defun custo/mode-visual-fill ()
+    (setq visual-fill-column-width 100
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+)
 
 (use-package visual-fill-column
   :defer t
   :hook
   (org-mode . custo/mode-visual-fill)
   (markdown-mode . custo/mode-visual-fill)
-  ;; (prog-mode . custo/mode-visual-fill)  
   )
 
 
@@ -1064,11 +1063,13 @@
 
 
 ;; IRC
-
-(load "~/.private.el")
+(with-eval-after-load 'circe
+  (load "~/.private.el")
+  )
 
 (use-package circe
   :defer t
+  :commands circe
   :config
   (setq circe-network-options
         `(("irc.chat.twitch.tv"
@@ -1085,30 +1086,30 @@
   )
 
 (use-package treemacs
-  :defer t)
+  :defer t
+  :commands treemacs
+  )
 
 (use-package lsp-treemacs
   :defer t
-  :after treemacs
+  :after (lsp treemacs)
   :commands lsp-treemacs-errors-list)
 
 (use-package treemacs-evil
-  :after treemacs evil
+  :after (treemacs evil)
   :defer t)
 
 (use-package treemacs-projectile
-  :after treemacs projectile
+  :after (treemacs projectile)
   :defer t)
 
 (use-package vterm
-  :config
-  (custo/leader-key
-    "a t" '(vterm :wk "terminal")
-    )
+  :defer t
+  :commands vterm
   )
 
 (use-package gcmh
-  :defer t
+  :defer T
   :hook (after-init . gcmh-mode)
   :config
   (setq gcmh-high-cons-threashold (* 1024 1024 100)
