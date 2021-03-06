@@ -1109,7 +1109,7 @@
   )
 
 (use-package gcmh
-  :defer T
+  :defer t
   :hook (after-init . gcmh-mode)
   :config
   (setq gcmh-high-cons-threashold (* 1024 1024 100)
