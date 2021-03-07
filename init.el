@@ -161,6 +161,7 @@
   :defer t
   :hook
   (after-init . ivy-mode)
+  :bind (("C-s" . swiper))
   :config
   (setq ivy-sort-max-size 7500
         ivy-height 17
@@ -556,6 +557,11 @@
   :after lsp-mode
   :hook
   (lsp-mode . company-mode)
+  :bind ((:map company-active-map
+               ("<tab>" . company-complete-selection))
+         (:map lsp-mode-map
+               ("<tab>" . company-indent-or-complete-common))
+         )
   :config
   (setq company-backends '(company-capf)
         company-idle-delay 0.2
@@ -566,8 +572,8 @@
         ;; These auto-complete the current selection when
         ;; `company-auto-complete-chars' is typed. This is too magical. We
         ;; already have the much more explicit RET and TAB.
-        company-auto-complete nil
-        company-auto-complete-chars nil
+        ;; company-auto-complete nil
+        ;; company-auto-complete-chars nil
 
         ;; Only search the current buffer for `company-dabbrev' (a backend that
         ;; suggests text your open buffers). This prevents Company from causing
