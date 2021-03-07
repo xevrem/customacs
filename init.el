@@ -10,11 +10,7 @@
 (add-hook 'emacs-startup-hook #'custo/display-startup-time)
 
 (setq inhibit-startup-message t)
-;; (scroll-bar-mode -1)    ;; disable vis scrollbar
-;; (tool-bar-mode -1)      ;; disable the toolbar
-;; (tooltip-mode -1)       ;; disable tooltip
 (set-fringe-mode 10)    ;; 'breathing' room
-;; (menu-bar-mode -1)      ;; turn off menus
 (setq ring-bell-function 'ignore) ;; disable all visual and audible bells
 (setq-default indent-tabs-mode nil) ;; uses spaces and not tabs
 (setq create-lockfiles nil)
@@ -142,6 +138,7 @@
   :defer t
   :commands swiper
   )
+
 ;; use counsel for completions over
 ;; default M-x and some other things
 (use-package counsel
@@ -186,7 +183,7 @@
  )
 
 (use-package ivy-prescient
-  :after ivy
+  :after (ivy prescient)
   :hook
   (ivy-mode . ivy-prescient-mode)
   :config
@@ -228,9 +225,11 @@
 
 ;; add a better modeline
 (use-package doom-modeline
+  :defer t
+  :hook
+  (after-init . doom-modeline-mode)
   :config
   (setq doom-modeline-height 32)
-  (doom-modeline-mode)
   )
 
 ;; enable better themes
@@ -340,12 +339,12 @@
         evil-want-C-d-scroll t)
   :bind (:map evil-insert-state-map
          ("C-g" . evil-normal-state))
-  ;; (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
  )
 
 ;; better evil stuff
 (use-package evil-collection
   :defer t
+  :after evil
   :hook
   (evil-mode . evil-collection-init)
   )
@@ -386,6 +385,7 @@
   "f" '(:ignore f :which-key "file")
   "f d" '(ranger :which-key "file directory")
   "f f" '(counsel-find-file :which-key "find file")
+  "f p" '(find-file-in-project :wk "find file in project")
   "f r" '(counsel-recentf :wk "recent files")
   "f s" '(save-buffer :which-key "save file")
   "f t" '(treemacs :wk "treemacs")
@@ -399,6 +399,7 @@
   "h s b" '(straight-rebuild-all :which-key "straight build packages")
   "m" '(:ignore t :which-key "local-leader")
   "o" '(:ignore t :which-key "org")
+  "p f" '(find-file-in-project :wk "find file in project")
   "q" '(:ignore t :which-key "quit")
   "q q" '(save-buffers-kill-emacs :which-key "save and quit")
   "q Q" '(kill-emacs :which-key "quit no-save")
@@ -461,6 +462,7 @@
 ;; (use-package multiple-cursors
 (use-package evil-mc
   :defer t
+  :after evil
   :hook
   (evil-mode . evil-mc-mode)
   :config
@@ -496,13 +498,11 @@
   )
 
 (use-package find-file-in-project
+  :defer t
   :after projectile
+  :commands find-file-in-project
   :config
   (setq ffip-use-rust-fd t)
-  (custo/leader-key
-    "f p" '(find-file-in-project :wk "find file in project")
-    "p f" '(find-file-in-project :wk "find file in project")
-    )
   :bind
   ([remap projectile-find-file] . find-file-in-project)
   ([remap counsel-projectile-find-file] . find-file-in-project)
@@ -544,16 +544,11 @@
 
 ;; magit
 (use-package magit
+  :defer t
   :commands magit-status
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   )
-
-;; magit integration with github and gitlab
-;; (use-package forge
-;;   :after magit
-;;   )
-
 
 ;; completion mini buffers
 (use-package company
@@ -587,10 +582,9 @@
 
 (use-package company-prescient
   :defer t
-  :after company
+  :after (company prescient)
   :hook
   (company-mode . company-prescient-mode)
-  ;; :init (company-prescient-mode 1)
   )
 
 (use-package company-box
@@ -628,7 +622,7 @@
   :after (yasnippet js2-mode)
   :config
   (custo/local-leader-key
-    :keymaps '(js2-mode-map rsjx-mode-map)
+    :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
     "i s" '(yas-insert-snippet :which-key "insert snippet"))
   )
 
