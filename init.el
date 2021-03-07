@@ -139,7 +139,7 @@
 
 ;; ivy trio
 (use-package swiper
-  ;; :defer t
+  :defer t
   :commands swiper
   )
 ;; use counsel for completions over
