@@ -695,7 +695,13 @@
     )
   )
 
-(use-package elixir-mode)
+(use-package elixir-mode
+  :mode ("\\.ex\\'"
+          "\\.eex\\'"
+          "\\.exs\\'")
+  :hook
+  (elixir-mode . yas-minor-mode)
+  )
 
 (use-package python
   :defer t
