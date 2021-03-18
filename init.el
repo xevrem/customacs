@@ -238,7 +238,8 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italics t)
-  (load-theme 'doom-tomorrow-night t))
+  (load-theme 'doom-snazzy t)
+  )
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
@@ -465,7 +466,7 @@
   :defer t
   :after evil
   :hook
-  (evil-mode . evil-mc-mode)
+  (prog-mode . evil-mc-mode)
   :config
   (custo/leader-key
     :keymaps 'prog-mode-map
@@ -572,8 +573,8 @@
         ;; These auto-complete the current selection when
         ;; `company-auto-complete-chars' is typed. This is too magical. We
         ;; already have the much more explicit RET and TAB.
-        ;; company-auto-complete nil
-        ;; company-auto-complete-chars nil
+        company-auto-complete nil
+        company-auto-complete-chars nil
 
         ;; Only search the current buffer for `company-dabbrev' (a backend that
         ;; suggests text your open buffers). This prevents Company from causing
