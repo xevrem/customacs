@@ -566,7 +566,7 @@
   :config
   (setq company-backends '(company-capf)
         company-idle-delay 0.2
-        company-minimum-prefix-length 1
+        company-minimum-prefix-length 2
         ;;
         ;; Good Ideas from DOOM:
         ;;
