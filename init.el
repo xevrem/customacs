@@ -238,7 +238,8 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italics t)
-  (load-theme 'doom-snazzy t)
+  ;; (load-theme 'doom-snazzy t)
+  (load-theme 'doom-tomorrow-night t)
   )
 
 ;; make it easier to keep track of parens and braces
@@ -349,6 +350,13 @@
   :after evil
   :hook
   (evil-mode . evil-collection-init)
+  )
+
+(use-package evil-commentary
+  :defer t
+  :after evil
+  :hook
+  (evil-mode . evil-commentary-mode)
   )
 
 
@@ -613,6 +621,7 @@
 ;; teach js2-mode how to jsx
 (use-package rjsx-mode
   :mode "components\\/.*\\.js\\'"
+  :config
   )
 
 ;; auto-docs :D
@@ -806,8 +815,10 @@
   (setq flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
                         '(javascript-jshint)))
-  ;; (flycheck-add-mode 'javascript-eslint)
   (setq flycheck-temp-prefix ".flycheck")
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
   (custo/local-leader-key
     :keymaps '(js2-mode-map
                rsjx-mode-map
