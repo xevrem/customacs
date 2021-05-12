@@ -1111,7 +1111,7 @@
     "i s" '((lambda ()
                 (interactive)
                 (org-insert-structure-template "src")) :wk "insert source block")
-    "s" '(:ignore t :wk "subtree") 
+    "s" '(:ignore t :wk "subtree")
     "s r" '(org-refile :wk "refile")
     "s c" '(org-copy-subtree :wk "copy")
     "s x" '(org-cut-subtree :wk "cut")
