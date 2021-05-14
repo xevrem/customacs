@@ -53,7 +53,12 @@
   )
 
 (setq auto-save-list-file-prefix (expand-file-name "auto-saves/sessions/" user-emacs-directory)
-     auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+      auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+
+;; if native comp is used, cache copiled code
+(when (boundp 'comp-eln-load-path)
+  (setcar comp-eln-load-path
+          (expand-file-name "cache/eln-cache/" user-emacs-directory)))
 
 ;; disable lockfiles
 ;;(setq create-lockfiles nil)

@@ -53,3 +53,4 @@
 (setq frame-inhibit-implied-resize t)
 
 (setq comp-deferred-compilation nil)
+(setq comp-speed 2)
