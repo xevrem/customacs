@@ -243,8 +243,8 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italics t)
-  ;; (load-theme 'doom-snazzy t)
-  (load-theme 'doom-tomorrow-night t)
+  (load-theme 'doom-snazzy t)
+  ;; (load-theme 'doom-tomorrow-night t)
   )
 
 ;; make it easier to keep track of parens and braces
@@ -773,6 +773,7 @@
   :config
   (setq lsp-completion-provider :capf)
   (setq lsp-rust-server 'rust-analyzer)
+  (setq lsp-file-watch-threshold 100)
   ;; (setq lsp-keymap-prefix "SPC-m")
   (setq lsp-headerline-breadcrumb-enable nil)
   ;; (setq lsp-headerline-breadcrumb-segments '(project file symbols))
