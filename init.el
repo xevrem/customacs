@@ -771,6 +771,7 @@
   ;; (setq lsp-keymap-prefix "SPC-m")
   (setq lsp-headerline-breadcrumb-enable nil)
   ;; (setq lsp-headerline-breadcrumb-segments '(project file symbols))
+  (setq lsp-ui-doc-enable nil)
   (custo/local-leader-key
     :keymaps '(js2-mode-map
                rjsx-mode-map
@@ -786,6 +787,9 @@
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g r" '(lsp-ui-peek-find-references :which-key "goto references")
     "g g" '(lsp-find-definition :which-key "goto definition")
+    "l" '(:ignore t :wk "lsp")
+    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
     "o" '(lsp-ui-imenu :which-key "overview")
     "r" '(:ignore t :which-key "refactor")
     "r r" '(lsp-rename :which-key "rename")
@@ -1077,6 +1081,12 @@
   :defer t
   :hook
   (tty-setup . global-clipetty-mode)
+  )
+
+(use-package xclip
+  :defer t
+  :hook
+  (tty-setup . xclip-mode)
   )
 
 
