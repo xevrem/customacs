@@ -53,7 +53,12 @@
   )
 
 (setq auto-save-list-file-prefix (expand-file-name "auto-saves/sessions/" user-emacs-directory)
-     auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+      auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+
+;; if native comp is used, cache copiled code
+(when (boundp 'comp-eln-load-path)
+  (setcar comp-eln-load-path
+          (expand-file-name "cache/eln-cache/" user-emacs-directory)))
 
 ;; disable lockfiles
 ;;(setq create-lockfiles nil)
@@ -238,8 +243,8 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italics t)
-  ;; (load-theme 'doom-snazzy t)
-  (load-theme 'doom-tomorrow-night t)
+  (load-theme 'doom-snazzy t)
+  ;; (load-theme 'doom-tomorrow-night t)
   )
 
 ;; make it easier to keep track of parens and braces
@@ -768,6 +773,7 @@
   :config
   (setq lsp-completion-provider :capf)
   (setq lsp-rust-server 'rust-analyzer)
+  (setq lsp-file-watch-threshold 100)
   ;; (setq lsp-keymap-prefix "SPC-m")
   (setq lsp-headerline-breadcrumb-enable nil)
   ;; (setq lsp-headerline-breadcrumb-segments '(project file symbols))
