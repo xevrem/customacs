@@ -300,12 +300,12 @@
   )
 
 ;; provide more helpful info in ivy panels
-(use-package ivy-rich
-  :defer t
-  :after ivy
-  :hook
-  (ivy-mode . ivy-rich-mode)
-  )
+;; (use-package ivy-rich
+;;   :defer t
+;;   :after ivy
+;;   :hook
+;;   (ivy-mode . ivy-rich-mode)
+;;   )
 
 
 ;; more better help menus
@@ -811,10 +811,10 @@
   )
 
 ;; better lsp
-(use-package lsp-ivy
-  :after lsp
-  :commands lsp-ivy-workspace-symbol
-  )
+;; (use-package lsp-ivy
+;;   :after lsp
+;;   :commands lsp-ivy-workspace-symbol
+;;   )
 
 ;; error checking
 (use-package flycheck
