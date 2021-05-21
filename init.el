@@ -243,8 +243,8 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italics t)
-  (load-theme 'doom-snazzy t)
-  ;; (load-theme 'doom-tomorrow-night t)
+  ;; (load-theme 'doom-snazzy t)
+  (load-theme 'doom-tomorrow-night t)
   )
 
 ;; make it easier to keep track of parens and braces
