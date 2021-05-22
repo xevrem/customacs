@@ -98,7 +98,9 @@
 
 
 ;; setup straight for package management, its much better than use-package
-(setq straight-use-package-by-default t)
+(setq straight-use-package-by-default t
+      straight-repository-branch "develop")
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -149,12 +151,13 @@
   :defer t
   :after vertico
   :config
-  (setq completion-styles '(substring))
+  (setq completion-styles '(orderless))
   )
 
 (use-package consult-flycheck
   :defer t
-  :after (:all consult flycheck))
+  :after (:all consult flycheck)
+  )
 
 (use-package marginalia
   :defer t
@@ -165,6 +168,8 @@
 (use-package orderless
   :defer t
   :after vertico
+  :hook
+  (vertico-mode . icomplete-mode)
   :custom (completion-styles '(orderless))
   )
 
@@ -245,10 +250,9 @@
 ;;         ivy-use-selectable-prompt t)
 ;;   )
 
-(use-package prescient
+;; (use-package prescient
   ;; :after ivy
-  :after vertico
- )
+;; )
 
 ;; (use-package ivy-prescient
 ;;   :after (ivy prescient)

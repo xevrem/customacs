@@ -52,5 +52,10 @@
 
 (setq frame-inhibit-implied-resize t)
 
-;;(setq comp-deferred-compilation nil)
-(setq comp-speed 2)
+;;prevent package.el loading stuff too early
+(setq package-enable-at-startup nil)
+
+;;native comp insanity
+(defvar comp-deferred-compilation-deny-list ())
+(setq comp-deferred-compilation t
+      comp-speed 3)
