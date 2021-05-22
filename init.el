@@ -138,85 +138,120 @@
   :commands restart-emacs
   )
 
-;; ivy trio
-(use-package swiper
+(use-package vertico
   :defer t
-  :commands swiper
+  :hook
+  (after-init . vertico-mode)
   )
+
+(use-package consult
+  :defer t
+  :after vertico
+  :config
+  (setq completion-styles '(substring))
+  )
+
+(use-package marginalia
+  :defer t
+  :hook
+  (after-init . marginalia-mode)
+  )
+
+(use-package orderless
+  :defer t
+  :after vertico
+  :custom (completion-styles '(orderless))
+  )
+
+;; (use-package corfu
+;;   :defer t
+;;   :hook
+;;   (after-init . corfu-global-mode)
+;;   )
+
+;; ivy trio
+;; (use-package swiper
+;;   :defer t
+;;   :commands swiper
+;;   )
 
 ;; use counsel for completions over
 ;; default M-x and some other things
-(use-package counsel
-  :defer t
-  :bind (("M-x" . counsel-M-x)
-         ("C-x b" . counsel-ibuffer)
-         ("C-x C-f" . counsel-find-file)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history)
-         )
-  )
+;; (use-package counsel
+;;   :defer t
+;;   :bind (("M-x" . counsel-M-x)
+;;          ("C-x b" . counsel-ibuffer)
+;;          ("C-x C-f" . counsel-find-file)
+;;          :map minibuffer-local-map
+;;          ("C-r" . 'counsel-minibuffer-history)
+;;          )
+;;   )
 
 ;; show recently used files
 (use-package recentf
-  :after counsel
-  :commands counsel-recentf
-  )
-
-(use-package ivy
   :defer t
   :hook
-  (after-init . ivy-mode)
-  :bind (("C-s" . swiper))
-  :config
-  (setq ivy-sort-max-size 7500
-        ivy-height 17
-        ivy-wrap t
-        ivy-fixed-height-minibuffer t
-        ;; disable magic slash on non-match
-        ivy-magic-slash-non-match-action nil
-        ;; don't show recent files in switch-buffer
-        ivy-use-virtual-buffers nil
-        ;; ...but if that ever changes, show their full path
-        ivy-virtual-abbreviate 'full
-        ;; don't quit minibuffer on delete-error
-        ivy-on-del-error-function #'ignore
-        ;; enable ability to select prompt (alternative to `ivy-immediate-done')
-        ivy-use-selectable-prompt t)
+  (after-init . recentf-mode)
+  ;; :after counsel
+  ;; :commands counsel-recentf
   )
+
+;; (use-package ivy
+;;   :defer t
+;;   :hook
+;;   (after-init . ivy-mode)
+;;   :bind (("C-s" . swiper))
+;;   :config
+;;   (setq ivy-sort-max-size 7500
+;;         ivy-height 17
+;;         ivy-wrap t
+;;         ivy-fixed-height-minibuffer t
+;;         ;; disable magic slash on non-match
+;;         ivy-magic-slash-non-match-action nil
+;;         ;; don't show recent files in switch-buffer
+;;         ivy-use-virtual-buffers nil
+;;         ;; ...but if that ever changes, show their full path
+;;         ivy-virtual-abbreviate 'full
+;;         ;; don't quit minibuffer on delete-error
+;;         ivy-on-del-error-function #'ignore
+;;         ;; enable ability to select prompt (alternative to `ivy-immediate-done')
+;;         ivy-use-selectable-prompt t)
+;;   )
 
 (use-package prescient
-  :after ivy
+  ;; :after ivy
+  :after vertico
  )
 
-(use-package ivy-prescient
-  :after (ivy prescient)
-  :hook
-  (ivy-mode . ivy-prescient-mode)
-  :config
-  ;;good ideas from doom:
-  (defun +ivy-prescient-non-fuzzy (str)
-    (let ((prescient-filter-method '(literal regexp)))
-      (ivy-prescient-re-builder str)
-      )
-    )
-  (let ((standard-search-fn
-         #'+ivy-prescient-non-fuzzy)
-        (alt-search-fn
-         ;; Ignore order for non-fuzzy searches by default
-         #'ivy--regex-ignore-order))
-    (setq ivy-re-builders-alist
-          `((counsel-rg     . ,standard-search-fn)
-            (swiper         . ,standard-search-fn)
-            (swiper-isearch . ,standard-search-fn)
-            (t . ,alt-search-fn))
-          ivy-more-chars-alist
-          '((counsel-rg . 1)
-            (counsel-search . 2)
-            (t . 3)
-            )
-          )
-    )
-  )
+;; (use-package ivy-prescient
+;;   :after (ivy prescient)
+;;   :hook
+;;   (ivy-mode . ivy-prescient-mode)
+;;   :config
+;;   ;;good ideas from doom:
+;;   (defun +ivy-prescient-non-fuzzy (str)
+;;     (let ((prescient-filter-method '(literal regexp)))
+;;       (ivy-prescient-re-builder str)
+;;       )
+;;     )
+;;   (let ((standard-search-fn
+;;          #'+ivy-prescient-non-fuzzy)
+;;         (alt-search-fn
+;;          ;; Ignore order for non-fuzzy searches by default
+;;          #'ivy--regex-ignore-order))
+;;     (setq ivy-re-builders-alist
+;;           `((counsel-rg     . ,standard-search-fn)
+;;             (swiper         . ,standard-search-fn)
+;;             (swiper-isearch . ,standard-search-fn)
+;;             (t . ,alt-search-fn))
+;;           ivy-more-chars-alist
+;;           '((counsel-rg . 1)
+;;             (counsel-search . 2)
+;;             (t . 3)
+;;             )
+;;           )
+;;     )
+;;   )
 
 ;; load all-the-icons only if in GUI mode
 ;; and install them if not present
@@ -311,15 +346,15 @@
 ;; more better help menus
 (use-package helpful
   :defer t
-  :commands (helpful-callable helpful-variable helpful-command helpful-key)
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
-  :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key)
+  ;; :commands (helpful-callable helpful-variable helpful-command helpful-key)
+  ;; :custom
+  ;; (counsel-describe-function-function #'helpful-callable)
+  ;; (counsel-describe-variable-function #'helpful-variable)
+  ;; :bind
+  ;; ([remap describe-function] . counsel-describe-function)
+  ;; ([remap describe-command] . helpful-command)
+  ;; ([remap describe-variable] . counsel-describe-variable)
+  ;; ([remap describe-key] . helpful-key)
   )
   
 
@@ -386,22 +421,26 @@
 ;; define default keybinds
 (custo/leader-key
   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
-  ":" '(counsel-M-x :which-key "M-x")
+  ;; ":" '(counsel-M-x :which-key "M-x")
+  ":" '(execute-extended-command :wk "M-x")
   "a" '(:ignore t :wk "apps")
   "a c" '(circe :wk "circe")
   "a e" '(eww :wk "eww")
   "a t" '(vterm :wk "terminal")
   "b" '(:ignore t :which-key "buffer")
-  "b b" '(counsel-switch-buffer :which-key "switch buffers")
+  ;; "b b" '(counsel-switch-buffer :which-key "switch buffers")
+  "b b" '(switch-to-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
-  "b i" '(counsel-ibuffer :which-key "ibuffer")
+  ;; "b i" '(counsel-ibuffer :which-key "ibuffer")
   "c" '(:ignore t :which-key "cursor")
   "c c" '(comment-line :which-key "comment line")
   "f" '(:ignore f :which-key "file")
   "f d" '(ranger :which-key "file directory")
-  "f f" '(counsel-find-file :which-key "find file")
+  ;; "f f" '(counsel-find-file :which-key "find file")
+  "f f" '(find-file :which-key "find file")
   "f p" '(find-file-in-project :wk "find file in project")
-  "f r" '(counsel-recentf :wk "recent files")
+  ;; "f r" '(counsel-recentf :wk "recent files")
+  "f r" '(recentf-open-files :wk "recent files")
   "f s" '(save-buffer :which-key "save file")
   "f t" '(treemacs :wk "treemacs")
   "g" '(:ignore t :which-key "magit")
@@ -420,11 +459,13 @@
   "q Q" '(kill-emacs :which-key "quit no-save")
   "q r" '(restart-emacs :which-key "restart emacs")
   "s" '(:ignore t :which-key "search")
-  "s s" '(swiper :which-key "search buffer")
-  "s p" '(counsel-projectile-rg :which-key "search project")
+  ;; "s s" '(swiper :which-key "search buffer")
+  "s s" '(consult-line :which-key "search buffer")
+  ;; "s p" '(counsel-projectile-rg :which-key "search project")
+  "s p" '(consult-ripgrep :which-key "search project")
   "t" '(:ignore t :which-key "toggles")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
-  "t T" '(counsel-load-theme :which-key "choose theme")
+  ;; "t T" '(counsel-load-theme :which-key "choose theme")
   "w" '(:ignore t :which-key "window")
   "w w" '(other-window :which-key "other window")
   "w d" '(delete-window :which-key "delete window")
@@ -491,9 +532,12 @@
 
 ;; setup project management
 (use-package projectile
+  :defer t
   :diminish projectile-mode
-  :custom
-  (projectile-completion-system 'ivy)
+  :hook
+  (vertico-mode . projectile-mode)
+  ;; :custom
+  ;; (projectile-completion-system 'ivy)
   :config
   (custo/leader-key
     "p" '(projectile-command-map :which-key "projectile")
@@ -501,16 +545,16 @@
   )
   
 ;; add counsel capability
-(use-package counsel-projectile
-  :defer t
-  :after projectile
-  :hook
-  (after-init .  counsel-projectile-mode)
-  :bind
-  ;; ([remap projectile-find-file] . counsel-projectile-find-file)
-  ([remap projectile-switch-project] . counsel-projectile-switch-project)
-  ([remap projectile-switch-to-buffer] . counsel-projectile-switch-to-buffer)
-  )
+;; (use-package counsel-projectile
+;;   :defer t
+;;   :after projectile
+;;   :hook
+;;   (after-init .  counsel-projectile-mode)
+;;   :bind
+;;   ;; ([remap projectile-find-file] . counsel-projectile-find-file)
+;;   ([remap projectile-switch-project] . counsel-projectile-switch-project)
+;;   ([remap projectile-switch-to-buffer] . counsel-projectile-switch-to-buffer)
+;;   )
 
 (use-package find-file-in-project
   :defer t
@@ -520,7 +564,7 @@
   (setq ffip-use-rust-fd t)
   :bind
   ([remap projectile-find-file] . find-file-in-project)
-  ([remap counsel-projectile-find-file] . find-file-in-project)
+  ;; ([remap counsel-projectile-find-file] . find-file-in-project)
   )
 
 (use-package all-the-icons-dired
@@ -1141,6 +1185,7 @@
   :defer t
   :commands vterm
   )
+
 
 (use-package gcmh
   :defer t
