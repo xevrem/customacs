@@ -58,7 +58,7 @@
 ;; if native comp is used, cache copiled code
 (when (boundp 'comp-eln-load-path)
   (setcar comp-eln-load-path
-          (expand-file-name "cache/eln-cache/" user-emacs-directory)))
+          (expand-file-name "eln-cache/" user-emacs-directory)))
 
 ;; disable lockfiles
 ;;(setq create-lockfiles nil)
@@ -138,6 +138,7 @@
   :commands restart-emacs
   )
 
+;;minad's awesome packages: 
 (use-package vertico
   :defer t
   :hook
@@ -151,6 +152,10 @@
   (setq completion-styles '(substring))
   )
 
+(use-package consult-flycheck
+  :defer t
+  :after (:all consult flycheck))
+
 (use-package marginalia
   :defer t
   :hook
@@ -163,11 +168,33 @@
   :custom (completion-styles '(orderless))
   )
 
-;; (use-package corfu
-;;   :defer t
-;;   :hook
-;;   (after-init . corfu-global-mode)
-;;   )
+(use-package corfu
+  :defer t
+  :hook
+  (after-init . corfu-global-mode)
+  :bind (:map corfu-map
+              ("TAB" . corfu-next)
+              ("<backtab>" . corfu-previous)
+              )
+  :config
+  (setq corfu-cycle t)
+  )
+
+(use-package emacs
+  :init
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; Completion is often bound to M-TAB.
+  (setq tab-always-indent 'complete)
+  )
+
+(use-package ripgrep
+  :defer t
+  :after (:any consult projectile)
+  )
+
 
 ;; ivy trio
 ;; (use-package swiper
@@ -272,6 +299,8 @@
   :config
   (setq doom-modeline-height 32)
   )
+
+(use-package one-themes)
 
 ;; enable better themes
 (use-package doom-themes
@@ -466,6 +495,7 @@
   "t" '(:ignore t :which-key "toggles")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
   ;; "t T" '(counsel-load-theme :which-key "choose theme")
+  "t T" '(consult-theme :wk "choose theme")
   "w" '(:ignore t :which-key "window")
   "w w" '(other-window :which-key "other window")
   "w d" '(delete-window :which-key "delete window")
@@ -610,52 +640,52 @@
   )
 
 ;; completion mini buffers
-(use-package company
-  :defer t
-  :after lsp-mode
-  :hook
-  (lsp-mode . company-mode)
-  :bind ((:map company-active-map
-               ("<tab>" . company-complete-selection))
-         (:map lsp-mode-map
-               ("<tab>" . company-indent-or-complete-common))
-         )
-  :config
-  (setq company-backends '(company-capf)
-        company-idle-delay 0.2
-        company-minimum-prefix-length 2
-        ;;
-        ;; Good Ideas from DOOM:
-        ;;
-        ;; These auto-complete the current selection when
-        ;; `company-auto-complete-chars' is typed. This is too magical. We
-        ;; already have the much more explicit RET and TAB.
-        company-auto-complete nil
-        company-auto-complete-chars nil
+;; (use-package company
+;;   :defer t
+;;   :after lsp-mode
+;;   :hook
+;;   (lsp-mode . company-mode)
+;;   :bind ((:map company-active-map
+;;                ("<tab>" . company-complete-selection))
+;;          (:map lsp-mode-map
+;;                ("<tab>" . company-indent-or-complete-common))
+;;          )
+;;   :config
+;;   (setq company-backends '(company-capf)
+;;         company-idle-delay 0.2
+;;         company-minimum-prefix-length 2
+;;         ;;
+;;         ;; Good Ideas from DOOM:
+;;         ;;
+;;         ;; These auto-complete the current selection when
+;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
+;;         ;; already have the much more explicit RET and TAB.
+;;         company-auto-complete nil
+;;         company-auto-complete-chars nil
 
-        ;; Only search the current buffer for `company-dabbrev' (a backend that
-        ;; suggests text your open buffers). This prevents Company from causing
-        ;; lag once you have a lot of buffers open.
-        company-dabbrev-other-buffers nil
-        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-        ;; domain-specific words with particular casing.
-        company-dabbrev-ignore-case nil
-        company-dabbrev-downcase nil
-        )
-  )
+;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
+;;         ;; suggests text your open buffers). This prevents Company from causing
+;;         ;; lag once you have a lot of buffers open.
+;;         company-dabbrev-other-buffers nil
+;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+;;         ;; domain-specific words with particular casing.
+;;         company-dabbrev-ignore-case nil
+;;         company-dabbrev-downcase nil
+;;         )
+;;   )
 
-(use-package company-prescient
-  :defer t
-  :after (company prescient)
-  :hook
-  (company-mode . company-prescient-mode)
-  )
+;; (use-package company-prescient
+;;   :defer t
+;;   :after (company prescient)
+;;   :hook
+;;   (company-mode . company-prescient-mode)
+;;   )
 
-(use-package company-box
-  :defer t
-  :after company
-  :hook (company-mode . company-box-mode)
-  )
+;; (use-package company-box
+;;   :defer t
+;;   :after company
+;;   :hook (company-mode . company-box-mode)
+;;   )
 
 
 ;; better javascript mode
@@ -730,12 +760,13 @@
 (use-package csharp-mode
   :hook
   (csharp-mode . rainbow-delimiters-mode)
-  (csharp-mode . company-mode)
+  ;; (csharp-mode . company-mode)
   (csharp-mode . flycheck-mode)
   )
 
 (use-package omnisharp
-  :after company
+  ;; :after company
+  :after corfu
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -745,7 +776,7 @@
         c-basic-offset 2
         tab-width 2
         evil-shift-width 2)
-  (add-to-list 'company-backends 'company-omnisharp)
+  ;; (add-to-list 'company-backends 'company-omnisharp)
   (custo/local-leader-key
     :keymaps '(csharp-mode-map omnisharp-mode-map)
     "o" '(:ignore t :which-key "omnisharp")
@@ -881,7 +912,7 @@
                elixir-mode-map
                csharp-mode-map)
     "e" '(:ignore t :which-key "errors")
-    "e l" '(flycheck-list-errors :which-key "list errors")
+    "e l" '(consult-flycheck :which-key "list errors")
     )
   )
 
@@ -1099,19 +1130,19 @@
   )
 
 
-(use-package centaur-tabs
-  :defer t
-  :hook
-  (after-init . centaur-tabs-mode)
-  :config
-  (setq centaur-tabs-height 32)
-  (setq centaur-tabs-bar-height 43)
-  (setq centaur-tabs-set-bar 'under)
-  (setq centaur-tabs-set-icons t)
-  (setq centaur-tabs-set-greyout-icons t)
-  (setq centaur-tabs-icon-scale-factor 0.75)
-  (setq x-underline-at-descent-line t)
-  )
+;; (use-package centaur-tabs
+;;   :defer t
+;;   :hook
+;;   (after-init . centaur-tabs-mode)
+;;   :config
+;;   (setq centaur-tabs-height 32)
+;;   (setq centaur-tabs-bar-height 43)
+;;   (setq centaur-tabs-set-bar 'under)
+;;   (setq centaur-tabs-set-icons t)
+;;   (setq centaur-tabs-set-greyout-icons t)
+;;   (setq centaur-tabs-icon-scale-factor 0.75)
+;;   (setq x-underline-at-descent-line t)
+;; )
 
 ;; terminal related package
 
@@ -1194,3 +1225,16 @@
   (setq gcmh-high-cons-threashold (* 1024 1024 100)
         gcmh-idle-delay 60)
   )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("7b3d184d2955990e4df1162aeff6bfb4e1c3e822368f0359e15e2974235d9fa8" default)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
