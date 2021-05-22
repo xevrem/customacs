@@ -173,10 +173,21 @@
   :custom (completion-styles '(orderless))
   )
 
+(use-package affe
+  :straight '(:type git :host github
+              :repo "minad/affe"
+              :branch "main")
+  :after orderless
+  :config
+  ;; Configure Orderless
+  (setq affe-regexp-function #'orderless-pattern-compiler
+        affe-highlight-function #'orderless-highlight-matches)
+  )
+
 (use-package corfu
   :defer t
   :hook
-  (after-init . corfu-global-mode)
+  (prog-mode . corfu-mode)
   :bind (:map corfu-map
               ("TAB" . corfu-next)
               ("<backtab>" . corfu-previous)
