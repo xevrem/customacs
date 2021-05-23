@@ -58,7 +58,7 @@
 ;; if native comp is used, cache copiled code
 (when (boundp 'comp-eln-load-path)
   (setcar comp-eln-load-path
-          (expand-file-name "eln-cache/" user-emacs-directory)))
+          (expand-file-name ".cache/eln-cache/" user-emacs-directory)))
 
 ;; disable lockfiles
 ;;(setq create-lockfiles nil)
@@ -137,7 +137,14 @@
 
 ;; restart
 (use-package restart-emacs
+  :defer t
   :commands restart-emacs
+  )
+
+(use-package savehist
+  :defer t
+  :hook
+  (after-init . savehist-mode)
   )
 
 ;;minad's awesome packages: 
