@@ -55,14 +55,14 @@
 (setq auto-save-list-file-prefix (expand-file-name "auto-saves/sessions/" user-emacs-directory)
       auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
 
+;; native comp insanity
 ;; if native comp is used, cache copiled code
-(when (boundp 'comp-eln-load-path)
-  (setcar comp-eln-load-path
-          (expand-file-name ".cache/eln-cache/" user-emacs-directory)))
+(when (boundp 'native-comp-eln-load-path)
+  (setcar native-comp-eln-load-path
+          (expand-file-name "eln-cache/" user-emacs-directory)))
 
 ;; disable lockfiles
 ;;(setq create-lockfiles nil)
-
 
 ;; create some font size defaults
 ;; may need to customize
@@ -147,7 +147,7 @@
   (after-init . savehist-mode)
   )
 
-;;minad's awesome packages: 
+;; minad' and oantolin's awesome packages:
 (use-package vertico
   :defer t
   :hook
@@ -491,7 +491,8 @@
   "f f" '(find-file :which-key "find file")
   "f p" '(find-file-in-project :wk "find file in project")
   ;; "f r" '(counsel-recentf :wk "recent files")
-  "f r" '(recentf-open-files :wk "recent files")
+  "f r" '(consult-recent-file :wk "recent files")
+  "f R" '(recentf-open-files :wk "full recentf files")
   "f s" '(save-buffer :which-key "save file")
   "f t" '(treemacs :wk "treemacs")
   "g" '(:ignore t :which-key "magit")
@@ -868,7 +869,8 @@
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred)
   :config
-  (setq lsp-completion-provider :capf)
+  (setq lsp-completion-provider :none)
+  ;; (setq lsp-completion-provider :capf)
   (setq lsp-rust-server 'rust-analyzer)
   (setq lsp-file-watch-threshold 100)
   ;; (setq lsp-keymap-prefix "SPC-m")

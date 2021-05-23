@@ -55,7 +55,13 @@
 ;;prevent package.el loading stuff too early
 (setq package-enable-at-startup nil)
 
-;;native comp insanity
+;; prevent bug with straight.el
 (defvar comp-deferred-compilation-deny-list ())
-(setq comp-deferred-compilation t
-      comp-speed 3)
+;; use whatever is available, then replace it with native comp one
+(when (boundp 'native-comp-deferred-compilation)
+  (setq native-comp-deferred-compilation t)
+  )
+;; use level 2 optimizations
+(when (boundp 'native-comp-speed)
+  (setq native-comp-speed 2)
+  )
