@@ -670,23 +670,34 @@
   :after lsp-mode
   :hook
   (lsp-mode . company-mode)
-  :bind ((:map company-active-map
-               ("<tab>" . company-complete-selection))
+  :bind (;; only active when trying to complete a selection
+         (:map company-active-map
+               ;; complete the currently chosen selection
+               ("RET" . company-complete-selection)
+               ;; goto next selection
+               ("<tab>" . company-select-next)
+               ;; goto previous selection
+               ("<backtab>" . company-select-previous)
+               )
+         ;; only make tab start completions if lsp is active
          (:map lsp-mode-map
-               ("<tab>" . company-indent-or-complete-common))
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               )
          )
   :config
   (setq company-backends '(company-capf)
         company-idle-delay 0.2
         company-minimum-prefix-length 2
+        company-selection-wrap-around t
         ;;
         ;; Good Ideas from DOOM:
         ;;
         ;; These auto-complete the current selection when
         ;; `company-auto-complete-chars' is typed. This is too magical. We
         ;; already have the much more explicit RET and TAB.
-        company-auto-complete nil
-        company-auto-complete-chars nil
+        ;; company-auto-complete nil
+        ;; company-auto-complete-chars nil
 
         ;; Only search the current buffer for `company-dabbrev' (a backend that
         ;; suggests text your open buffers). This prevents Company from causing
@@ -699,12 +710,12 @@
         )
   )
 
-(use-package company-prescient
-  :defer t
-  :after (company prescient)
-  :hook
-  (company-mode . company-prescient-mode)
-  )
+;; (use-package company-prescient
+;;   :defer t
+;;   :after (company prescient)
+;;   :hook
+;;   (company-mode . company-prescient-mode)
+;;   )
 
 (use-package company-box
   :defer t
