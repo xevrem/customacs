@@ -801,8 +801,8 @@
   )
 
 (use-package omnisharp
-  ;; :after company
-  :after corfu
+  :after company
+  ;; :after corfu
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -812,7 +812,7 @@
         c-basic-offset 2
         tab-width 2
         evil-shift-width 2)
-  ;; (add-to-list 'company-backends 'company-omnisharp)
+  (add-to-list 'company-backends 'company-omnisharp)
   (custo/local-leader-key
     :keymaps '(csharp-mode-map omnisharp-mode-map)
     "o" '(:ignore t :which-key "omnisharp")
