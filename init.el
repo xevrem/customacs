@@ -191,17 +191,17 @@
         affe-highlight-function #'orderless-highlight-matches)
   )
 
-(use-package corfu
-  :defer t
-  :hook
-  (prog-mode . corfu-mode)
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<backtab>" . corfu-previous)
-              )
-  :config
-  (setq corfu-cycle t)
-  )
+;; (use-package corfu
+;;   :defer t
+;;   :hook
+;;   (prog-mode . corfu-mode)
+;;   :bind (:map corfu-map
+;;               ("TAB" . corfu-next)
+;;               ("<backtab>" . corfu-previous)
+;;               )
+;;   :config
+;;   (setq corfu-cycle t)
+;;   )
 
 (use-package emacs
   :init
@@ -665,52 +665,52 @@
   )
 
 ;; completion mini buffers
-;; (use-package company
-;;   :defer t
-;;   :after lsp-mode
-;;   :hook
-;;   (lsp-mode . company-mode)
-;;   :bind ((:map company-active-map
-;;                ("<tab>" . company-complete-selection))
-;;          (:map lsp-mode-map
-;;                ("<tab>" . company-indent-or-complete-common))
-;;          )
-;;   :config
-;;   (setq company-backends '(company-capf)
-;;         company-idle-delay 0.2
-;;         company-minimum-prefix-length 2
-;;         ;;
-;;         ;; Good Ideas from DOOM:
-;;         ;;
-;;         ;; These auto-complete the current selection when
-;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
-;;         ;; already have the much more explicit RET and TAB.
-;;         company-auto-complete nil
-;;         company-auto-complete-chars nil
+(use-package company
+  :defer t
+  :after lsp-mode
+  :hook
+  (lsp-mode . company-mode)
+  :bind ((:map company-active-map
+               ("<tab>" . company-complete-selection))
+         (:map lsp-mode-map
+               ("<tab>" . company-indent-or-complete-common))
+         )
+  :config
+  (setq company-backends '(company-capf)
+        company-idle-delay 0.2
+        company-minimum-prefix-length 2
+        ;;
+        ;; Good Ideas from DOOM:
+        ;;
+        ;; These auto-complete the current selection when
+        ;; `company-auto-complete-chars' is typed. This is too magical. We
+        ;; already have the much more explicit RET and TAB.
+        company-auto-complete nil
+        company-auto-complete-chars nil
 
-;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
-;;         ;; suggests text your open buffers). This prevents Company from causing
-;;         ;; lag once you have a lot of buffers open.
-;;         company-dabbrev-other-buffers nil
-;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-;;         ;; domain-specific words with particular casing.
-;;         company-dabbrev-ignore-case nil
-;;         company-dabbrev-downcase nil
-;;         )
-;;   )
+        ;; Only search the current buffer for `company-dabbrev' (a backend that
+        ;; suggests text your open buffers). This prevents Company from causing
+        ;; lag once you have a lot of buffers open.
+        company-dabbrev-other-buffers nil
+        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+        ;; domain-specific words with particular casing.
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil
+        )
+  )
 
-;; (use-package company-prescient
-;;   :defer t
-;;   :after (company prescient)
-;;   :hook
-;;   (company-mode . company-prescient-mode)
-;;   )
+(use-package company-prescient
+  :defer t
+  :after (company prescient)
+  :hook
+  (company-mode . company-prescient-mode)
+  )
 
-;; (use-package company-box
-;;   :defer t
-;;   :after company
-;;   :hook (company-mode . company-box-mode)
-;;   )
+(use-package company-box
+  :defer t
+  :after company
+  :hook (company-mode . company-box-mode)
+  )
 
 
 ;; better javascript mode
@@ -871,9 +871,9 @@
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred)
   :config
-  (setq lsp-completion-provider :none)
-  ;; (setq lsp-completion-provider :capf)
-  (setq lsp-rust-server 'rust-analyzer)
+  ;; (setq lsp-completion-provider :none)
+  (setq lsp-completion-provider :capf)
+  ;; (setq lsp-rust-server 'rust-analyzer)
   (setq lsp-file-watch-threshold 100)
   ;; (setq lsp-keymap-prefix "SPC-m")
   (setq lsp-headerline-breadcrumb-enable nil)
