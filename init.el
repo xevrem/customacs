@@ -86,10 +86,10 @@
     (progn
       ;; set default font
       ;; (set-face-attribute 'default nil :font "Fira Code" :height custo/default-font-size)
-      (set-face-attribute 'default nil :font (font-spec :family "Fira Code" :size 20 :weight 'regular))
+      (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
       ;; Set the fixed pitch face
       ;; (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
-      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "Fira Code" :size 20 :weight 'regular))
+      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
       )
     )
 
@@ -852,6 +852,8 @@
   :config
   (setq yaml-indent-offset 2)
   )
+
+(use-package gdscript-mode)
 
 (use-package plantuml-mode
   :straight '(:type git :host github
