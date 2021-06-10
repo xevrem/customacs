@@ -154,11 +154,17 @@
   (after-init . vertico-mode)
   )
 
+(defun custo/get-project-root ()
+  (when (fboundp 'projectile-project-root)
+    (projectile-project-root)))
+
 (use-package consult
   :defer t
   :after vertico
   :config
   (setq completion-styles '(orderless))
+  :custom
+  (consult-project-root-function #'custo/get-project-root)
   )
 
 (use-package consult-flycheck
@@ -855,6 +861,11 @@
 
 (use-package gdscript-mode)
 
+(use-package go-mode
+  :config
+  (setq tab-width 2)
+  )
+
 (use-package plantuml-mode
   :straight '(:type git :host github
               :repo "skuro/plantuml-mode"
@@ -881,6 +892,7 @@
          (elixir-mode . lsp-deferred)
          (yaml-mode . lsp-deferred)
          (json-mode . lsp-deferred)
+         (go-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred)
   :config
@@ -902,6 +914,7 @@
                yaml-mode-map
                json-mode-map
                web-mode-map
+               go-mode-map
                lsp-mode-map
                lsp-ui-mode-map)
     "a" '(lsp-execute-code-action :wk "excute code action")
@@ -949,7 +962,9 @@
                typescript-mode-map
                rustic-mode-map
                elixir-mode-map
-               csharp-mode-map)
+               csharp-mode-map
+               go-mode-map
+               )
     "e" '(:ignore t :which-key "errors")
     "e l" '(consult-flycheck :which-key "list errors")
     )
@@ -1236,6 +1251,8 @@
 (use-package treemacs
   :defer t
   :commands treemacs
+  :config
+  (setq treemacs-width 25)
   )
 
 (use-package lsp-treemacs
@@ -1250,6 +1267,11 @@
 (use-package treemacs-projectile
   :after (treemacs projectile)
   :defer t)
+
+(use-package treemacs-magit
+  :after (treemacs magit)
+  :defer t
+  )
 
 (use-package vterm
   :defer t
