@@ -147,6 +147,19 @@
   (after-init . savehist-mode)
   )
 
+(use-package dashboard
+  :defer t
+  :hook
+  (after-init . dashboard-setup-startup-hook)
+  :config
+  (setq dashboard-center-content t
+        dashboard-items '((recents  . 5)
+                          (projects . 5)
+                          (agenda . 5)
+                          )
+        )
+  )
+
 ;; minad' and oantolin's awesome packages:
 (use-package vertico
   :defer t
@@ -1240,7 +1253,14 @@
            :port 6697
            :nick ,private/circe-nick
            :pass ,private/circe-pass
-           ))
+           )
+          ("irc.libera.chat"
+           ;; :tls t
+           :port 6667
+           :nick ,private/libera-nick
+           :pass ,private/libera-pass
+           )
+          )
         )
   (require 'circe-color-nicks)
   (setq circe-color-nicks-min-constrast-ratio 4.5
@@ -1286,3 +1306,15 @@
   (setq gcmh-high-cons-threashold (* 1024 1024 100)
         gcmh-idle-delay 60)
   )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-agenda-files nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
