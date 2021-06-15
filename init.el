@@ -1237,10 +1237,15 @@
   (tty-setup . xclip-mode)
   )
 
+(defconst private-file (expand-file-name "~/.private.el"))
+(unless (file-exists-p private-file)
+  ;; (shell-command (concat "touch " custom-file))
+  (with-temp-buffer (write-file private-file))
+  )
 
 ;; IRC
 (with-eval-after-load 'circe
-  (load "~/.private.el")
+  (load private-file)
   )
 
 (use-package circe
@@ -1311,7 +1316,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files nil))
+ '(org-agenda-files '("~/org/tasks.org" "~/org/ideas.org")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
