@@ -157,6 +157,9 @@
                           (projects . 5)
                           (agenda . 5)
                           )
+        dashboard-startup-banner 'logo
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
         )
   )
 
@@ -210,17 +213,18 @@
         affe-highlight-function #'orderless-highlight-matches)
   )
 
-;; (use-package corfu
-;;   :defer t
-;;   :hook
-;;   (prog-mode . corfu-mode)
-;;   :bind (:map corfu-map
-;;               ("TAB" . corfu-next)
-;;               ("<backtab>" . corfu-previous)
-;;               )
-;;   :config
-;;   (setq corfu-cycle t)
-;;   )
+;; alternate completion engine to company
+(use-package corfu
+  :defer t
+  :hook
+  (prog-mode . corfu-mode)
+  :bind (:map corfu-map
+              ("TAB" . corfu-next)
+              ("<backtab>" . corfu-previous)
+              )
+  :config
+  (setq corfu-cycle t)
+  )
 
 (use-package emacs
   :init
@@ -684,50 +688,50 @@
   )
 
 ;; completion mini buffers
-(use-package company
-  :defer t
-  :after lsp-mode
-  :hook
-  (lsp-mode . company-mode)
-  :bind (;; only active when trying to complete a selection
-         (:map company-active-map
-               ;; complete the currently chosen selection
-               ("RET" . company-complete-selection)
-               ;; goto next selection
-               ("<tab>" . company-select-next)
-               ;; goto previous selection
-               ("<backtab>" . company-select-previous)
-               )
-         ;; only make tab start completions if lsp is active
-         (:map lsp-mode-map
-               ;; start the completion process
-               ("<tab>" . company-indent-or-complete-common)
-               )
-         )
-  :config
-  (setq company-backends '(company-capf)
-        company-idle-delay 0.2
-        company-minimum-prefix-length 2
-        company-selection-wrap-around t
-        ;;
-        ;; Good Ideas from DOOM:
-        ;;
-        ;; These auto-complete the current selection when
-        ;; `company-auto-complete-chars' is typed. This is too magical. We
-        ;; already have the much more explicit RET and TAB.
-        ;; company-auto-complete nil
-        ;; company-auto-complete-chars nil
+;; (use-package company
+;;   :defer t
+;;   :after lsp-mode
+;;   :hook
+;;   (lsp-mode . company-mode)
+;;   :bind (;; only active when trying to complete a selection
+;;          (:map company-active-map
+;;                ;; complete the currently chosen selection
+;;                ("RET" . company-complete-selection)
+;;                ;; goto next selection
+;;                ("<tab>" . company-select-next)
+;;                ;; goto previous selection
+;;                ("<backtab>" . company-select-previous)
+;;                )
+;;          ;; only make tab start completions if lsp is active
+;;          (:map lsp-mode-map
+;;                ;; start the completion process
+;;                ("<tab>" . company-indent-or-complete-common)
+;;                )
+;;          )
+;;   :config
+;;   (setq company-backends '(company-capf)
+;;         company-idle-delay 0.2
+;;         company-minimum-prefix-length 2
+;;         company-selection-wrap-around t
+;;         ;;
+;;         ;; Good Ideas from DOOM:
+;;         ;;
+;;         ;; These auto-complete the current selection when
+;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
+;;         ;; already have the much more explicit RET and TAB.
+;;         ;; company-auto-complete nil
+;;         ;; company-auto-complete-chars nil
 
-        ;; Only search the current buffer for `company-dabbrev' (a backend that
-        ;; suggests text your open buffers). This prevents Company from causing
-        ;; lag once you have a lot of buffers open.
-        company-dabbrev-other-buffers nil
-        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-        ;; domain-specific words with particular casing.
-        company-dabbrev-ignore-case nil
-        company-dabbrev-downcase nil
-        )
-  )
+;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
+;;         ;; suggests text your open buffers). This prevents Company from causing
+;;         ;; lag once you have a lot of buffers open.
+;;         company-dabbrev-other-buffers nil
+;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+;;         ;; domain-specific words with particular casing.
+;;         company-dabbrev-ignore-case nil
+;;         company-dabbrev-downcase nil
+;;         )
+;;   )
 
 ;; (use-package company-prescient
 ;;   :defer t
@@ -736,11 +740,11 @@
 ;;   (company-mode . company-prescient-mode)
 ;;   )
 
-(use-package company-box
-  :defer t
-  :after company
-  :hook (company-mode . company-box-mode)
-  )
+;; (use-package company-box
+;;   :defer t
+;;   :after company
+;;   :hook (company-mode . company-box-mode)
+;;   )
 
 
 ;; better javascript mode
@@ -815,13 +819,12 @@
 (use-package csharp-mode
   :hook
   (csharp-mode . rainbow-delimiters-mode)
-  ;; (csharp-mode . company-mode)
   (csharp-mode . flycheck-mode)
   )
 
 (use-package omnisharp
-  :after company
-  ;; :after corfu
+  ;; :after company
+  :after corfu
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -831,7 +834,7 @@
         c-basic-offset 2
         tab-width 2
         evil-shift-width 2)
-  (add-to-list 'company-backends 'company-omnisharp)
+  ;; (add-to-list 'company-backends 'company-omnisharp)
   (custo/local-leader-key
     :keymaps '(csharp-mode-map omnisharp-mode-map)
     "o" '(:ignore t :which-key "omnisharp")
