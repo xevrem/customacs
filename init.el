@@ -214,17 +214,17 @@
   )
 
 ;; alternate completion engine to company
-(use-package corfu
-  :defer t
-  :hook
-  (prog-mode . corfu-mode)
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<backtab>" . corfu-previous)
-              )
-  :config
-  (setq corfu-cycle t)
-  )
+;; (use-package corfu
+;;   :defer t
+;;   :hook
+;;   (prog-mode . corfu-mode)
+;;   :bind (:map corfu-map
+;;               ("TAB" . corfu-next)
+;;               ("<backtab>" . corfu-previous)
+;;               )
+;;   :config
+;;   (setq corfu-cycle t)
+;;   )
 
 (use-package emacs
   :init
@@ -688,50 +688,50 @@
   )
 
 ;; completion mini buffers
-;; (use-package company
-;;   :defer t
-;;   :after lsp-mode
-;;   :hook
-;;   (lsp-mode . company-mode)
-;;   :bind (;; only active when trying to complete a selection
-;;          (:map company-active-map
-;;                ;; complete the currently chosen selection
-;;                ("RET" . company-complete-selection)
-;;                ;; goto next selection
-;;                ("<tab>" . company-select-next)
-;;                ;; goto previous selection
-;;                ("<backtab>" . company-select-previous)
-;;                )
-;;          ;; only make tab start completions if lsp is active
-;;          (:map lsp-mode-map
-;;                ;; start the completion process
-;;                ("<tab>" . company-indent-or-complete-common)
-;;                )
-;;          )
-;;   :config
-;;   (setq company-backends '(company-capf)
-;;         company-idle-delay 0.2
-;;         company-minimum-prefix-length 2
-;;         company-selection-wrap-around t
-;;         ;;
-;;         ;; Good Ideas from DOOM:
-;;         ;;
-;;         ;; These auto-complete the current selection when
-;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
-;;         ;; already have the much more explicit RET and TAB.
-;;         ;; company-auto-complete nil
-;;         ;; company-auto-complete-chars nil
+(use-package company
+  :defer t
+  :after lsp-mode
+  :hook
+  (lsp-mode . company-mode)
+  :bind (;; only active when trying to complete a selection
+         (:map company-active-map
+               ;; complete the currently chosen selection
+               ("RET" . company-complete-selection)
+               ;; goto next selection
+               ("<tab>" . company-select-next)
+               ;; goto previous selection
+               ("<backtab>" . company-select-previous)
+               )
+         ;; only make tab start completions if lsp is active
+         (:map lsp-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               )
+         )
+  :config
+  (setq company-backends '(company-capf)
+        company-idle-delay 0.2
+        company-minimum-prefix-length 2
+        company-selection-wrap-around t
+        ;;
+        ;; Good Ideas from DOOM:
+        ;;
+        ;; These auto-complete the current selection when
+        ;; `company-auto-complete-chars' is typed. This is too magical. We
+        ;; already have the much more explicit RET and TAB.
+        ;; company-auto-complete nil
+        ;; company-auto-complete-chars nil
 
-;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
-;;         ;; suggests text your open buffers). This prevents Company from causing
-;;         ;; lag once you have a lot of buffers open.
-;;         company-dabbrev-other-buffers nil
-;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-;;         ;; domain-specific words with particular casing.
-;;         company-dabbrev-ignore-case nil
-;;         company-dabbrev-downcase nil
-;;         )
-;;   )
+        ;; Only search the current buffer for `company-dabbrev' (a backend that
+        ;; suggests text your open buffers). This prevents Company from causing
+        ;; lag once you have a lot of buffers open.
+        company-dabbrev-other-buffers nil
+        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+        ;; domain-specific words with particular casing.
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil
+        )
+  )
 
 ;; (use-package company-prescient
 ;;   :defer t
@@ -740,11 +740,18 @@
 ;;   (company-mode . company-prescient-mode)
 ;;   )
 
-;; (use-package company-box
-;;   :defer t
-;;   :after company
-;;   :hook (company-mode . company-box-mode)
-;;   )
+(use-package company-box
+  :defer t
+  :after company
+  :hook (company-mode . company-box-mode)
+  )
+
+(use-package format-all
+  :defer t
+  :commands format-all-buffer
+  :config
+  (setq formal-all-show-errors 'errors)
+  )
 
 
 ;; better javascript mode
@@ -781,13 +788,13 @@
   )
 
 ;; format js and jsx
-(use-package prettier
-  :after (:any js2-mode rsjx-mode typescript-mode)
-  :config
-  (custo/local-leader-key
-    :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
-    "= =" '(prettier-prettify :which-key "format with prettier"))
-  )
+;; (use-package prettier
+  ;; :after (:any js2-mode rsjx-mode typescript-mode)
+  ;; :config
+  ;; (custo/local-leader-key
+  ;;   :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
+  ;;   "= =" '(prettier-prettify :which-key "format with prettier"))
+  ;; )
 
 
 (use-package web-mode
@@ -823,8 +830,8 @@
   )
 
 (use-package omnisharp
-  ;; :after company
-  :after corfu
+  :after company
+  ;; :after corfu
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -834,7 +841,7 @@
         c-basic-offset 2
         tab-width 2
         evil-shift-width 2)
-  ;; (add-to-list 'company-backends 'company-omnisharp)
+  (add-to-list 'company-backends 'company-omnisharp)
   (custo/local-leader-key
     :keymaps '(csharp-mode-map omnisharp-mode-map)
     "o" '(:ignore t :which-key "omnisharp")
@@ -943,6 +950,7 @@
     "r" '(:ignore t :which-key "refactor")
     "r r" '(lsp-rename :which-key "rename")
     "=" '(:ignore t :which-key "format")
+    "= =" '(format-all-buffer :which-key "format")
     "= l" '(lsp-format-buffer :which-key "format with lsp")
     )
   )
@@ -1319,7 +1327,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files '("~/org/tasks.org" "~/org/ideas.org")))
+ '(org-agenda-files '("~/org/tasks.org")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
