@@ -213,7 +213,7 @@
   :config
   ;; Configure Orderless
   (setq affe-regexp-function #'orderless-pattern-compiler
-        affe-highlight-function #'orderless-highlight-matches)
+        affe-highlight-function #'orderless--highlight)
   )
 
 ;; alternate completion engine to company
