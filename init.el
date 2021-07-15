@@ -206,7 +206,10 @@
   :straight '(:type git :host github
               :repo "minad/affe"
               :branch "main")
+  :defer t
   :after orderless
+  :commands (affe-grep
+             affe-find)
   :config
   ;; Configure Orderless
   (setq affe-regexp-function #'orderless-pattern-compiler
@@ -514,7 +517,8 @@
   "f d" '(ranger :which-key "file directory")
   ;; "f f" '(counsel-find-file :which-key "find file")
   "f f" '(find-file :which-key "find file")
-  "f p" '(find-file-in-project :wk "find file in project")
+  ;; "f p" '(find-file-in-project :wk "find file in project")
+  "f p" '(affe-find :wk "find file in project")
   ;; "f r" '(counsel-recentf :wk "recent files")
   "f r" '(consult-recent-file :wk "recent files")
   "f R" '(recentf-open-files :wk "full recentf files")
@@ -540,7 +544,8 @@
   ;; "s s" '(swiper :which-key "search buffer")
   "s s" '(consult-line :which-key "search buffer")
   ;; "s p" '(counsel-projectile-rg :which-key "search project")
-  "s p" '(consult-ripgrep :which-key "search project")
+  ;; "s p" '(consult-ripgrep :which-key "search project")
+  "s p" '(affe-grep :which-key "search project")
   "t" '(:ignore t :which-key "toggles")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
   ;; "t T" '(counsel-load-theme :which-key "choose theme")
