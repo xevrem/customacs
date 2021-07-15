@@ -755,8 +755,10 @@
 (use-package format-all
   :defer t
   :commands format-all-buffer
+  :hook
+  (format-all-mode . format-all-ensure-formatter)
   :config
-  (setq formal-all-show-errors 'errors)
+  (setq format-all-show-errors 'errors)
   )
 
 
