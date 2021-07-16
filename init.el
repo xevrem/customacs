@@ -927,8 +927,8 @@
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred)
   :config
-  ;; (setq lsp-completion-provider :none)
-  (setq lsp-completion-provider :capf)
+  (setq lsp-completion-provider :none)
+  ;; (setq lsp-completion-provider :capf)
   ;; (setq lsp-rust-server 'rust-analyzer)
   (setq lsp-file-watch-threshold 100)
   ;; (setq lsp-keymap-prefix "SPC-m")
