@@ -357,8 +357,8 @@
         doom-themes-enable-italics t)
   ;; (load-theme 'doom-snazzy t)
   ;; (load-theme 'doom-tomorrow-night t)
-  ;; (consult-theme 'doom-snazzy)
-  (consult-theme 'one-dark)
+  (consult-theme 'doom-snazzy)
+  ;; (consult-theme 'one-dark)
   )
 
 
@@ -1332,3 +1332,4 @@
         gcmh-idle-delay 60)
   )
 
+(add-hook 'emacs-startup-hook (lambda () (set-background-color "black")))
