@@ -359,6 +359,8 @@
   ;; (load-theme 'doom-tomorrow-night t)
   (consult-theme 'doom-snazzy)
   ;; (consult-theme 'one-dark)
+  (add-hook 'emacs-startup-hook (lambda () (set-background-color "black")))
+  (add-hook 'server-after-make-frame-hook (lambda () (set-background-color "black")))
   )
 
 
@@ -1332,4 +1334,3 @@
         gcmh-idle-delay 60)
   )
 
-(add-hook 'emacs-startup-hook (lambda () (set-background-color "black")))
