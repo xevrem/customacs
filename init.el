@@ -359,8 +359,6 @@
   ;; (load-theme 'doom-tomorrow-night t)
   (consult-theme 'doom-snazzy)
   ;; (consult-theme 'one-dark)
-  (add-hook 'emacs-startup-hook (lambda () (set-background-color "black")))
-  (add-hook 'server-after-make-frame-hook (lambda () (set-background-color "black")))
   )
 
 
@@ -1258,6 +1256,12 @@
   :hook
   (tty-setup . xclip-mode)
   )
+
+(defun custo/tty-background ()
+  (add-hook 'emacs-startup-hook (lambda () (set-background-color "black")))
+  (add-hook 'server-after-make-frame-hook (lambda () (set-background-color "black")))
+  )
+(add-hook 'tty-setup-hook 'custo/tty-background)
 
 (defconst private-file (expand-file-name "~/.private.el"))
 (unless (file-exists-p private-file)
