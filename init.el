@@ -1257,15 +1257,13 @@
   (tty-setup . xclip-mode)
   )
 
-(defun custo/tty-background ()
+(add-hook 'tty-setup-hook (lambda ()
   (add-hook 'emacs-startup-hook (lambda () (set-background-color "black")))
   (add-hook 'server-after-make-frame-hook (lambda () (set-background-color "black")))
-  )
-(add-hook 'tty-setup-hook 'custo/tty-background)
+  ))
 
 (defconst private-file (expand-file-name "~/.private.el"))
 (unless (file-exists-p private-file)
-  ;; (shell-command (concat "touch " custom-file))
   (with-temp-buffer (write-file private-file))
   )
 
@@ -1286,8 +1284,8 @@
            :pass ,private/circe-pass
            )
           ("irc.libera.chat"
-           ;; :tls t
-           :port 6667
+           :tls t
+           :port 6697
            :nick ,private/libera-nick
            :pass ,private/libera-pass
            )
