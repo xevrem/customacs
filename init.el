@@ -217,17 +217,20 @@
   )
 
 ;; alternate completion engine to company
-(use-package corfu
-  :defer t
-  :hook
-  (prog-mode . corfu-mode)
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<backtab>" . corfu-previous)
-              )
-  :config
-  (setq corfu-cycle t)
-  )
+;; (use-package corfu
+;;   :defer t
+;;   :after (:all evil dabbrev)
+;;   :hook
+;;   ;; (prog-mode . corfu-mode)
+;;   (evil-insert-state-entry . (lambda () (corfu-mode 1)))
+;;   (evil-insert-state-exit . (lambda () (corfu-mode 0)))
+;;   :bind (:map corfu-map
+;;               ("TAB" . corfu-next)
+;;               ("<backtab>" . corfu-previous)
+;;               )
+;;   :config
+;;   (setq corfu-cycle t)
+;;   )
 
 (use-package emacs
   :init
@@ -426,15 +429,20 @@
 ;; more better help menus
 (use-package helpful
   :defer t
-  ;; :commands (helpful-callable helpful-variable helpful-command helpful-key)
+  :commands (helpful-callable
+             helpful-command
+             helpful-function
+             helpful-key
+             helpful-variable)
   ;; :custom
   ;; (counsel-describe-function-function #'helpful-callable)
   ;; (counsel-describe-variable-function #'helpful-variable)
-  ;; :bind
-  ;; ([remap describe-function] . counsel-describe-function)
-  ;; ([remap describe-command] . helpful-command)
-  ;; ([remap describe-variable] . counsel-describe-variable)
-  ;; ([remap describe-key] . helpful-key)
+  :bind
+  ([remap describe-callable] . helpful-callable)
+  ([remap describe-function] . helpful-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . helpful-variable)
+  ([remap describe-key] . helpful-key)
   )
   
 
@@ -506,6 +514,7 @@
   "a" '(:ignore t :wk "apps")
   "a c" '(circe :wk "circe")
   "a e" '(eww :wk "eww")
+  "a p" '(prodigy :wk "prodigy")
   "a t" '(vterm :wk "terminal")
   "b" '(:ignore t :which-key "buffer")
   ;; "b b" '(counsel-switch-buffer :which-key "switch buffers")
@@ -695,50 +704,52 @@
   )
 
 ;; completion mini buffers
-;; (use-package company
-;;   :defer t
-;;   :after lsp-mode
-;;   :hook
-;;   (lsp-mode . company-mode)
-;;   :bind (;; only active when trying to complete a selection
-;;          (:map company-active-map
-;;                ;; complete the currently chosen selection
-;;                ("RET" . company-complete-selection)
-;;                ;; goto next selection
-;;                ("<tab>" . company-select-next)
-;;                ;; goto previous selection
-;;                ("<backtab>" . company-select-previous)
-;;                )
-;;          ;; only make tab start completions if lsp is active
-;;          (:map lsp-mode-map
-;;                ;; start the completion process
-;;                ("<tab>" . company-indent-or-complete-common)
-;;                )
-;;          )
-;;   :config
-;;   (setq company-backends '(company-capf)
-;;         company-idle-delay 0.2
-;;         company-minimum-prefix-length 2
-;;         company-selection-wrap-around t
-;;         ;;
-;;         ;; Good Ideas from DOOM:
-;;         ;;
-;;         ;; These auto-complete the current selection when
-;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
-;;         ;; already have the much more explicit RET and TAB.
-;;         ;; company-auto-complete nil
-;;         ;; company-auto-complete-chars nil
+(use-package company
+  :defer t
+  :after lsp-mode
+  :hook
+  ;; (lsp-mode . company-mode)
+  (evil-insert-state-entry . (lambda () (company-mode 1)))
+  (evil-insert-state-exit . (lambda () (company-mode 0)))
+  :bind (;; only active when trying to complete a selection
+         (:map company-active-map
+               ;; complete the currently chosen selection
+               ("RET" . company-complete-selection)
+               ;; goto next selection
+               ("<tab>" . company-select-next)
+               ;; goto previous selection
+               ("<backtab>" . company-select-previous)
+               )
+         ;; only make tab start completions if lsp is active
+         (:map lsp-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               )
+         )
+  :config
+  (setq company-backends '(company-capf)
+        company-idle-delay 0.2
+        company-minimum-prefix-length 2
+        company-selection-wrap-around t
+        ;;
+        ;; Good Ideas from DOOM:
+        ;;
+        ;; These auto-complete the current selection when
+        ;; `company-auto-complete-chars' is typed. This is too magical. We
+        ;; already have the much more explicit RET and TAB.
+        ;; company-auto-complete nil
+        ;; company-auto-complete-chars nil
 
-;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
-;;         ;; suggests text your open buffers). This prevents Company from causing
-;;         ;; lag once you have a lot of buffers open.
-;;         company-dabbrev-other-buffers nil
-;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-;;         ;; domain-specific words with particular casing.
-;;         company-dabbrev-ignore-case nil
-;;         company-dabbrev-downcase nil
-;;         )
-;;   )
+        ;; Only search the current buffer for `company-dabbrev' (a backend that
+        ;; suggests text your open buffers). This prevents Company from causing
+        ;; lag once you have a lot of buffers open.
+        company-dabbrev-other-buffers nil
+        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+        ;; domain-specific words with particular casing.
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil
+        )
+  )
 
 ;; (use-package company-prescient
 ;;   :defer t
@@ -747,11 +758,11 @@
 ;;   (company-mode . company-prescient-mode)
 ;;   )
 
-;; (use-package company-box
-;;   :defer t
-;;   :after company
-;;   :hook (company-mode . company-box-mode)
-;;   )
+(use-package company-box
+  :defer t
+  :after company
+  :hook (company-mode . company-box-mode)
+  )
 
 (use-package format-all
   :defer t
@@ -765,7 +776,9 @@
 
 ;; better javascript mode
 (use-package js2-mode
-  :mode "\\/.*\\.js\\'"
+  :defer t
+  ;; :mode "\\/.*\\.js\\'"
+  :mode "\\.js\\'"
   :config
   (setq js-indent-level 2)
   :hook
@@ -774,8 +787,8 @@
 
 ;; teach js2-mode how to jsx
 (use-package rjsx-mode
-  :mode "components\\/.*\\.js\\'"
-  :config
+  :defer t
+  :mode ("components\\/.*\\.js\\'" "\\.jsx\\'")
   )
 
 ;; auto-docs :D
@@ -807,6 +820,8 @@
 
 
 (use-package web-mode
+  :defer t
+  :mode ("\\.html\\'" "\\.scss\\'" "\\.css\\'")
   :config
   (setq web-mode-css-indent-offset 2
         web-mode-markup-indent-offset 2
@@ -814,6 +829,8 @@
   )
 
 (use-package typescript-mode
+  :defer t
+  :mode "\\.ts\\'"
   :config
   (setq typescript-indent-level 2)
   (progn
@@ -822,6 +839,8 @@
   )
 
 (use-package rustic
+  :defer t
+  :mode "\\.rs\\'"
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-server 'rust-analyzer
@@ -833,14 +852,18 @@
   )
 
 (use-package csharp-mode
+  :defer t
+  :mode "\\.cs\\'"
   :hook
   (csharp-mode . rainbow-delimiters-mode)
   (csharp-mode . flycheck-mode)
   )
 
 (use-package omnisharp
-  ;; :after company
-  :after corfu
+  :defer t
+  :mode "\\.cs\\'"
+  :after company
+  ;; :after corfu
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -850,7 +873,7 @@
         c-basic-offset 2
         tab-width 2
         evil-shift-width 2)
-  ;; (add-to-list 'company-backends 'company-omnisharp)
+  (add-to-list 'company-backends 'company-omnisharp)
   (custo/local-leader-key
     :keymaps '(csharp-mode-map omnisharp-mode-map)
     "o" '(:ignore t :which-key "omnisharp")
@@ -869,10 +892,12 @@
 
 (use-package python
   :defer t
+  :mode "\\.py\\'"
   :hook (python-mode . lsp-deferred)
   )
 
 (use-package pyenv-mode
+  :defer t
   :after python
   :hook (python-mode . pyenv-mode)
   )
@@ -885,15 +910,21 @@
   )
 
 (use-package yaml-mode
+  :defer t
+  :mode ("\\.yml\\'" "\\.yaml\\'")
   :hook
   (yaml-mode . yas-minor-mode)
   :config
   (setq yaml-indent-offset 2)
   )
 
-(use-package gdscript-mode)
+(use-package gdscript-mode
+  :defer t
+  :mode "\\.gd\\'")
 
 (use-package go-mode
+  :defer t
+  :mode "\\.go\\'"
   :config
   (setq tab-width 2)
   )
@@ -903,7 +934,7 @@
               :repo "skuro/plantuml-mode"
               :branch "develop")
   :defer t
-  :mode "\\.puml\\'"
+  :mode ("\\.puml\\'" "\\.pml\\'")
   :config
   (setq plantuml-default-exec-mode 'server
         plantuml-server-url "http://localhost:8080"
@@ -928,8 +959,8 @@
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred)
   :config
-  (setq lsp-completion-provider :none)
-  ;; (setq lsp-completion-provider :capf)
+  ;; (setq lsp-completion-provider :none)
+  (setq lsp-completion-provider :capf)
   ;; (setq lsp-rust-server 'rust-analyzer)
   (setq lsp-file-watch-threshold 100)
   ;; (setq lsp-keymap-prefix "SPC-m")
@@ -1039,6 +1070,7 @@
     :local-repo nil
     )
   :defer t
+  :mode "\\.org\\'"
   :commands (org-capture org-agenda)
   :hook
   (org-mode . custo/org-mode-setup)
@@ -1242,7 +1274,7 @@
         evil-visual-state-cursor 'box  ; █
         evil-normal-state-cursor 'box  ; █
         evil-insert-state-cursor 'bar  ; ⎸
-        evil-emacs-state-cursor  'hbar) ; _ 
+        evil-emacs-state-cursor  'hbar) ; _
   )
 
 (use-package clipetty
@@ -1327,6 +1359,23 @@
   :commands vterm
   )
 
+(use-package prodigy
+  :defer t
+  :commands prodigy
+  :config
+  (prodigy-define-service
+    :name "Megalith"
+    :command "npm"
+    :cwd "/Users/erikajonell/repos/megalith"
+    :args '("run" "start")
+    )
+  (prodigy-define-service
+    :name "Nucleo"
+    :command "docker-compose"
+    :cwd "/Users/erikajonell/repos/nucleo"
+    :args '("up" "-d")
+    )
+  )
 
 (use-package gcmh
   :defer t
