@@ -802,7 +802,7 @@
   )
 
 (use-package js-react-redux-yasnippets
-  :after (yasnippet js2-mode)
+  :after (:all yasnippet js2-mode)
   :config
   (custo/local-leader-key
     :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
@@ -861,7 +861,7 @@
 
 (use-package omnisharp
   :defer t
-  :mode "\\.cs\\'"
+  :mode ("\\.cs\\'" . omnisharp-mode)
   :after company
   ;; :after corfu
   :commands omnisharp-install-server
