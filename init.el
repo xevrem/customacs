@@ -764,14 +764,14 @@
   :hook (company-mode . company-box-mode)
   )
 
-(use-package format-all
-  :defer t
-  :commands format-all-buffer
-  :hook
-  (format-all-mode . format-all-ensure-formatter)
-  :config
-  (setq format-all-show-errors 'errors)
-  )
+;; (use-package format-all
+;;   :defer t
+;;   :commands format-all-buffer
+;;   :hook
+;;   (format-all-mode . format-all-ensure-formatter)
+;;   :config
+;;   (setq format-all-show-errors 'errors)
+;;   )
 
 
 ;; better javascript mode
@@ -810,13 +810,13 @@
   )
 
 ;; format js and jsx
-;; (use-package prettier
-  ;; :after (:any js2-mode rsjx-mode typescript-mode)
-  ;; :config
-  ;; (custo/local-leader-key
-  ;;   :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
-  ;;   "= =" '(prettier-prettify :which-key "format with prettier"))
-  ;; )
+(use-package prettier
+  :after (:any js2-mode rsjx-mode typescript-mode)
+  :config
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
+    "= =" '(prettier-prettify :wk "format with prettier"))
+  )
 
 
 (use-package web-mode
@@ -840,7 +840,7 @@
 
 (use-package rustic
   :defer t
-  :mode "\\.rs\\'"
+  :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-server 'rust-analyzer
@@ -848,7 +848,7 @@
         rust-format-on-save t)
   (custo/local-leader-key
     :keymaps 'rustic-mode-map
-    "= =" '(rustic-format-buffer :which-key "format with rustfmt"))
+    "= =" '(rustic-format-buffer :wk "format with rustfmt"))
   )
 
 (use-package csharp-mode
@@ -892,8 +892,8 @@
 
 (use-package python
   :defer t
-  :mode "\\.py\\'"
-  :hook (python-mode . lsp-deferred)
+  :mode ("\\.py\\'" . python-mode)
+  ;; :hook (python-mode . lsp-deferred)
   )
 
 (use-package pyenv-mode
@@ -903,6 +903,8 @@
   )
 
 (use-package json-mode
+  :defer t
+  :mode "\\.json\\'"
   :hook
   (json-mode . yas-minor-mode)
   :config
@@ -956,6 +958,7 @@
          (yaml-mode . lsp-deferred)
          (json-mode . lsp-deferred)
          (go-mode . lsp-deferred)
+         (python-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred)
   :config
@@ -978,6 +981,8 @@
                json-mode-map
                web-mode-map
                go-mode-map
+               python-mode-map
+               gdscript-mode-map
                lsp-mode-map
                lsp-ui-mode-map)
     "a" '(lsp-execute-code-action :wk "excute code action")
@@ -990,7 +995,7 @@
     "r" '(:ignore t :which-key "refactor")
     "r r" '(lsp-rename :which-key "rename")
     "=" '(:ignore t :which-key "format")
-    "= =" '(format-all-buffer :which-key "format")
+    ;; "= =" '(format-all-buffer :which-key "format")
     "= l" '(lsp-format-buffer :which-key "format with lsp")
     )
   )
@@ -1070,7 +1075,7 @@
     :local-repo nil
     )
   :defer t
-  :mode "\\.org\\'"
+  :mode ("\\.org\\'" . org-mode)
   :commands (org-capture org-agenda)
   :hook
   (org-mode . custo/org-mode-setup)
