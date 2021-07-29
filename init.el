@@ -1099,6 +1099,7 @@
            "TODO"
            "DOING"
            "DELAYED"
+           "COMPLETE"
            "IN REVIEW"
            "|"
            "DONE"
@@ -1110,6 +1111,7 @@
         `(("TODO" . "#88ff88")
           ("DOING" . "#ffff88")
           ("DELAYED" . "#ffbb88")
+          ("COMPLETE" . "#ff55bb")
           ("IN REVIEW" . "#bb55ff")
           ("DONE" . "#8888ff")
           ("PARTIAL" . "#8855ff")
