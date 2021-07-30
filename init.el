@@ -24,7 +24,7 @@
 
 ;; better line info
 (column-number-mode) ;; show column info
-(global-display-line-numbers-mode t) ;; display line numbers to the left
+;; (global-display-line-numbers-mode t) ;; display line numbers to the left
 (menu-bar--display-line-numbers-mode-relative) ;; make those line numbers relative
 
 ;; turn of line numbers in the following modes
@@ -34,6 +34,12 @@
                 ansi-term-mode-hook
                 treemacs-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0)
+                   )
+            )
+  )
+
+(dolist (mode '(prog-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 1)
                    )
             )
   )
