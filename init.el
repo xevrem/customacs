@@ -654,9 +654,10 @@
   :defer t
   :after (:all counsel projectile)
   :commands (counsel-projectile-switch-project
-             counsel-projectile-switch-to-buffer)
-  :hook
-  (after-init .  counsel-projectile-mode)
+             counsel-projectile-switch-to-buffer
+             counsel-projectile-find-file)
+  ;; :hook
+  ;; (projectile-mode . counsel-projectile-mode)
   :bind
   ;; ([remap projectile-find-file] . counsel-projectile-find-file)
   ([remap projectile-switch-project] . counsel-projectile-switch-project)
@@ -671,7 +672,7 @@
   (setq ffip-use-rust-fd t)
   :bind
   ([remap projectile-find-file] . find-file-in-project)
-  ;; ([remap counsel-projectile-find-file] . find-file-in-project)
+  ([remap counsel-projectile-find-file] . find-file-in-project)
   )
 
 (use-package all-the-icons-dired
