@@ -267,7 +267,12 @@
 ;; default M-x and some other things
 (use-package counsel
   :defer t
-  :commands (counsel-M-x counsel-find-file)
+  :commands (counsel-M-x
+             counsel-find-file
+             counsel-switch-buffer
+             counsel-recentf
+             counsel-load-theme
+             counsel-flycheck)
   :bind (("M-x" . counsel-M-x)
 ;;          ("C-x b" . counsel-ibuffer)
          ("C-x C-f" . counsel-find-file)
