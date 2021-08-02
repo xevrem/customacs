@@ -545,9 +545,15 @@
   "f s" '(save-buffer :which-key "save file")
   "f t" '(treemacs :wk "treemacs")
   "g" '(:ignore t :which-key "magit")
-  "g s" '(magit-status :which-key "magit status")
+  "g g" '(magit-status :which-key "magit status")
   "g b" '(magit-branch :which-key "magit branch")
   "g B" '(magit-blame :which-key "magit blame")
+  "g s" '(:ignore s :wk "smerge")
+  "g s n" '(smerge-next :wk "goto next conflict")
+  "g s p" '(smerge-prev :wk "goto prev conflict")
+  "g s u" '(smerge-keep-upper :wk "keep upper")
+  "g s l" '(smerge-keep-lower :wk "keep lower")
+  "g s b" '(smerge-keep-all :wk "keep both")
   "h" '(:ignore t :which-key "custo help")
   "h s" '(:ignore t :which-key "straight")
   "h s p" '(straight-pull-all :which-key "straight pull packages")
@@ -832,7 +838,7 @@
   :after (:any js2-mode rsjx-mode typescript-mode)
   :config
   (custo/local-leader-key
-    :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
+    :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map web-mode-map)
     "= =" '(prettier-prettify :wk "format with prettier"))
   )
 
