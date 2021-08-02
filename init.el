@@ -537,7 +537,7 @@
   "f d" '(ranger :which-key "file directory")
   "f f" '(counsel-find-file :which-key "find file")
   ;; "f f" '(find-file :which-key "find file")
-  "f p" '(find-file-in-project :wk "find file in project")
+  ;; "f p" '(find-file-in-project :wk "find file in project")
   ;; "f p" '(affe-find :wk "find file in project")
   "f r" '(counsel-recentf :wk "recent files")
   ;; "f r" '(consult-recent-file :wk "recent files")
@@ -554,7 +554,6 @@
   "h s b" '(straight-rebuild-all :which-key "straight build packages")
   "m" '(:ignore t :which-key "local-leader")
   "o" '(:ignore t :which-key "org")
-  "p f" '(find-file-in-project :wk "find file in project")
   "q" '(:ignore t :which-key "quit")
   "q f" '(delete-frame :wk "delete frame")
   "q q" '(save-buffers-kill-emacs :which-key "save and quit")
@@ -638,6 +637,9 @@
 (use-package projectile
   :defer t
   :diminish projectile-mode
+  :commands (projectile-find-file
+             projectile-switch-project
+             projectile-switch-to-buffer)
   :hook
   ;; (vertico-mode . projectile-mode)
   (ivy-mode . projectile-mode)
@@ -646,22 +648,22 @@
   :config
   (custo/leader-key
     "p" '(projectile-command-map :which-key "projectile")
+    :keymaps 'projectile-mode-map
     "p a" '(projectile-add-known-project :which-key "add project"))
   )
   
 ;; add counsel capability
 (use-package counsel-projectile
-  :defer t
-  :after (:all counsel projectile)
+  :after projectile
   :commands (counsel-projectile-switch-project
              counsel-projectile-switch-to-buffer
              counsel-projectile-find-file)
-  ;; :hook
-  ;; (projectile-mode . counsel-projectile-mode)
-  :bind
-  ;; ([remap projectile-find-file] . counsel-projectile-find-file)
-  ([remap projectile-switch-project] . counsel-projectile-switch-project)
-  ([remap projectile-switch-to-buffer] . counsel-projectile-switch-to-buffer)
+  :config
+  (custo/leader-key
+    "b B" '(counsel-projectile-switch-to-buffer :wk "switch project buffer")
+  )
+  :init
+  (counsel-projectile-mode t)
   )
 
 (use-package find-file-in-project
@@ -670,9 +672,11 @@
   :commands find-file-in-project
   :config
   (setq ffip-use-rust-fd t)
-  :bind
-  ([remap projectile-find-file] . find-file-in-project)
-  ([remap counsel-projectile-find-file] . find-file-in-project)
+  (custo/leader-key
+    "f p" '(find-file-in-project :wk "find file in project")
+    :keymaps 'projectile-mode-map
+    "p f" '(find-file-in-project :wk "find file in project")
+    )
   )
 
 (use-package all-the-icons-dired
