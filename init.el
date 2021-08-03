@@ -170,75 +170,86 @@
   )
 
 ;; minad' and oantolin's awesome packages:
-;; (use-package vertico
-;;   :defer t
-;;   :hook
-;;   (after-init . vertico-mode)
-;;   )
+(use-package vertico
+  :defer t
+  :hook
+  (after-init . vertico-mode)
+  :config
+  (setq vertico-cycle t)
+  )
 
-;; (defun custo/get-project-root ()
-;;   (when (fboundp 'projectile-project-root)
-;;     (projectile-project-root)))
 
-;; (use-package consult
-;;   :defer t
-;;   :after vertico
-;;   :config
-;;   (setq completion-styles '(orderless))
-;;   :custom
-;;   (consult-project-root-function #'custo/get-project-root)
-;;   )
+(defun custo/get-project-root ()
+  (when (fboundp 'projectile-project-root)
+    (projectile-project-root)))
 
-;; (use-package consult-flycheck
-;;   :defer t
-;;   :after (:all consult flycheck)
-;;   )
+(use-package consult
+  :defer t
+  :after vertico
+  :custom
+  (consult-project-root-function #'custo/get-project-root)
+  )
+
+(use-package consult-flycheck
+  :defer t
+  :after (:all consult flycheck)
+  )
 
 (use-package marginalia
   :defer t
-  :after ivy
+  ;; :after ivy
+  :after vertico
   :hook
-  ;; (after-init . marginalia-mode)
-  (ivy-mode . marginalia-mode)
+  (vertico-mode . marginalia-mode)
+  ;; (ivy-mode . marginalia-mode)
   )
 
 (use-package orderless
-  :defer t
-  ;; :after vertico
-  :after ivy
-  ;; :hook
-  ;; (vertico-mode . icomplete-mode)
-  :custom (completion-styles '(orderless))
+  :after vertico
+  :config
+  (orderless-define-completion-style orderless+initialism
+    (orderless-matching-styles '(orderless-initialism
+                                 orderless-literal
+                                 orderless-regexp)))
+  (setq completion-styles '(orderless+initialism)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles . (partial-completion)))
+                                        (command (styles orderless+initialism))
+                                        (symbol (styles orderless+initialism))
+                                        (variable (styles orderless+initialism)))
+        )
   )
 
-;; (use-package affe
-;;   :straight '(:type git :host github
-;;               :repo "minad/affe"
-;;               :branch "main")
-;;   :defer t
-;;   :after orderless
-;;   :commands (affe-grep
-;;              affe-find)
-;;   :config
-;;   ;; Configure Orderless
-;;   (setq affe-regexp-function #'orderless-pattern-compiler
-;;         affe-highlight-function #'orderless--highlight)
-;;   )
+(use-package affe
+  :straight '(:type git :host github
+              :repo "minad/affe"
+              :branch "main")
+  :defer t
+  :after (:all vertico consult orderless)
+  :commands (affe-grep
+             affe-find)
+  :config
+  ;; Configure Orderless
+  (setq affe-regexp-function #'orderless-pattern-compiler
+        affe-highlight-function #'orderless--highlight)
+  )
 
 ;; alternate completion engine to company
 ;; (use-package corfu
 ;;   :defer t
-;;   :after (:all evil dabbrev)
+;;   :after evil
 ;;   :hook
-;;   ;; (prog-mode . corfu-mode)
-;;   (evil-insert-state-entry . (lambda () (corfu-mode 1)))
-;;   (evil-insert-state-exit . (lambda () (corfu-mode 0)))
+;;   (prog-mode . corfu-mode)
+;;   ;; (evil-insert-state-entry . (lambda () (corfu-mode 1)))
+;;   ;; (evil-insert-state-exit . (lambda () (corfu-mode 0)))
 ;;   :bind (:map corfu-map
 ;;               ("TAB" . corfu-next)
 ;;               ("<backtab>" . corfu-previous)
 ;;               )
+;;   :custom
+;;   (corfu-cycle t)
 ;;   :config
-;;   (setq corfu-cycle t)
+;;   (setq corfu-cycle)
 ;;   )
 
 (use-package emacs
@@ -258,87 +269,43 @@
 
 
 ;; ivy trio
-(use-package swiper
-  :defer t
-  :commands swiper
-  )
+;; (use-package swiper
+;;   :defer t
+;;   :commands swiper
+;;   )
 
 ;; use counsel for completions over
 ;; default M-x and some other things
-(use-package counsel
-  :defer t
-  :commands (counsel-M-x
-             counsel-find-file
-             counsel-switch-buffer
-             counsel-recentf
-             counsel-load-theme
-             counsel-flycheck)
-  :bind (("M-x" . counsel-M-x)
-;;          ("C-x b" . counsel-ibuffer)
-         ("C-x C-f" . counsel-find-file)
-;;          :map minibuffer-local-map
-;;          ("C-r" . 'counsel-minibuffer-history)
-         )
-  )
+;; (use-package counsel
+;;   :defer t
+;;   :commands (counsel-M-x
+;;              counsel-find-file
+;;              counsel-switch-buffer
+;;              counsel-recentf
+;;              counsel-load-theme
+;;              counsel-flycheck)
+;;   :bind (("M-x" . counsel-M-x)
+;;          ("C-x C-f" . counsel-find-file)
+;;          )
+;;   )
 
 ;; show recently used files
 (use-package recentf
   :defer t
   :hook
   (after-init . recentf-mode)
-  ;; :after counsel
-  ;; :commands counsel-recentf
   )
 
-(use-package ivy
-  :defer t
-  :hook
-  (after-init . ivy-mode)
-  :bind (("C-s" . swiper))
-  :config
-  ;; (setq ivy-sort-max-size 7500
-  ;;       ivy-height 17
-  ;;       ivy-wrap t
-  ;; ivy-fixed-height-minibuffer t
-  ;; )
-  (setq ivy-use-virtual-buffers t
-        enable-recursive-minibuffers t
-        ivy-re-builders-alist '((t . orderless-ivy-re-builder))
-        )
-  )
-
-;; (use-package prescient
-  ;; :after ivy
-;; )
-
-;; (use-package ivy-prescient
-;;   :after (ivy prescient)
+;; (use-package ivy
+;;   :defer t
 ;;   :hook
-;;   (ivy-mode . ivy-prescient-mode)
+;;   (after-init . ivy-mode)
+;;   :bind (("C-s" . swiper))
 ;;   :config
-;;   ;;good ideas from doom:
-;;   (defun +ivy-prescient-non-fuzzy (str)
-;;     (let ((prescient-filter-method '(literal regexp)))
-;;       (ivy-prescient-re-builder str)
-;;       )
-;;     )
-;;   (let ((standard-search-fn
-;;          #'+ivy-prescient-non-fuzzy)
-;;         (alt-search-fn
-;;          ;; Ignore order for non-fuzzy searches by default
-;;          #'ivy--regex-ignore-order))
-;;     (setq ivy-re-builders-alist
-;;           `((counsel-rg     . ,standard-search-fn)
-;;             (swiper         . ,standard-search-fn)
-;;             (swiper-isearch . ,standard-search-fn)
-;;             (t . ,alt-search-fn))
-;;           ivy-more-chars-alist
-;;           '((counsel-rg . 1)
-;;             (counsel-search . 2)
-;;             (t . 3)
-;;             )
-;;           )
-;;     )
+;;   (setq ivy-use-virtual-buffers t
+;;         enable-recursive-minibuffers t
+;;         ivy-re-builders-alist '((t . orderless-ivy-re-builder))
+;;         )
 ;;   )
 
 ;; load all-the-icons only if in GUI mode
@@ -519,28 +486,28 @@
 ;; define default keybinds
 (custo/leader-key
   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
-  ":" '(counsel-M-x :wk "M-x")
-  ;; ":" '(execute-extended-command :wk "M-x")
+  ;; ":" '(counsel-M-x :wk "M-x")
+  ":" '(execute-extended-command :wk "M-x")
   "a" '(:ignore t :wk "apps")
   "a c" '(circe :wk "circe")
   "a e" '(eww :wk "eww")
   "a p" '(prodigy :wk "prodigy")
   "a t" '(vterm :wk "terminal")
   "b" '(:ignore t :which-key "buffer")
-  "b b" '(counsel-switch-buffer :which-key "switch buffers")
-  ;; "b b" '(switch-to-buffer :which-key "switch buffers")
+  ;; "b b" '(counsel-switch-buffer :which-key "switch buffers")
+  "b b" '(switch-to-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
   ;; "b i" '(counsel-ibuffer :which-key "ibuffer")
   "c" '(:ignore t :which-key "cursor")
   "c c" '(comment-line :which-key "comment line")
   "f" '(:ignore f :which-key "file")
   "f d" '(ranger :which-key "file directory")
-  "f f" '(counsel-find-file :which-key "find file")
-  ;; "f f" '(find-file :which-key "find file")
-  ;; "f p" '(find-file-in-project :wk "find file in project")
+  ;; "f f" '(counsel-find-file :which-key "find file")
+  "f f" '(find-file :which-key "find file")
+  "f p" '(find-file-in-project :wk "find file in project")
   ;; "f p" '(affe-find :wk "find file in project")
-  "f r" '(counsel-recentf :wk "recent files")
-  ;; "f r" '(consult-recent-file :wk "recent files")
+  ;; "f r" '(counsel-recentf :wk "recent files")
+  "f r" '(consult-recent-file :wk "recent files")
   "f R" '(recentf-open-files :wk "full recentf files")
   "f s" '(save-buffer :which-key "save file")
   "f t" '(treemacs :wk "treemacs")
@@ -566,15 +533,15 @@
   "q Q" '(kill-emacs :which-key "quit no-save")
   "q r" '(restart-emacs :which-key "restart emacs")
   "s" '(:ignore t :which-key "search")
-  "s s" '(swiper :which-key "search buffer")
-  ;; "s s" '(consult-line :which-key "search buffer")
-  "s p" '(counsel-projectile-rg :which-key "search project")
+  ;; "s s" '(swiper :which-key "search buffer")
+  "s s" '(consult-line :which-key "search buffer")
+  ;; "s p" '(counsel-projectile-rg :which-key "search project")
   ;; "s p" '(consult-ripgrep :which-key "search project")
-  ;; "s p" '(affe-grep :which-key "search project")
+  "s p" '(affe-grep :which-key "search project")
   "t" '(:ignore t :which-key "toggles")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
-  "t T" '(counsel-load-theme :which-key "choose theme")
-  ;; "t T" '(consult-theme :wk "choose theme")
+  ;; "t T" '(counsel-load-theme :which-key "choose theme")
+  "t T" '(consult-theme :wk "choose theme")
   "w" '(:ignore t :which-key "window")
   "w w" '(other-window :which-key "other window")
   "w d" '(delete-window :which-key "delete window")
@@ -643,34 +610,36 @@
 (use-package projectile
   :defer t
   :diminish projectile-mode
-  :commands (projectile-find-file
+  :commands (projectile-command-map
+             projectile-find-file
              projectile-switch-project
              projectile-switch-to-buffer)
   :hook
-  ;; (vertico-mode . projectile-mode)
-  (ivy-mode . projectile-mode)
-  :custom
-  (projectile-completion-system 'ivy)
+  (vertico-mode . projectile-mode)
+  ;; (ivy-mode . projectile-mode)
+  ;; :custom
+  ;; (projectile-completion-system 'ivy)
+  ;; (projectile-completion-system 'vertico-mode)
   :config
   (custo/leader-key
-    "p" '(projectile-command-map :which-key "projectile")
+    "p" '(projectile-command-map :wk "projectile")
     :keymaps 'projectile-mode-map
     "p a" '(projectile-add-known-project :which-key "add project"))
   )
   
 ;; add counsel capability
-(use-package counsel-projectile
-  :after projectile
-  :commands (counsel-projectile-switch-project
-             counsel-projectile-switch-to-buffer
-             counsel-projectile-find-file)
-  :config
-  (custo/leader-key
-    "b B" '(counsel-projectile-switch-to-buffer :wk "switch project buffer")
-  )
-  :init
-  (counsel-projectile-mode t)
-  )
+;; (use-package counsel-projectile
+;;   :after projectile
+;;   :commands (counsel-projectile-switch-project
+;;              counsel-projectile-switch-to-buffer
+;;              counsel-projectile-find-file)
+;;   :config
+;;   (custo/leader-key
+;;     "b B" '(counsel-projectile-switch-to-buffer :wk "switch project buffer")
+;;   )
+;;   :init
+;;   (counsel-projectile-mode t)
+;;   )
 
 (use-package find-file-in-project
   :defer t
@@ -679,7 +648,7 @@
   :config
   (setq ffip-use-rust-fd t)
   (custo/leader-key
-    "f p" '(find-file-in-project :wk "find file in project")
+    ;; "f p" '(find-file-in-project :wk "find file in project")
     :keymaps 'projectile-mode-map
     "p f" '(find-file-in-project :wk "find file in project")
     )
@@ -774,13 +743,6 @@
         company-dabbrev-downcase nil
         )
   )
-
-;; (use-package company-prescient
-;;   :defer t
-;;   :after (company prescient)
-;;   :hook
-;;   (company-mode . company-prescient-mode)
-;;   )
 
 (use-package company-box
   :defer t
@@ -917,7 +879,6 @@
 (use-package python
   :defer t
   :mode ("\\.py\\'" . python-mode)
-  ;; :hook (python-mode . lsp-deferred)
   )
 
 (use-package pyenv-mode
@@ -983,17 +944,18 @@
          (json-mode . lsp-deferred)
          (go-mode . lsp-deferred)
          (python-mode . lsp-deferred)
-         (lsp-mode . lsp-enable-which-key-integration))
+         (lsp-mode . lsp-enable-which-key-integration)
+         )
   :commands (lsp lsp-deferred)
   :config
-  ;; (setq lsp-completion-provider :none)
-  (setq lsp-completion-provider :capf)
-  ;; (setq lsp-rust-server 'rust-analyzer)
-  (setq lsp-file-watch-threshold 100)
-  ;; (setq lsp-keymap-prefix "SPC-m")
-  (setq lsp-headerline-breadcrumb-enable nil)
-  ;; (setq lsp-headerline-breadcrumb-segments '(project file symbols))
-  (setq lsp-ui-doc-enable nil)
+  (setq lsp-completion-provider :capf
+        lsp-file-watch-threshold 100
+        lsp-headerline-breadcrumb-enable nil
+        ;; lsp-headerline-breadcrumb-segments '(project file symbols)
+        lsp-ui-doc-enable nil
+        lsp-idle-delay 0.500
+        lsp-log-io nil
+        )
   (custo/local-leader-key
     :keymaps '(js2-mode-map
                rjsx-mode-map
@@ -1026,8 +988,10 @@
 
 ;; prettier lsp
 (use-package lsp-ui
-  :after lsp
-  :commands lsp-ui-mode
+  :defer t
+  :after lsp-mode
+  :hook
+  (lsp-mode . lsp-ui-mode)
   )
 
 ;; better lsp
@@ -1049,6 +1013,7 @@
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/local-leader-key
     :keymaps '(js2-mode-map
                rsjx-mode-map
@@ -1059,8 +1024,8 @@
                go-mode-map
                )
     "e" '(:ignore t :wk "errors")
-    ;; "e l" '(consult-flycheck :which-key "list errors")
-    "e l" '(counsel-flycheck :wk "list errors")
+    "e l" '(consult-flycheck :which-key "list errors")
+    ;; "e l" '(counsel-flycheck :wk "list errors")
     )
   )
 
@@ -1370,19 +1335,19 @@
 
 (use-package lsp-treemacs
   :defer t
-  :after (lsp treemacs)
+  :after (:all lsp-mode treemacs)
   :commands lsp-treemacs-errors-list)
 
 (use-package treemacs-evil
-  :after (treemacs evil)
+  :after (:all treemacs evil)
   :defer t)
 
 (use-package treemacs-projectile
-  :after (treemacs projectile)
+  :after (:all treemacs projectile)
   :defer t)
 
 (use-package treemacs-magit
-  :after (treemacs magit)
+  :after (:all treemacs magit)
   :defer t
   )
 
