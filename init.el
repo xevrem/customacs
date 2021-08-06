@@ -83,18 +83,14 @@
       (setq custo/default-font-size 192)
       (setq custo/default-variable-font-size 192)
       ;; set default font
-      ;; (set-face-attribute 'default nil :font "FiraCode NF" :height custo/default-font-size)
       (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
       ;; Set the fixed pitch face
-      ;; (set-face-attribute 'fixed-pitch nil :font "FiraCode NF" :height custo/default-font-size)
       (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
       )
     (progn
       ;; set default font
-      ;; (set-face-attribute 'default nil :font "Fira Code" :height custo/default-font-size)
       (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
       ;; Set the fixed pitch face
-      ;; (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height custo/default-font-size)
       (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
       )
     )
@@ -132,9 +128,7 @@
 
 ;; get shell variables
 (use-package exec-path-from-shell
-  ;; :init
-  ;; (setq exec-path-from-shell-check-startup-files nil)
-  :config
+  :init
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)
     )
@@ -197,11 +191,9 @@
 
 (use-package marginalia
   :defer t
-  ;; :after ivy
   :after vertico
   :hook
   (vertico-mode . marginalia-mode)
-  ;; (ivy-mode . marginalia-mode)
   )
 
 (use-package orderless
@@ -239,7 +231,6 @@
   :defer t
   :after evil
   :hook
-  ;; (prog-mode . corfu-mode)
   (evil-insert-state-entry . (lambda () (corfu-mode 1)))
   (evil-insert-state-exit . (lambda () (corfu-mode 0)))
   :bind (:map corfu-map
@@ -248,8 +239,6 @@
               )
   :custom
   (corfu-cycle t)
-  ;; :config
-  ;; (setq corfu-cycle t)
   )
 
 (use-package emacs
@@ -336,11 +325,13 @@
   (setq doom-themes-enable-bold t
         doom-themes-enable-italics t)
   (load-theme 'doom-snazzy t)
-  ;; (load-theme 'doom-tomorrow-night t)
-  ;; (consult-theme 'doom-snazzy)
-  ;; (consult-theme 'one-dark)
   )
 
+(use-package rainbow-identifiers
+  :defer t
+  :hook
+  (prog-mode . rainbow-identifiers-mode)
+  )
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
@@ -410,25 +401,25 @@
              helpful-command
              helpful-function
              helpful-key
-             helpful-variable)
-  ;; :custom
-  ;; (counsel-describe-function-function #'helpful-callable)
-  ;; (counsel-describe-variable-function #'helpful-variable)
+             helpful-variable
+             helpful-symbol)
   :bind
   ([remap describe-callable] . helpful-callable)
   ([remap describe-function] . helpful-function)
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key)
+  ([remap describe-symbol] . helpful-symbol)
   )
   
 
 (defun custo/evil-hook ()
   (dolist (mode '(custom-mode
-                  ;; eshell-mode
+                  eshell-mode
                   git-rebase-mode
-                  ;; term-mode
-                  ;; ansi-term-mode
+                  term-mode
+                  ansi-term-mode
+                  vterm
                   ))
     (add-to-list 'evil-emacs-state-modes mode)
     )
@@ -471,12 +462,10 @@
   (general-auto-unbind-keys)
   (general-create-definer custo/leader-key
     :states '(normal insert visual emacs)
-    ;;:keymaps '(normal insert visual emacs)
     :prefix "SPC"
     :global-prefix "C-SPC")
   (general-create-definer custo/local-leader-key
     :states '(normal insert visual emacs)
-    ;;:keymaps '(normal insert visual emacs)
     :prefix "SPC m"
     :global-prefix "C-SPC m")
   )
@@ -505,7 +494,7 @@
   ;; "f f" '(counsel-find-file :which-key "find file")
   "f f" '(find-file :which-key "find file")
   "f p" '(find-file-in-project :wk "find file in project")
-  ;; "f p" '(affe-find :wk "find file in project")
+  "f a" '(affe-find :wk "affe find file in project")
   ;; "f r" '(counsel-recentf :wk "recent files")
   "f r" '(consult-recent-file :wk "recent files")
   "f R" '(recentf-open-files :wk "full recentf files")
@@ -533,11 +522,11 @@
   "q Q" '(kill-emacs :which-key "quit no-save")
   "q r" '(restart-emacs :which-key "restart emacs")
   "s" '(:ignore t :which-key "search")
-  ;; "s s" '(swiper :which-key "search buffer")
-  "s s" '(consult-line :which-key "search buffer")
   ;; "s p" '(counsel-projectile-rg :which-key "search project")
   ;; "s p" '(consult-ripgrep :which-key "search project")
   "s p" '(affe-grep :which-key "search project")
+  ;; "s s" '(swiper :which-key "search buffer")
+  "s s" '(consult-line :which-key "search buffer")
   "t" '(:ignore t :which-key "toggles")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
   ;; "t T" '(counsel-load-theme :which-key "choose theme")
@@ -591,7 +580,6 @@
     )
   )
 
-;; (use-package multiple-cursors
 (use-package evil-mc
   :defer t
   :after evil
@@ -619,7 +607,6 @@
   ;; (ivy-mode . projectile-mode)
   ;; :custom
   ;; (projectile-completion-system 'ivy)
-  ;; (projectile-completion-system 'vertico-mode)
   :config
   (custo/leader-key
     "p" '(projectile-command-map :wk "projectile")
@@ -648,7 +635,6 @@
   :config
   (setq ffip-use-rust-fd t)
   (custo/leader-key
-    ;; "f p" '(find-file-in-project :wk "find file in project")
     :keymaps 'projectile-mode-map
     "p f" '(find-file-in-project :wk "find file in project")
     )
@@ -750,15 +736,6 @@
 ;;   :hook (company-mode . company-box-mode)
 ;;   )
 
-;; (use-package format-all
-;;   :defer t
-;;   :commands format-all-buffer
-;;   :hook
-;;   (format-all-mode . format-all-ensure-formatter)
-;;   :config
-;;   (setq format-all-show-errors 'errors)
-;;   )
-
 
 ;; better javascript mode
 (use-package js2-mode
@@ -829,7 +806,8 @@
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        ;; rustic-lsp-server 'rust-analyzer
+        ;; rustic-lsp-client 'lsp
+        ;; rustic-lsp-server 'rls;;rust-analyzer
         rustic-indent-offset 2
         rust-format-on-save t)
   (custo/local-leader-key
@@ -928,78 +906,21 @@
         plantuml-indent-level 2)
   )
 
-(use-package eglot
-  :defer t
-  :hook ((js2-mode . eglot-ensure)
-         (rsjx-mode . eglot-ensure)
-         (scss-mode . eglot-ensure)
-         (web-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (rustic-mode . eglot-ensure)
-         (csharp-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure)
-         (yaml-mode . eglot-ensure)
-         (json-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         )
-  :config
-  (custo/local-leader-key
-    :keymaps '(js2-mode-map
-               rjsx-mode-map
-               rustic-mode-map
-               typescript-mode-map
-               csharp-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               web-mode-map
-               go-mode-map
-               python-mode-map
-               gdscript-mode-map
-               lsp-mode-map
-               lsp-ui-mode-map)
-    "a" '(eglot-code-actions :wk "excute code action")
-    "g r" '(xref-find-references :wk "goto references")
-    "g g" '(eglot-find-implementation :wk "goto definition")
-    ;; "l" '(:ignore t :wk "lsp")
-    ;; "l g" '(lsp-ui-doc-glance :wk "glance symbol")
-    ;; "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-    ;; "o" '(lsp-ui-imenu :which-key "overview")
-    "r" '(:ignore t :which-key "refactor")
-    "r r" '(eglot-rename :which-key "rename")
-    "=" '(:ignore t :which-key "format")
-    ;; "= =" '(format-all-buffer :which-key "format")
-    "= l" '(eglot-format-buffer :wk "format with eglot")
-    )
-  )
-
-;;lsp-mode
-;; (use-package lsp-mode
+;; (use-package eglot
 ;;   :defer t
-;;   :hook ((js2-mode . lsp-deferred)
-;;          (rsjx-mode . lsp-deferred)
-;;          (scss-mode . lsp-deferred)
-;;          (web-mode . lsp-deferred)
-;;          (typescript-mode . lsp-deferred)
-;;          (rustic-mode . lsp-deferred)
-;;          (csharp-mode . lsp-deferred)
-;;          (elixir-mode . lsp-deferred)
-;;          (yaml-mode . lsp-deferred)
-;;          (json-mode . lsp-deferred)
-;;          (go-mode . lsp-deferred)
-;;          (python-mode . lsp-deferred)
-;;          (lsp-mode . lsp-enable-which-key-integration)
+;;   :hook ((js2-mode . eglot-ensure)
+;;          (rsjx-mode . eglot-ensure)
+;;          (scss-mode . eglot-ensure)
+;;          (web-mode . eglot-ensure)
+;;          (typescript-mode . eglot-ensure)
+;;          (rustic-mode . eglot-ensure)
+;;          (csharp-mode . eglot-ensure)
+;;          (elixir-mode . eglot-ensure)
+;;          (yaml-mode . eglot-ensure)
+;;          (json-mode . eglot-ensure)
+;;          (go-mode . eglot-ensure)
 ;;          )
-;;   :commands (lsp lsp-deferred)
 ;;   :config
-;;   (setq lsp-completion-provider :capf
-;;         lsp-file-watch-threshold 100
-;;         lsp-headerline-breadcrumb-enable nil
-;;         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-;;         lsp-ui-doc-enable nil
-;;         lsp-idle-delay 0.500
-;;         lsp-log-io nil
-;;         )
 ;;   (custo/local-leader-key
 ;;     :keymaps '(js2-mode-map
 ;;                rjsx-mode-map
@@ -1015,63 +936,113 @@
 ;;                gdscript-mode-map
 ;;                lsp-mode-map
 ;;                lsp-ui-mode-map)
-;;     "a" '(lsp-execute-code-action :wk "excute code action")
-;;     "g r" '(lsp-ui-peek-find-references :which-key "goto references")
-;;     "g g" '(lsp-find-definition :which-key "goto definition")
-;;     "l" '(:ignore t :wk "lsp")
-;;     "l g" '(lsp-ui-doc-glance :wk "glance symbol")
-;;     "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-;;     "o" '(lsp-ui-imenu :which-key "overview")
+;;     "a" '(eglot-code-actions :wk "excute code action")
+;;     "g r" '(xref-find-references :wk "goto references")
+;;     "g g" '(eglot-find-implementation :wk "goto definition")
+;;     ;; "l" '(:ignore t :wk "lsp")
+;;     ;; "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+;;     ;; "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
+;;     ;; "o" '(lsp-ui-imenu :which-key "overview")
 ;;     "r" '(:ignore t :which-key "refactor")
-;;     "r r" '(lsp-rename :which-key "rename")
+;;     "r r" '(eglot-rename :which-key "rename")
 ;;     "=" '(:ignore t :which-key "format")
-;;     ;; "= =" '(format-all-buffer :which-key "format")
-;;     "= l" '(lsp-format-buffer :which-key "format with lsp")
+;;     "= l" '(eglot-format-buffer :wk "format with eglot")
 ;;     )
 ;;   )
+
+;;lsp-mode
+(use-package lsp-mode
+  :defer t
+  :hook ((js2-mode . lsp-deferred)
+         (rsjx-mode . lsp-deferred)
+         (scss-mode . lsp-deferred)
+         (web-mode . lsp-deferred)
+         (typescript-mode . lsp-deferred)
+         (rustic-mode . lsp-deferred)
+         (csharp-mode . lsp-deferred)
+         (elixir-mode . lsp-deferred)
+         (yaml-mode . lsp-deferred)
+         (json-mode . lsp-deferred)
+         (go-mode . lsp-deferred)
+         (python-mode . lsp-deferred)
+         (lsp-mode . lsp-enable-which-key-integration)
+         )
+  :commands (lsp lsp-deferred)
+  :config
+  (setq lsp-completion-provider :none
+        lsp-file-watch-threshold 100
+        lsp-headerline-breadcrumb-enable nil
+        ;; lsp-headerline-breadcrumb-segments '(project file symbols)
+        lsp-ui-doc-enable nil
+        lsp-idle-delay 0.500
+        lsp-log-io nil
+        )
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map
+               rjsx-mode-map
+               rustic-mode-map
+               typescript-mode-map
+               csharp-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               web-mode-map
+               go-mode-map
+               python-mode-map
+               gdscript-mode-map
+               lsp-mode-map
+               lsp-ui-mode-map)
+    "a" '(lsp-execute-code-action :wk "excute code action")
+    "g r" '(lsp-find-references :wk "goto references")
+    "g p" '(lsp-ui-peek-find-references :which-key "peek references")
+    "g g" '(lsp-find-definition :which-key "goto definition")
+    "l" '(:ignore t :wk "lsp")
+    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
+    "o" '(lsp-ui-imenu :which-key "overview")
+    "r" '(:ignore t :which-key "refactor")
+    "r r" '(lsp-rename :which-key "rename")
+    "=" '(:ignore t :which-key "format")
+    "= l" '(lsp-format-buffer :which-key "format with lsp")
+    )
+  )
 
 ;; prettier lsp
-;; (use-package lsp-ui
-;;   :defer t
-;;   :after lsp-mode
-;;   :hook
-;;   (lsp-mode . lsp-ui-mode)
-;;   )
-
-;; better lsp
-;; (use-package lsp-ivy
-;;   :after lsp
-;;   :commands lsp-ivy-workspace-symbol
-;;   )
+(use-package lsp-ui
+  :defer t
+  :after lsp-mode
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  )
 
 ;; error checking
-;; (use-package flycheck
-;;   :defer t
-;;   :hook
-;;   (prog-mode . flycheck-mode)
-;;   :config
-;;   (setq flycheck-disabled-checkers
-;;                 (append flycheck-disabled-checkers
-;;                         '(javascript-jshint)))
-;;   (setq flycheck-temp-prefix ".flycheck")
-;;   (flycheck-add-mode 'javascript-eslint 'js2-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
-;;   (custo/local-leader-key
-;;     :keymaps '(js2-mode-map
-;;                rsjx-mode-map
-;;                typescript-mode-map
-;;                rustic-mode-map
-;;                elixir-mode-map
-;;                csharp-mode-map
-;;                go-mode-map
-;;                )
-;;     "e" '(:ignore t :wk "errors")
-;;     "e l" '(consult-flycheck :which-key "list errors")
-;;     ;; "e l" '(counsel-flycheck :wk "list errors")
-;;     )
-;;   )
+(use-package flycheck
+  :defer t
+  :hook
+  (prog-mode . flycheck-mode)
+  :config
+  (setq flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
+  (setq flycheck-temp-prefix ".flycheck")
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map
+               rsjx-mode-map
+               typescript-mode-map
+               rustic-mode-map
+               elixir-mode-map
+               csharp-mode-map
+               go-mode-map
+               )
+    "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flycheck :which-key "list errors")
+    ;; "e l" '(counsel-flycheck :wk "list errors")
+    )
+  )
 
 (use-package hl-todo
   :defer t
@@ -1116,7 +1087,7 @@
   :config
   (setq org-ellipsis " ▼"
         org-hide-emphasis-markers t
-        ;; org-startup-indented nil
+        org-startup-indented nil
         )
   (setq org-agenda-files
         `(
@@ -1377,10 +1348,11 @@
   (setq treemacs-width 25)
   )
 
-;; (use-package lsp-treemacs
-;;   :defer t
-;;   :after (:all lsp-mode treemacs)
-;;   :commands lsp-treemacs-errors-list)
+(use-package lsp-treemacs
+  :defer t
+  :after (:all lsp-mode treemacs)
+  :commands lsp-treemacs-errors-list
+  )
 
 (use-package treemacs-evil
   :defer t
