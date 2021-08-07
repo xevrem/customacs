@@ -20,7 +20,7 @@
 (setq create-lockfiles nil)
 
 ;; adjust the startup size of emacs
-(setq default-frame-alist
+(setq initial-frame-alist
       `((width . 120) ; chars
         (height . 45) ; lines
         )
@@ -85,6 +85,12 @@
 ;; otherwise assume linux
 (defun custo/setup-font-faces ()
   "Setup all customacs font faces."
+  (interactive)
+  ;;re-disable GUI stuff we don't care about
+  (push '(menu-bar-lines . 0) default-frame-alist)
+  (push '(tool-bar-lines . 0) default-frame-alist)
+  (push '(vertical-scroll-bars) default-frame-alist)
+  ;; adjust fonts based on OS
   (if (eq system-type 'darwin)
       (progn
         (setq custo/default-font-size 192)
@@ -125,11 +131,14 @@
     (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
     (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
     )
+  ;; set current frame to 120x45 characters
+  (set-frame-width (frame-focus) 120)
+  (set-frame-height (frame-focus) 45)
   )
 ;; run this hook after we have initialized the first time
-(add-hook 'after-init-hook #'custo/setup-font-faces)
+(add-hook 'after-init-hook 'custo/setup-font-faces)
 ;; re-run this hook if we create a new frame from daemonized Emacs
-(add-hook 'server-after-make-frame-hook #'custo/setup-font-faces)
+(add-hook 'server-after-make-frame-hook 'custo/setup-font-faces)
 
 
 ;; setup straight for package management, its much better than use-package
@@ -486,16 +495,6 @@
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key)
   ([remap describe-symbol] . helpful-symbol)
-  :config
-  (custo/leader-key
-    "h h" '(:ignore h :wk "helpful docs"))
-  (custo/local-leader-key
-    "h c" '(helpful-callable :wk "helpful callable")
-    "h f" '(helpful-function :wk "helpful function")
-    "h v" '(helpful-variable :wk "helpful variable")
-    "h k" '(helpful-key :wk "helpful key")
-    "h s" '(helpful-symbol :wk "helpful symbol")
-    )
   )
   
 
@@ -601,6 +600,12 @@
   "g s l" '(smerge-keep-lower :wk "keep lower")
   "g s b" '(smerge-keep-all :wk "keep both")
   "h" '(:ignore t :which-key "custo help")
+  "h h" '(:ignore h :wk "helpful docs")
+  "h h c" '(helpful-callable :wk "helpful callable")
+  "h h f" '(helpful-function :wk "helpful function")
+  "h h v" '(helpful-variable :wk "helpful variable")
+  "h h k" '(helpful-key :wk "helpful key")
+  "h h s" '(helpful-symbol :wk "helpful symbol")
   "h s" '(:ignore t :which-key "straight")
   "h s p" '(straight-pull-all :which-key "straight pull packages")
   "h s b" '(straight-rebuild-all :which-key "straight build packages")
@@ -618,6 +623,7 @@
   ;; "s s" '(swiper :which-key "search buffer")
   "s s" '(consult-line :which-key "search buffer")
   "t" '(:ignore t :which-key "toggles")
+  "t r" '(custo/setup-font-faces :wk "reset font-faces")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
   ;; "t T" '(counsel-load-theme :which-key "choose theme")
   "t T" '(consult-theme :wk "choose theme")
@@ -896,7 +902,7 @@
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        ;; rustic-lsp-client 'lsp
+        rustic-lsp-client 'eglot
         rustic-lsp-server 'rls
         rustic-indent-offset 2
         rust-format-on-save t)
@@ -996,77 +1002,31 @@
         plantuml-indent-level 2)
   )
 
-;; (use-package eglot
-;;   :defer t
-;;   :hook ((js2-mode . eglot-ensure)
-;;          (rsjx-mode . eglot-ensure)
-;;          (scss-mode . eglot-ensure)
-;;          (web-mode . eglot-ensure)
-;;          (typescript-mode . eglot-ensure)
-;;          (rustic-mode . eglot-ensure)
-;;          (csharp-mode . eglot-ensure)
-;;          (elixir-mode . eglot-ensure)
-;;          (yaml-mode . eglot-ensure)
-;;          (json-mode . eglot-ensure)
-;;          (go-mode . eglot-ensure)
-;;          )
-;;   :config
-;;   (custo/local-leader-key
-;;     :keymaps '(js2-mode-map
-;;                rjsx-mode-map
-;;                rustic-mode-map
-;;                typescript-mode-map
-;;                csharp-mode-map
-;;                elixir-mode-map
-;;                yaml-mode-map
-;;                json-mode-map
-;;                web-mode-map
-;;                go-mode-map
-;;                python-mode-map
-;;                gdscript-mode-map
-;;                lsp-mode-map
-;;                lsp-ui-mode-map)
-;;     "a" '(eglot-code-actions :wk "excute code action")
-;;     "g r" '(xref-find-references :wk "goto references")
-;;     "g g" '(eglot-find-implementation :wk "goto definition")
-;;     ;; "l" '(:ignore t :wk "lsp")
-;;     ;; "l g" '(lsp-ui-doc-glance :wk "glance symbol")
-;;     ;; "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-;;     ;; "o" '(lsp-ui-imenu :which-key "overview")
-;;     "r" '(:ignore t :which-key "refactor")
-;;     "r r" '(eglot-rename :which-key "rename")
-;;     "=" '(:ignore t :which-key "format")
-;;     "= l" '(eglot-format-buffer :wk "format with eglot")
-;;     )
-;;   )
 
-;;lsp-mode
-(use-package lsp-mode
+(defun custo/xref-goto-xref ()
+  "Customacs goto xref and quit xref buffer."
+  (interactive)
+  (xref-goto-xref t)
+  )
+
+
+(use-package eglot
   :defer t
-  :hook ((js2-mode . lsp-deferred)
-         (rsjx-mode . lsp-deferred)
-         (scss-mode . lsp-deferred)
-         (web-mode . lsp-deferred)
-         (typescript-mode . lsp-deferred)
-         (rustic-mode . lsp-deferred)
-         (csharp-mode . lsp-deferred)
-         (elixir-mode . lsp-deferred)
-         (yaml-mode . lsp-deferred)
-         (json-mode . lsp-deferred)
-         (go-mode . lsp-deferred)
-         (python-mode . lsp-deferred)
-         (lsp-mode . lsp-enable-which-key-integration)
+  :hook ((js2-mode . eglot-ensure)
+         (rsjx-mode . eglot-ensure)
+         (scss-mode . eglot-ensure)
+         (web-mode . eglot-ensure)
+         (typescript-mode . eglot-ensure)
+         (rustic-mode . eglot-ensure)
+         (csharp-mode . eglot-ensure)
+         (elixir-mode . eglot-ensure)
+         (yaml-mode . eglot-ensure)
+         (json-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
          )
-  :commands (lsp lsp-deferred)
+  :bind
+  ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (setq lsp-completion-provider :none
-        lsp-file-watch-threshold 100
-        lsp-headerline-breadcrumb-enable nil
-        ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-        lsp-ui-doc-enable nil
-        lsp-idle-delay 0.500
-        lsp-log-io nil
-        )
   (custo/local-leader-key
     :keymaps '(js2-mode-map
                rjsx-mode-map
@@ -1082,28 +1042,80 @@
                gdscript-mode-map
                lsp-mode-map
                lsp-ui-mode-map)
-    "a" '(lsp-execute-code-action :wk "excute code action")
-    "g r" '(lsp-find-references :wk "goto references")
-    "g p" '(lsp-ui-peek-find-references :which-key "peek references")
-    "g g" '(lsp-find-definition :which-key "goto definition")
-    "l" '(:ignore t :wk "lsp")
-    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
-    "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-    "o" '(lsp-ui-imenu :which-key "overview")
+    "a" '(eglot-code-actions :wk "excute code action")
+    "g r" '(xref-find-references :wk "goto references")
+    "g g" '(eglot-find-implementation :wk "goto definition")
     "r" '(:ignore t :which-key "refactor")
-    "r r" '(lsp-rename :which-key "rename")
+    "r r" '(eglot-rename :which-key "rename")
     "=" '(:ignore t :which-key "format")
-    "= l" '(lsp-format-buffer :which-key "format with lsp")
+    "= l" '(eglot-format-buffer :wk "format with eglot")
     )
   )
 
+;;lsp-mode
+;; (use-package lsp-mode
+;;   :defer t
+;;   :hook ((js2-mode . lsp-deferred)
+;;          (rsjx-mode . lsp-deferred)
+;;          (scss-mode . lsp-deferred)
+;;          (web-mode . lsp-deferred)
+;;          (typescript-mode . lsp-deferred)
+;;          (rustic-mode . lsp-deferred)
+;;          (csharp-mode . lsp-deferred)
+;;          (elixir-mode . lsp-deferred)
+;;          (yaml-mode . lsp-deferred)
+;;          (json-mode . lsp-deferred)
+;;          (go-mode . lsp-deferred)
+;;          (python-mode . lsp-deferred)
+;;          (lsp-mode . lsp-enable-which-key-integration)
+;;          )
+;;   :commands (lsp lsp-deferred)
+;;   :config
+;;   (setq lsp-completion-provider :none
+;;         lsp-file-watch-threshold 100
+;;         lsp-headerline-breadcrumb-enable nil
+;;         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
+;;         lsp-ui-doc-enable nil
+;;         lsp-idle-delay 0.500
+;;         lsp-log-io nil
+;;         )
+;;   (custo/local-leader-key
+;;     :keymaps '(js2-mode-map
+;;                rjsx-mode-map
+;;                rustic-mode-map
+;;                typescript-mode-map
+;;                csharp-mode-map
+;;                elixir-mode-map
+;;                yaml-mode-map
+;;                json-mode-map
+;;                web-mode-map
+;;                go-mode-map
+;;                python-mode-map
+;;                gdscript-mode-map
+;;                lsp-mode-map
+;;                lsp-ui-mode-map)
+;;     "a" '(lsp-execute-code-action :wk "excute code action")
+;;     "g r" '(lsp-find-references :wk "goto references")
+;;     "g p" '(lsp-ui-peek-find-references :which-key "peek references")
+;;     "g g" '(lsp-find-definition :which-key "goto definition")
+;;     "l" '(:ignore t :wk "lsp")
+;;     "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+;;     "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
+;;     "o" '(lsp-ui-imenu :which-key "overview")
+;;     "r" '(:ignore t :which-key "refactor")
+;;     "r r" '(lsp-rename :which-key "rename")
+;;     "=" '(:ignore t :which-key "format")
+;;     "= l" '(lsp-format-buffer :which-key "format with lsp")
+;;     )
+;;   )
+
 ;; prettier lsp
-(use-package lsp-ui
-  :defer t
-  :after lsp-mode
-  :hook
-  (lsp-mode . lsp-ui-mode)
-  )
+;; (use-package lsp-ui
+;;   :defer t
+;;   :after lsp-mode
+;;   :hook
+;;   (lsp-mode . lsp-ui-mode)
+;;   )
 
 ;; error checking
 (use-package flycheck
@@ -1119,6 +1131,10 @@
   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (custo/leader-key
+    "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flycheck :wk "list errors")
+    )
   (custo/local-leader-key
     :keymaps '(js2-mode-map
                rsjx-mode-map
@@ -1400,11 +1416,11 @@
   (setq treemacs-width 25)
   )
 
-(use-package lsp-treemacs
-  :defer t
-  :after (:all lsp-mode treemacs)
-  :commands lsp-treemacs-errors-list
-  )
+;; (use-package lsp-treemacs
+;;   :defer t
+;;   :after (:all lsp-mode treemacs)
+;;   :commands lsp-treemacs-errors-list
+;;   )
 
 (use-package treemacs-evil
   :defer t
