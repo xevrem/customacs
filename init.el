@@ -1,7 +1,11 @@
-;; Code:
+;;; init --- "Summary"
+;; customacs initialization & configuration file
+;;; Commentary:
+;;; Code:
 
 ;; lets us know how long it takes to startup
 (defun custo/display-startup-time ()
+  "Display the startup time for customacs."
   (message "Emacs loaded in %s with %d garbage collections."
            (format "%.2f seconds"
                    (float-time
@@ -32,7 +36,8 @@
                 term-mode-hook
                 eshell-mode-hook
                 ansi-term-mode-hook
-                treemacs-mode-hook))
+                treemacs-mode-hook
+                vterm-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0)
                    )
             )
@@ -174,6 +179,7 @@
 
 
 (defun custo/get-project-root ()
+  "Get the current project root."
   (when (fboundp 'projectile-project-root)
     (projectile-project-root)))
 
@@ -182,6 +188,8 @@
   :after vertico
   :custom
   (consult-project-root-function #'custo/get-project-root)
+  ;; :config
+  ;; (setq consult-grep-command)
   )
 
 (use-package consult-flycheck
@@ -317,18 +325,37 @@
   (setq doom-modeline-height 32)
   )
 
-(use-package one-themes)
-
 ;; enable better themes
+(use-package one-themes
+  :after doom-modeline
+  )
+
+(use-package challenger-deep-theme
+  :after doom-modeline
+  :config
+  (consult-theme 'challenger-deep)
+  )
+
 (use-package doom-themes
+  :after doom-modeline
   :config
   (setq doom-themes-enable-bold t
-        doom-themes-enable-italics t)
-  (load-theme 'doom-snazzy t)
+        doom-themes-enable-italic t
+        )
   )
+
+;; for certian versions of emacs, we need to change the backgroun
+(add-hook 'tty-setup-hook (lambda ()
+                            (unless (> emacs-major-version 27)
+                              (add-hook 'emacs-startup-hook (lambda () (set-background-color "black")))
+                              (add-hook 'server-after-make-frame-hook (lambda () (set-background-color "black")))
+                              )
+                            )
+          )
 
 (use-package rainbow-identifiers
   :defer t
+  :after doom-themes
   :hook
   (prog-mode . rainbow-identifiers-mode)
   )
@@ -336,6 +363,7 @@
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
   :defer t
+  :after (:all doom-themes rainbow-identifiers)
   :hook
   (prog-mode . rainbow-delimiters-mode)
   )
@@ -343,6 +371,7 @@
 ;; highlight matching delimiters
 (use-package paren
   :defer t
+  :after (:all doom-themes rainbow-identifiers rainbow-delimiters)
   :hook (prog-mode . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
@@ -351,6 +380,19 @@
         show-paren-when-point-in-periphery t)
   (setq blink-matching-paren t)
   )
+
+(use-package clipetty
+  :defer t
+  :hook
+  (tty-setup . global-clipetty-mode)
+  )
+
+(use-package xclip
+  :defer t
+  :hook
+  (tty-setup . xclip-mode)
+  )
+
 
 
 ;; yasnippet
@@ -414,13 +456,15 @@
   
 
 (defun custo/evil-hook ()
+  "Custom hook to use Emacs mode."
   (dolist (mode '(custom-mode
                   eshell-mode
                   git-rebase-mode
                   term-mode
                   ansi-term-mode
-                  vterm
-                  ))
+                  vterm-mode
+                  )
+                )
     (add-to-list 'evil-emacs-state-modes mode)
     )
   )
@@ -430,14 +474,17 @@
   :defer t
   :hook
   (after-init . evil-mode)
-  (evil-mode . custo/evil-hook)
+  ;; (evil-mode . custo/evil-hook)
   :init
   (setq evil-want-integration t
         evil-want-keybinding nil
         evil-want-C-u-scroll t
         evil-want-C-d-scroll t)
   :bind (:map evil-insert-state-map
-         ("C-g" . evil-normal-state))
+              ("C-g" . evil-normal-state)
+              )
+  :config
+  (custo/evil-hook)
  )
 
 ;; better evil stuff
@@ -471,7 +518,6 @@
   )
 
 
-
 ;; define default keybinds
 (custo/leader-key
   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
@@ -481,7 +527,7 @@
   "a c" '(circe :wk "circe")
   "a e" '(eww :wk "eww")
   "a p" '(prodigy :wk "prodigy")
-  "a t" '(vterm :wk "terminal")
+  "a t" '(custo/launch-vterm :wk "terminal")
   "b" '(:ignore t :which-key "buffer")
   ;; "b b" '(counsel-switch-buffer :which-key "switch buffers")
   "b b" '(switch-to-buffer :which-key "switch buffers")
@@ -807,7 +853,7 @@
   :config
   (setq indent-tabs-mode nil
         ;; rustic-lsp-client 'lsp
-        ;; rustic-lsp-server 'rls;;rust-analyzer
+        rustic-lsp-server 'rls
         rustic-indent-offset 2
         rust-format-on-save t)
   (custo/local-leader-key
@@ -1063,6 +1109,7 @@
 
 ;; org stuff
 (defun custo/org-mode-setup ()
+  "Setup various org-mdoe settings whenever org mode is launched in a buffer."
   (org-indent-mode)
   (variable-pitch-mode 1)
   ;; (auto-fill-mode 0)
@@ -1246,18 +1293,15 @@
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
   )
 
-(with-eval-after-load 'visual-fill-column
-  (defun custo/mode-visual-fill ()
-    (setq visual-fill-column-width 100
-          visual-fill-column-center-text t)
-    (visual-fill-column-mode 1))
-)
 
 (use-package visual-fill-column
   :defer t
   :hook
-  (org-mode . custo/mode-visual-fill)
-  (markdown-mode . custo/mode-visual-fill)
+  (org-mode . visual-fill-column-mode)
+  (markdown-mode . visual-fill-column-mode)
+  :config
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
   )
 
 
@@ -1289,22 +1333,7 @@
         evil-emacs-state-cursor  'hbar) ; _
   )
 
-(use-package clipetty
-  :defer t
-  :hook
-  (tty-setup . global-clipetty-mode)
-  )
 
-(use-package xclip
-  :defer t
-  :hook
-  (tty-setup . xclip-mode)
-  )
-
-(add-hook 'tty-setup-hook (lambda ()
-  (add-hook 'emacs-startup-hook (lambda () (set-background-color "black")))
-  (add-hook 'server-after-make-frame-hook (lambda () (set-background-color "black")))
-  ))
 
 (defconst private-file (expand-file-name "~/.private.el"))
 (unless (file-exists-p private-file)
@@ -1374,6 +1403,13 @@
   :commands vterm
   )
 
+(defun custo/launch-vterm ()
+  "Launches vterm and switch to evil-emacs-state."
+  (interactive)
+  (vterm)
+  (evil-emacs-state)
+  )
+
 (use-package prodigy
   :defer t
   :commands prodigy
@@ -1400,3 +1436,5 @@
         gcmh-idle-delay 60)
   )
 
+(provide 'init)
+;;; init ends here
