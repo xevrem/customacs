@@ -20,7 +20,7 @@
 (setq create-lockfiles nil)
 
 ;; adjust the startup size of emacs
-(setq initial-frame-alist
+(setq default-frame-alist
       `((width . 120) ; chars
         (height . 45) ; lines
         )
@@ -83,15 +83,17 @@
 
 ;; if in macOS, set size appropriately
 ;; otherwise assume linux
-(if (eq system-type 'darwin)
-    (progn
-      (setq custo/default-font-size 192)
-      (setq custo/default-variable-font-size 192)
-      ;; set default font
-      (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
-      ;; Set the fixed pitch face
-      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
-      )
+(defun custo/setup-font-faces ()
+  "Setup all customacs font faces."
+  (if (eq system-type 'darwin)
+      (progn
+        (setq custo/default-font-size 192)
+        (setq custo/default-variable-font-size 192)
+        ;; set default font
+        (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
+        ;; Set the fixed pitch face
+        (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
+        )
     (progn
       ;; set default font
       (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
@@ -99,9 +101,35 @@
       (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
       )
     )
+  ;; Set the variable pitch face which is the same for mac and linux
+  (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
+  ;; after org-mode we want to adjust font sizes
+  (with-eval-after-load 'org
+    (dolist (face '((org-level-1 . 1.3)
+                    (org-level-2 . 1.25)
+                    (org-level-3 . 1.20)
+                    (org-level-4 . 1.15)
+                    (org-level-5 . 1.10)
+                    (org-level-6 . 1.05)
+                    (org-level-7 . 1.0)
+                    (org-level-8 . 1.0)))
+      (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face))
+      )
 
-;; Set the variable pitch face which is the same for mac and linux
-(set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+    )
+  )
+;; run this hook after we have initialized the first time
+(add-hook 'after-init-hook #'custo/setup-font-faces)
+;; re-run this hook if we create a new frame from daemonized Emacs
+(add-hook 'server-after-make-frame-hook #'custo/setup-font-faces)
 
 
 ;; setup straight for package management, its much better than use-package
@@ -347,8 +375,14 @@
 ;; for certian versions of emacs, we need to change the backgroun
 (add-hook 'tty-setup-hook (lambda ()
                             (unless (> emacs-major-version 27)
-                              (add-hook 'emacs-startup-hook (lambda () (set-background-color "black")))
-                              (add-hook 'server-after-make-frame-hook (lambda () (set-background-color "black")))
+                              (add-hook 'emacs-startup-hook (lambda ()
+                                                              (set-background-color "black")
+                                                              )
+                                        )
+                              (add-hook 'server-after-make-frame-hook (lambda ()
+                                                                        (set-background-color "black")
+                                                                        )
+                                        )
                               )
                             )
           )
@@ -452,6 +486,16 @@
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key)
   ([remap describe-symbol] . helpful-symbol)
+  :config
+  (custo/leader-key
+    "h h" '(:ignore h :wk "helpful docs"))
+  (custo/local-leader-key
+    "h c" '(helpful-callable :wk "helpful callable")
+    "h f" '(helpful-function :wk "helpful function")
+    "h v" '(helpful-variable :wk "helpful variable")
+    "h k" '(helpful-key :wk "helpful key")
+    "h s" '(helpful-symbol :wk "helpful symbol")
+    )
   )
   
 
@@ -1271,27 +1315,6 @@
   (org-superstar-configure-like-org-bullets)
   )
 
-(with-eval-after-load 'org
-  (dolist (face '((org-level-1 . 1.3)
-                  (org-level-2 . 1.25)
-                  (org-level-3 . 1.20)
-                  (org-level-4 . 1.15)
-                  (org-level-5 . 1.10)
-                  (org-level-6 . 1.05)
-                  (org-level-7 . 1.0)
-                  (org-level-8 . 1.0)))
-    (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face))
-    )
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-  )
 
 
 (use-package visual-fill-column
