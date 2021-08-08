@@ -906,8 +906,8 @@
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'eglot
-        rustic-lsp-server 'rls
-        rustic-indent-offset 2
+        rustic-lsp-server 'rust-analyzer
+        rustic-indent-offset 4
         rust-format-on-save t)
   (custo/local-leader-key
     :keymaps 'rustic-mode-map
