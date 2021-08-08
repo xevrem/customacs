@@ -600,6 +600,9 @@
   "g s l" '(smerge-keep-lower :wk "keep lower")
   "g s b" '(smerge-keep-all :wk "keep both")
   "h" '(:ignore t :which-key "custo help")
+  "h d" '(:ignore t :wk "devdocs")
+  "h d i" '(devdocs-install :wk "install devdocs")
+  "h d l" '(devdocs-lookup :wk "lookup devdocs")
   "h h" '(:ignore h :wk "helpful docs")
   "h h c" '(helpful-callable :wk "helpful callable")
   "h h f" '(helpful-function :wk "helpful function")
@@ -1465,6 +1468,12 @@
     :cwd "/Users/erikajonell/repos/nucleo"
     :args '("up" "-d")
     )
+  )
+
+(use-package devdocs
+  :defer t
+  :commands (devdocs-install
+             devdocs-lookup)
   )
 
 (use-package gcmh
