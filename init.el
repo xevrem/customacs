@@ -1354,19 +1354,19 @@
   )
 
 
-(use-package centaur-tabs
-  :defer t
-  :hook
-  (after-init . centaur-tabs-mode)
-  :config
-  (setq centaur-tabs-height 32)
-  (setq centaur-tabs-bar-height 43)
-  (setq centaur-tabs-set-bar 'under)
-  (setq centaur-tabs-set-icons t)
-  (setq centaur-tabs-set-greyout-icons t)
-  (setq centaur-tabs-icon-scale-factor 0.75)
-  (setq x-underline-at-descent-line t)
-)
+;; (use-package centaur-tabs
+;;   :defer t
+;;   :hook
+;;   (after-init . centaur-tabs-mode)
+;;   :config
+;;   (setq centaur-tabs-height 32)
+;;   (setq centaur-tabs-bar-height 43)
+;;   (setq centaur-tabs-set-bar 'under)
+;;   (setq centaur-tabs-set-icons t)
+;;   (setq centaur-tabs-set-greyout-icons t)
+;;   (setq centaur-tabs-icon-scale-factor 0.75)
+;;   (setq x-underline-at-descent-line t)
+;; )
 
 ;; terminal related package
 
