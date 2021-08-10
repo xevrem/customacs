@@ -82,61 +82,60 @@
 
 ;; setup tty hook var
 (defvar custo/tty-p nil)
-(add-hook 'tty-setup-hook (lambda () (setq custo/tty-p t)))
+(add-hook 'tty-setup-hook (lambda () (setq-default custo/tty-p t)))
 
 
 ;; if in macOS, set size appropriately
 ;; otherwise assume linux
 (defun custo/setup-font-faces ()
   "Setup all customacs font faces."
-  (interactive)
   ;;re-disable GUI stuff we don't care about
   (push '(menu-bar-lines . 0) default-frame-alist)
   (push '(tool-bar-lines . 0) default-frame-alist)
   (push '(vertical-scroll-bars) default-frame-alist)
-  ;; adjust fonts based on OS
-  (if (eq system-type 'darwin)
+  (when (display-graphic-p)
+    ;; adjust fonts based on OS
+    (if (eq system-type 'darwin)
+        (progn
+          (setq custo/default-font-size 192)
+          (setq custo/default-variable-font-size 192)
+          ;; set default font
+          (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
+          ;; Set the fixed pitch face
+          (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
+          )
       (progn
-        (setq custo/default-font-size 192)
-        (setq custo/default-variable-font-size 192)
         ;; set default font
         (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
         ;; Set the fixed pitch face
         (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
         )
-    (progn
-      ;; set default font
-      (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
-      ;; Set the fixed pitch face
-      (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
       )
-    )
-  ;; Set the variable pitch face which is the same for mac and linux
-  (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
-  ;; after org-mode we want to adjust font sizes
-  (with-eval-after-load 'org
-    (dolist (face '((org-level-1 . 1.3)
-                    (org-level-2 . 1.25)
-                    (org-level-3 . 1.20)
-                    (org-level-4 . 1.15)
-                    (org-level-5 . 1.10)
-                    (org-level-6 . 1.05)
-                    (org-level-7 . 1.0)
-                    (org-level-8 . 1.0)))
-      (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face))
+    ;; Set the variable pitch face which is the same for mac and linux
+    (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
+    ;; after org-mode we want to adjust font sizes
+    (with-eval-after-load 'org
+      (dolist (face '((org-level-1 . 1.3)
+                      (org-level-2 . 1.25)
+                      (org-level-3 . 1.20)
+                      (org-level-4 . 1.15)
+                      (org-level-5 . 1.10)
+                      (org-level-6 . 1.05)
+                      (org-level-7 . 1.0)
+                      (org-level-8 . 1.0)))
+        (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face))
+        )
+      
+      ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+      (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+      (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+      (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+      (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
       )
-
-    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-    )
-  ;; set current frame to 120x45 characters
-  (unless (custo/tty-p)
+    ;; set current frame to 120x45 characters
     (set-frame-width (frame-focus) 120)
     (set-frame-height (frame-focus) 45)
     )
@@ -640,7 +639,7 @@
   ;; "s s" '(swiper :which-key "search buffer")
   "s s" '(consult-line :which-key "search buffer")
   "t" '(:ignore t :which-key "toggles")
-  "t r" '(custo/setup-font-faces :wk "reset font-faces")
+  "t r" '((lambda ()(interactive) (custo/setup-font-faces)) :wk "reset font-faces")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
   ;; "t T" '(counsel-load-theme :which-key "choose theme")
   "t T" '(consult-theme :wk "choose theme")
