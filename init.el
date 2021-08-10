@@ -264,25 +264,27 @@
   )
 
 
-;; (defun affe-orderless-regexp-compiler (input _type)
-;;   "Affe regex compiler that utilizes orderless when searching for INPUT."
-;;     (setq input (orderless-pattern-compiler input))
-;;     (cons input (lambda (str) (orderless--highlight input str))))
+(defun affe-orderless-regexp-compiler (input _type)
+  "Affe regex compiler that utilizes orderless when searching for INPUT."
+    (setq input (orderless-pattern-compiler input))
+    (cons input (lambda (str) (orderless--highlight input str))))
 
-;; (use-package affe
-;;   :straight '(:type git :host github
-;;               :repo "minad/affe"
-;;               :branch "main")
-;;   :defer t
-;;   :after (:all vertico consult orderless)
-;;   :commands (affe-grep
-;;              affe-find)
-;;   :config
-;;   ;; Configure Orderless
-;;   (setq affe-regexp-function #'orderless-pattern-compiler
-;;         affe-highlight-function #'orderless--highlight)
-;;   (setq affe-regexp-compiler #'affe-orderless-regexp-compiler)
-;;   )
+(use-package affe
+  :straight '(:type git :host github
+              :repo "minad/affe"
+              :branch "main")
+  :defer t
+  :after (:all vertico consult orderless)
+  :commands (affe-grep
+             affe-find)
+  :config
+  ;; Configure Orderless
+  (setq affe-regexp-function #'orderless-pattern-compiler
+        affe-highlight-function #'orderless--highlight
+        affe-regexp-compiler #'affe-orderless-regexp-compiler
+        affe-grep-command "/usr/local/bin/rg --null --color=never --max-columns=1000 --no-heading --line-number -v ^$ .")
+
+  )
 
 ;; alternate completion engine to company
 (use-package corfu
@@ -311,9 +313,8 @@
 
 ;; (use-package ripgrep
 ;;   :defer t
-;;   ;; :after (:any consult projectile)
+;;   :after (:any consult projectile)
 ;;   )
-
 
 ;; ivy trio
 ;; (use-package swiper
@@ -596,7 +597,7 @@
   ;; "f f" '(counsel-find-file :which-key "find file")
   "f f" '(find-file :which-key "find file")
   "f p" '(find-file-in-project :wk "find file in project")
-  ;; "f a" '(affe-find :wk "affe find file in project")
+  "f a" '(affe-find :wk "affe find file in project")
   ;; "f r" '(counsel-recentf :wk "recent files")
   "f r" '(consult-recent-file :wk "recent files")
   "f R" '(recentf-open-files :wk "full recentf files")
@@ -634,8 +635,8 @@
   "q r" '(restart-emacs :which-key "restart emacs")
   "s" '(:ignore t :which-key "search")
   ;; "s p" '(counsel-projectile-rg :which-key "search project")
-  "s p" '(consult-ripgrep :which-key "search project")
-  ;; "s p" '(affe-grep :which-key "search project")
+  ;; "s p" '(consult-ripgrep :which-key "search project")
+  "s p" '(affe-grep :which-key "search project")
   ;; "s s" '(swiper :which-key "search buffer")
   "s s" '(consult-line :which-key "search buffer")
   "t" '(:ignore t :which-key "toggles")
