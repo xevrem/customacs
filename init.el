@@ -411,7 +411,7 @@
 
 (use-package rainbow-identifiers
   :defer t
-  :after doom-themes
+  :after (:any doom-themes one-themes challenger-deep-theme)
   :hook
   (prog-mode . rainbow-identifiers-mode)
   )
