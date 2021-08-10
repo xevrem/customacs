@@ -80,6 +80,10 @@
 (defvar custo/default-font-size 153)
 (defvar custo/default-variable-font-size 153)
 
+;; setup tty hook var
+(defvar custo/tty-p nil)
+(add-hook 'tty-setup-hook (lambda () (setq custo/tty-p t)))
+
 
 ;; if in macOS, set size appropriately
 ;; otherwise assume linux
@@ -132,8 +136,10 @@
     (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
     )
   ;; set current frame to 120x45 characters
-  (set-frame-width (frame-focus) 120)
-  (set-frame-height (frame-focus) 45)
+  (unless (custo/tty-p)
+    (set-frame-width (frame-focus) 120)
+    (set-frame-height (frame-focus) 45)
+    )
   )
 ;; run this hook after we have initialized the first time
 (add-hook 'after-init-hook 'custo/setup-font-faces)
