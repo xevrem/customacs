@@ -1227,11 +1227,11 @@
            "TODO"
            "DOING"
            "DELAYED"
+           "|"
+           "PARTIAL"
            "COMPLETE"
            "IN REVIEW"
-           "|"
            "DONE"
-           "PARTIAL"
            "CANCELLED"
            "OBE"
            "MOVED")))
@@ -1239,10 +1239,10 @@
         `(("TODO" . "#88ff88")
           ("DOING" . "#ffff88")
           ("DELAYED" . "#ffbb88")
+          ("PARTIAL" . "#8855ff")
           ("COMPLETE" . "#ff55bb")
           ("IN REVIEW" . "#bb55ff")
           ("DONE" . "#8888ff")
-          ("PARTIAL" . "#8855ff")
           ("CANCELLED" . "#ff8888")
           ("OBE" . "#ffbb88")
           ("MOVED" . "#88ffbb")))
