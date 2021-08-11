@@ -970,11 +970,11 @@
   :mode ("\\.py\\'" . python-mode)
   )
 
-(use-package pyenv-mode
-  :defer t
-  :after python
-  :hook (python-mode . pyenv-mode)
-  )
+;; (use-package pyenv-mode
+;;   :defer t
+;;   :after python
+;;   :hook (python-mode . pyenv-mode)
+;;   )
 
 (use-package json-mode
   :defer t
