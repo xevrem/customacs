@@ -885,7 +885,7 @@
 
 ;; format js and jsx
 (use-package prettier
-  :after (:any js2-mode rsjx-mode typescript-mode)
+  :after (:any js2-mode rsjx-mode typescript-mode web-mode)
   :config
   (custo/local-leader-key
     :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map web-mode-map)
