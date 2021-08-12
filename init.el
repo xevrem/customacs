@@ -230,8 +230,6 @@
   :after vertico
   :custom
   (consult-project-root-function #'custo/get-project-root)
-  ;; :config
-  ;; (setq consult-grep-command)
   )
 
 (use-package consult-flycheck
@@ -1128,8 +1126,7 @@
   )
 
 (use-package lsp-pyright
-  :defer t
-  :after lsp-mode
+  :after (:all lsp-mode python)
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp-deferred)
