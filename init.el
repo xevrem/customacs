@@ -351,6 +351,20 @@
   (prog-mode . rainbow-delimiters-mode)
   )
 
+(use-package smartparens
+  :defer t
+  :after (:any doom-themes
+               one-themes
+               challenge-deep-them)
+  :hook
+  (prog-mode . (lambda ()
+                 (require 'smartparens-config)
+                 (smartparens-mode)))
+  :config
+  ;; don't interfere with yasnippets
+  (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
+  )
+
 ;; highlight matching delimiters
 (use-package paren
   :defer t
@@ -391,15 +405,6 @@
   (snippet-mode . yas-minor-mode-on)
   )
 
-(use-package smartparens
-  :defer t
-  :after prog-mode
-  :hook
-  (prog-mode . smartparens-mode)
-  :config
-  ;; don't interfere with yasnippets
-  (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
-  )
 
 
 ;; setup a special menu that tells us what keys are available
@@ -719,7 +724,8 @@
 ;; completion mini buffers
 (use-package company
   :defer t
-  :after lsp-mode
+  ;; :after lsp-mode
+  :after elgot-mode
   :hook
   (evil-insert-state-entry . (lambda () (company-mode 1)))
   (evil-insert-state-exit . (lambda () (company-mode 0)))
@@ -734,6 +740,10 @@
                )
          ;; only make tab start completions if lsp is active
          (:map lsp-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               )
+         (:map eglot-mode-map
                ;; start the completion process
                ("<tab>" . company-indent-or-complete-common)
                )
@@ -851,7 +861,7 @@
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'lsp
+        rustic-lsp-client 'eglot
         rustic-lsp-server 'rust-analyzer
         rustic-indent-offset 4
         rust-format-on-save t)
@@ -959,77 +969,23 @@
   )
 
 
-;; (use-package eglot
-;;   :defer t
-;;   :hook ((js2-mode . eglot-ensure)
-;;          (rsjx-mode . eglot-ensure)
-;;          (scss-mode . eglot-ensure)
-;;          (web-mode . eglot-ensure)
-;;          (typescript-mode . eglot-ensure)
-;;          (rustic-mode . eglot-ensure)
-;;          (csharp-mode . eglot-ensure)
-;;          (elixir-mode . eglot-ensure)
-;;          (yaml-mode . eglot-ensure)
-;;          (json-mode . eglot-ensure)
-;;          (go-mode . eglot-ensure)
-;;          )
-;;   :bind
-;;   ([remap xref-goto-xref] . custo/xref-goto-xref)
-;;   :config
-;;   (custo/local-leader-key
-;;     :keymaps '(js2-mode-map
-;;                rjsx-mode-map
-;;                rustic-mode-map
-;;                typescript-mode-map
-;;                csharp-mode-map
-;;                elixir-mode-map
-;;                yaml-mode-map
-;;                json-mode-map
-;;                web-mode-map
-;;                go-mode-map
-;;                python-mode-map
-;;                gdscript-mode-map
-;;                lsp-mode-map
-;;                lsp-ui-mode-map)
-;;     "a" '(eglot-code-actions :wk "excute code action")
-;;     "g r" '(xref-find-references :wk "goto references")
-;;     "g g" '(eglot-find-implementation :wk "goto definition")
-;;     "r" '(:ignore t :which-key "refactor")
-;;     "r r" '(eglot-rename :which-key "rename")
-;;     "=" '(:ignore t :which-key "format")
-;;     "= l" '(eglot-format-buffer :wk "format with eglot")
-;;     )
-;;   )
-
-;;lsp-mode
-(use-package lsp-mode
+(use-package eglot
   :defer t
-  :hook ((js2-mode . lsp-deferred)
-         (rsjx-mode . lsp-deferred)
-         (scss-mode . lsp-deferred)
-         (web-mode . lsp-deferred)
-         (typescript-mode . lsp-deferred)
-         (rustic-mode . lsp-deferred)
-         (csharp-mode . lsp-deferred)
-         (elixir-mode . lsp-deferred)
-         (yaml-mode . lsp-deferred)
-         (json-mode . lsp-deferred)
-         (go-mode . lsp-deferred)
-         ;; (python-mode . lsp-deferred)
-         (lsp-mode . lsp-enable-which-key-integration)
+  :hook ((js2-mode . eglot-ensure)
+         (rsjx-mode . eglot-ensure)
+         (scss-mode . eglot-ensure)
+         (web-mode . eglot-ensure)
+         (typescript-mode . eglot-ensure)
+         (rustic-mode . eglot-ensure)
+         (csharp-mode . eglot-ensure)
+         (elixir-mode . eglot-ensure)
+         (yaml-mode . eglot-ensure)
+         (json-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
          )
-  :commands (lsp lsp-deferred)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (setq lsp-completion-provider :none
-        lsp-file-watch-threshold 100
-        lsp-headerline-breadcrumb-enable nil
-        ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-        lsp-ui-doc-enable nil
-        lsp-idle-delay 0.500
-        lsp-log-io nil
-        )
   (custo/local-leader-key
     :keymaps '(js2-mode-map
                rjsx-mode-map
@@ -1045,37 +1001,91 @@
                gdscript-mode-map
                lsp-mode-map
                lsp-ui-mode-map)
-    "a" '(lsp-execute-code-action :wk "excute code action")
-    "g r" '(lsp-find-references :wk "goto references")
-    "g r" '(lsp-find-references :wk "goto references")
-    "g p" '(lsp-ui-peek-find-references :which-key "peek references")
-    "g g" '(lsp-find-definition :which-key "goto definition")
-    "l" '(:ignore t :wk "lsp")
-    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
-    "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-    "o" '(lsp-ui-imenu :which-key "overview")
+    "a" '(eglot-code-actions :wk "excute code action")
+    "g r" '(xref-find-references :wk "goto references")
+    "g g" '(eglot-find-implementation :wk "goto definition")
     "r" '(:ignore t :which-key "refactor")
-    "r r" '(lsp-rename :which-key "rename")
+    "r r" '(eglot-rename :which-key "rename")
     "=" '(:ignore t :which-key "format")
-    "= l" '(lsp-format-buffer :which-key "format with lsp")
+    "= l" '(eglot-format-buffer :wk "format with eglot")
     )
   )
 
-(use-package lsp-pyright
-  :after (:all lsp-mode python)
-  :hook (python-mode .
-                     (lambda ()
-                       (require 'lsp-pyright)
-                       (lsp-deferred)))
-  )
+;;lsp-mode
+;; (use-package lsp-mode
+;;   :defer t
+;;   :hook ((js2-mode . lsp-deferred)
+;;          (rsjx-mode . lsp-deferred)
+;;          (scss-mode . lsp-deferred)
+;;          (web-mode . lsp-deferred)
+;;          (typescript-mode . lsp-deferred)
+;;          (rustic-mode . lsp-deferred)
+;;          (csharp-mode . lsp-deferred)
+;;          (elixir-mode . lsp-deferred)
+;;          (yaml-mode . lsp-deferred)
+;;          (json-mode . lsp-deferred)
+;;          (go-mode . lsp-deferred)
+;;          ;; (python-mode . lsp-deferred)
+;;          (lsp-mode . lsp-enable-which-key-integration)
+;;          )
+;;   :commands (lsp lsp-deferred)
+;;   :bind
+;;   ([remap xref-goto-xref] . custo/xref-goto-xref)
+;;   :config
+;;   (setq lsp-completion-provider :none
+;;         lsp-file-watch-threshold 100
+;;         lsp-headerline-breadcrumb-enable nil
+;;         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
+;;         lsp-ui-doc-enable nil
+;;         lsp-idle-delay 0.500
+;;         lsp-log-io nil
+;;         )
+;;   (custo/local-leader-key
+;;     :keymaps '(js2-mode-map
+;;                rjsx-mode-map
+;;                rustic-mode-map
+;;                typescript-mode-map
+;;                csharp-mode-map
+;;                elixir-mode-map
+;;                yaml-mode-map
+;;                json-mode-map
+;;                web-mode-map
+;;                go-mode-map
+;;                python-mode-map
+;;                gdscript-mode-map
+;;                lsp-mode-map
+;;                lsp-ui-mode-map)
+;;     "a" '(lsp-execute-code-action :wk "excute code action")
+;;     "g r" '(lsp-find-references :wk "goto references")
+;;     "g r" '(lsp-find-references :wk "goto references")
+;;     "g p" '(lsp-ui-peek-find-references :which-key "peek references")
+;;     "g g" '(lsp-find-definition :which-key "goto definition")
+;;     "l" '(:ignore t :wk "lsp")
+;;     "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+;;     "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
+;;     "o" '(lsp-ui-imenu :which-key "overview")
+;;     "r" '(:ignore t :which-key "refactor")
+;;     "r r" '(lsp-rename :which-key "rename")
+;;     "=" '(:ignore t :which-key "format")
+;;     "= l" '(lsp-format-buffer :which-key "format with lsp")
+;;     )
+;;   )
+
+;; (use-package lsp-pyright
+;;   :after (:all lsp-mode python)
+;;   :hook (python-mode .
+;;                      (lambda ()
+;;                        (require 'lsp-pyright)
+;;                        (lsp-deferred)))
+;;   )
 
 ;; prettier lsp
-(use-package lsp-ui
-  :defer t
-  :after lsp-mode
-  :hook
-  (lsp-mode . lsp-ui-mode)
-  )
+;; (use-package lsp-ui
+;;   :defer t
+;;   :after lsp-mode
+;;   :hook
+;;   (lsp-mode . lsp-ui-mode)
+;;   )
 
 ;; error checking
 (use-package flycheck
@@ -1375,11 +1385,11 @@
   (setq treemacs-width 25)
   )
 
-(use-package lsp-treemacs
-  :defer t
-  :after (:all treemacs lsp-mode)
-  :commands lsp-treemacs-errors-list
-  )
+;; (use-package lsp-treemacs
+;;   :defer t
+;;   :after (:all treemacs lsp-mode)
+;;   :commands lsp-treemacs-errors-list
+;;   )
 
 (use-package treemacs-evil
   :defer t
