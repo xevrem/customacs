@@ -210,95 +210,6 @@
         )
   )
 
-;; minad' and oantolin's awesome packages:
-;; (use-package vertico
-;;   :defer t
-;;   :hook
-;;   (after-init . vertico-mode)
-;;   :config
-;;   (setq vertico-cycle t)
-;;   )
-
-
-;; (defun custo/get-project-root ()
-;;   "Get the current project root."
-;;   (when (fboundp 'projectile-project-root)
-;;     (projectile-project-root)))
-
-;; (use-package consult
-;;   :defer t
-;;   :after vertico
-;;   :custom
-;;   (consult-project-root-function #'custo/get-project-root)
-;;   ;; :config
-;;   ;; (setq consult-grep-command)
-;;   )
-
-;; (use-package consult-flycheck
-;;   :defer t
-;;   :after (:all consult flycheck)
-;;   )
-
-;; (use-package marginalia
-;;   :defer t
-;;   :after vertico
-;;   :hook
-;;   (vertico-mode . marginalia-mode)
-;;   )
-
-;; (use-package orderless
-;;   :after vertico
-;;   :config
-;;   (orderless-define-completion-style orderless+initialism
-;;     (orderless-matching-styles '(orderless-initialism
-;;                                  orderless-literal
-;;                                  orderless-regexp)))
-;;   (setq completion-styles '(orderless+initialism)
-;;         completion-category-defaults nil
-;;         completion-category-overrides '((file (styles . (partial-completion)))
-;;                                         (command (styles orderless+initialism))
-;;                                         (symbol (styles orderless+initialism))
-;;                                         (variable (styles orderless+initialism)))
-;;         )
-;;   )
-
-
-;; (defun affe-orderless-regexp-compiler (input _type)
-;;   "Affe regex compiler that utilizes orderless when searching for INPUT."
-;;     (setq input (orderless-pattern-compiler input))
-;;     (cons input (lambda (str) (orderless--highlight input str))))
-
-;; (use-package affe
-;;   :straight '(:type git :host github
-;;               :repo "minad/affe"
-;;               :branch "main")
-;;   :defer t
-;;   :after (:all vertico consult orderless)
-;;   :commands (affe-grep
-;;              affe-find)
-;;   :config
-;;   ;; Configure Orderless
-;;   (setq affe-regexp-function #'orderless-pattern-compiler
-;;         affe-highlight-function #'orderless--highlight
-;;         affe-regexp-compiler #'affe-orderless-regexp-compiler
-;;         affe-grep-command "/usr/local/bin/rg --null --color=never --max-columns=1000 --no-heading --line-number -v ^$ .")
-
-;;   )
-
-;; alternate completion engine to company
-;; (use-package corfu
-;;   :defer t
-;;   :after evil
-;;   :hook
-;;   (evil-insert-state-entry . (lambda () (corfu-mode 1)))
-;;   (evil-insert-state-exit . (lambda () (corfu-mode 0)))
-;;   :bind (:map corfu-map
-;;               ("TAB" . corfu-next)
-;;               ("<backtab>" . corfu-previous)
-;;               )
-;;   :custom
-;;   (corfu-cycle t)
-;;   )
 
 (use-package emacs
   :init
@@ -310,10 +221,12 @@
   (setq tab-always-indent 'complete)
   )
 
-;; (use-package ripgrep
-;;   :defer t
-;;   :after (:any consult projectile)
-;;   )
+
+;; show recently used files
+(use-package recentf
+  :defer t
+  :commands recentf-open-files
+  )
 
 ;; ivy trio
 (use-package swiper
@@ -331,23 +244,17 @@
              counsel-recentf
              counsel-load-theme
              counsel-flycheck)
-  :bind (("M-x" . counsel-M-x)
-         ("C-x C-f" . counsel-find-file)
-         )
-  )
-
-;; show recently used files
-(use-package recentf
-  :defer t
-  :hook
-  (after-init . recentf-mode)
   )
 
 (use-package ivy
   :defer t
   :hook
   (after-init . ivy-mode)
-  :bind (("C-s" . swiper))
+  ;; we bind here in ivy so that they are loaded dynamically
+  :bind (("C-s" . swiper)
+         ("M-x" . counsel-M-x)
+         ("C-x C-f" . counsel-find-file)
+         )
   :config
   (setq ivy-use-virtual-buffers t
         enable-recursive-minibuffers t
@@ -355,6 +262,15 @@
         )
   )
 
+;; provide more helpful info in ivy panels
+(use-package ivy-rich
+  :defer t
+  :after ivy
+  :hook
+  (ivy-mode . ivy-rich-mode)
+  )
+
+;; good fuzzy completions
 (use-package prescient)
 
 (use-package ivy-prescient
@@ -399,28 +315,28 @@
   :after doom-modeline
   :config
   (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t
-        )
+        doom-themes-enable-italic t)
   )
 
 ;; for certian versions of emacs, we need to change the backgroun
-(add-hook 'tty-setup-hook (lambda ()
-                            (unless (> emacs-major-version 27)
-                              (add-hook 'emacs-startup-hook (lambda ()
-                                                              (set-background-color "black")
-                                                              )
-                                        )
-                              (add-hook 'server-after-make-frame-hook (lambda ()
-                                                                        (set-background-color "black")
-                                                                        )
-                                        )
-                              )
-                            )
+(add-hook 'tty-setup-hook
+          (lambda ()
+            (unless (> emacs-major-version 27)
+              (add-hook 'emacs-startup-hook
+                        (lambda ()
+                          (set-background-color "black")))
+              (add-hook 'server-after-make-frame-hook
+                        (lambda ()
+                          (set-background-color "black")))
+              )
+            )
           )
 
 (use-package rainbow-identifiers
   :defer t
-  :after (:any doom-themes one-themes challenger-deep-theme)
+  :after (:any doom-themes
+               one-themes
+               challenger-deep-theme)
   :hook
   (prog-mode . rainbow-identifiers-mode)
   )
@@ -428,7 +344,9 @@
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
   :defer t
-  :after (:all doom-themes rainbow-identifiers)
+  :after (:any doom-themes
+               one-themes
+               challenge-deep-them)
   :hook
   (prog-mode . rainbow-delimiters-mode)
   )
@@ -436,14 +354,16 @@
 ;; highlight matching delimiters
 (use-package paren
   :defer t
-  :after (:all doom-themes rainbow-identifiers rainbow-delimiters)
+  :after (:any doom-themes
+               one-themes
+               challenge-deep-them)
   :hook (prog-mode . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
         show-paren-highlight-openparen t
         show-paren-when-point-inside-paren t
-        show-paren-when-point-in-periphery t)
-  (setq blink-matching-paren t)
+        show-paren-when-point-in-periphery t
+        blink-matching-paren t)
   )
 
 (use-package clipetty
@@ -461,6 +381,7 @@
 ;; yasnippet
 (use-package yasnippet
   :defer t
+  :after prog-mode
   :commands (yas-minor-mode-on
              yas-lookup-snippet)
   :hook
@@ -472,6 +393,7 @@
 
 (use-package smartparens
   :defer t
+  :after prog-mode
   :hook
   (prog-mode . smartparens-mode)
   :config
@@ -490,13 +412,6 @@
   (setq which-key-idle-delay 0.1)
   )
 
-;; provide more helpful info in ivy panels
-;; (use-package ivy-rich
-;;   :defer t
-;;   :after ivy
-;;   :hook
-;;   (ivy-mode . ivy-rich-mode)
-;;   )
 
 
 ;; more better help menus
@@ -722,8 +637,8 @@
              projectile-switch-project
              projectile-switch-to-buffer)
   :hook
-  (vertico-mode . projectile-mode)
-  ;; (ivy-mode . projectile-mode)
+  ;; (vertico-mode . projectile-mode)
+  (ivy-mode . projectile-mode)
   :custom
   (projectile-completion-system 'ivy)
   :config
@@ -864,18 +779,24 @@
 ;; better javascript mode
 (use-package js2-mode
   :defer t
+  :after prog-mode
   ;; :mode "\\/.*\\.js\\'"
   :mode "\\.js\\'"
   :config
   (setq js-indent-level 2)
   :hook
   (js2-mode . yas-minor-mode)
+  ;; :config
+  ;; (rainbow-identifiers-mode nil)
   )
 
 ;; teach js2-mode how to jsx
 (use-package rjsx-mode
   :defer t
+  :after prog-mode
   :mode ("components\\/.*\\.js\\'" "\\.jsx\\'")
+  ;; :config
+  ;; (rainbow-identifiers-mode nil)
   )
 
 ;; auto-docs :D
@@ -1142,11 +1063,10 @@
 
 (use-package lsp-pyright
   :after (:all lsp-mode python)
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp-deferred)
-                          )
-                     )
+  :hook (python-mode .
+                     (lambda ()
+                       (require 'lsp-pyright)
+                       (lsp-deferred)))
   )
 
 ;; prettier lsp
@@ -1173,7 +1093,7 @@
   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
-    "e l" '(consult-flycheck :wk "list errors")
+    "e l" '(counsel-flycheck :wk "list errors")
     )
   (custo/local-leader-key
     :keymaps '(js2-mode-map
@@ -1185,8 +1105,7 @@
                go-mode-map
                )
     "e" '(:ignore t :wk "errors")
-    "e l" '(consult-flycheck :which-key "list errors")
-    ;; "e l" '(counsel-flycheck :wk "list errors")
+    "e l" '(counsel-flycheck :wk "list errors")
     )
   )
 
@@ -1363,6 +1282,7 @@
 
 ;; make org look nicer
 (use-package org-superstar
+  :if (display-graphic-p)
   :defer t
   :after org
   :hook
@@ -1413,7 +1333,6 @@
   )
 
 
-
 (defconst private-file (expand-file-name "~/.private.el"))
 (unless (file-exists-p private-file)
   (with-temp-buffer (write-file private-file))
@@ -1458,7 +1377,7 @@
 
 (use-package lsp-treemacs
   :defer t
-  :after (:all lsp-mode treemacs)
+  :after (:all treemacs lsp-mode)
   :commands lsp-treemacs-errors-list
   )
 
