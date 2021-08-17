@@ -36,7 +36,7 @@
                 term-mode-hook
                 eshell-mode-hook
                 ansi-term-mode-hook
-                treemacs-mode-hook
+                ;; treemacs-mode-hook
                 vterm-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0)
                    )
@@ -461,6 +461,7 @@
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
   )
 
+
 ;; highlight matching delimiters
 (use-package paren
   :defer t
@@ -476,35 +477,19 @@
         blink-matching-paren t)
   )
 
+
 (use-package clipetty
   :defer t
   :hook
   (tty-setup . global-clipetty-mode)
   )
 
+
 (use-package xclip
   :defer t
   :hook
   (tty-setup . xclip-mode)
   )
-
-(use-package yasnippet-snippets)
-
-;; yasnippet
-(use-package yasnippet
-  :defer t
-  :after yasnippet-snippets
-  :commands (yas-reload-all
-             yas-minor-mode-on
-             yas-lookup-snippet)
-  :hook
-  (after-init . yas-reload-all)
-  (text-mode . yas-minor-mode-on)
-  (prog-mode . yas-minor-mode-on)
-  (conf-mode . yas-minor-mode-on)
-  (snippet-mode . yas-minor-mode-on)
-  )
-
 
 
 ;; setup a special menu that tells us what keys are available
@@ -628,7 +613,7 @@
   "f r" '(consult-recent-file :wk "recent files")
   "f R" '(recentf-open-files :wk "full recentf files")
   "f s" '(save-buffer :which-key "save file")
-  "f t" '(treemacs :wk "treemacs")
+  ;; "f t" '(treemacs :wk "treemacs")
   "g" '(:ignore t :which-key "magit")
   "g g" '(magit-status :which-key "magit status")
   "g b" '(magit-branch :which-key "magit branch")
@@ -687,6 +672,28 @@
   "g" '(:ignore t :which-key "goto")
   "i" '(:ingore t :which-key "insert")
   )
+
+
+
+(use-package yasnippet-snippets)
+
+;; yasnippet
+(use-package yasnippet
+  :defer t
+  :after yasnippet-snippets
+  :commands (yas-reload-all
+             yas-minor-mode-on)
+  :hook
+  (after-init . yas-reload-all)
+  (text-mode . yas-minor-mode-on)
+  (prog-mode . yas-minor-mode-on)
+  (conf-mode . yas-minor-mode-on)
+  (snippet-mode . yas-minor-mode-on)
+  :config
+  (custo/local-leader-key
+    "i s" '(yas-insert-snippet :which-key "insert snippet"))
+  )
+
 
 ;; hydra to build menus
 (use-package hydra
@@ -830,7 +837,8 @@
   ;; :after lsp-mode
   ;; :after eglot
   :hook
-  (eglot--managed-mode . company-mode)
+  (lsp-mode . company-mode)
+  ;; (eglot--managed-mode . company-mode)
   ;; (evil-insert-state-entry . (lambda () (company-mode 1)))
   ;; (evil-insert-state-exit . (lambda () (company-mode 0)))
   :bind (;; only active when trying to complete a selection
@@ -843,14 +851,14 @@
                ("<backtab>" . company-select-previous)
                )
          ;; only make tab start completions if lsp is active
-         ;; (:map lsp-mode-map
-         ;;       ;; start the completion process
-         ;;       ("<tab>" . company-indent-or-complete-common)
-         ;;       )
-         (:map eglot-mode-map
+         (:map lsp-mode-map
                ;; start the completion process
                ("<tab>" . company-indent-or-complete-common)
                )
+         ;; (:map eglot-mode-map
+         ;;       ;; start the completion process
+         ;;       ("<tab>" . company-indent-or-complete-common)
+         ;;       )
          )
   :config
   (setq company-backends '(company-capf)
@@ -923,13 +931,9 @@
     "d f" '(js-doc-insert-function-doc :which-key "jsdoc function"))
   )
 
-(use-package js-react-redux-yasnippets
-  :after (:all yasnippet js2-mode)
-  :config
-  (custo/local-leader-key
-    :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map)
-    "i s" '(yas-insert-snippet :which-key "insert snippet"))
-  )
+;; (use-package js-react-redux-yasnippets
+;;   :after (:all yasnippet js2-mode)
+;;   )
 
 ;; format js and jsx
 (use-package prettier
@@ -965,7 +969,7 @@
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
+        rustic-lsp-client 'lsp
         rustic-lsp-server 'rust-analyzer
         rustic-indent-offset 4
         rust-format-on-save t)
@@ -1078,78 +1082,24 @@
 (use-package xref)
 (use-package eldoc)
 
-(use-package eglot
-  :defer t
-  :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  :hook ((js2-mode . eglot-ensure)
-         (rsjx-mode . eglot-ensure)
-         (scss-mode . eglot-ensure)
-         (web-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (rustic-mode . eglot-ensure)
-         (csharp-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure)
-         (yaml-mode . eglot-ensure)
-         (json-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         )
-  :bind
-  ([remap xref-goto-xref] . custo/xref-goto-xref)
-  :config
-  (custo/local-leader-key
-    :keymaps '(js2-mode-map
-               rjsx-mode-map
-               rustic-mode-map
-               typescript-mode-map
-               csharp-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               web-mode-map
-               go-mode-map
-               python-mode-map
-               gdscript-mode-map
-               lsp-mode-map
-               lsp-ui-mode-map)
-    "a" '(eglot-code-actions :wk "excute code action")
-    "g r" '(xref-find-references :wk "goto references")
-    "g g" '(eglot-find-implementation :wk "goto definition")
-    "r" '(:ignore t :which-key "refactor")
-    "r r" '(eglot-rename :which-key "rename")
-    "=" '(:ignore t :which-key "format")
-    "= l" '(eglot-format-buffer :wk "format with eglot")
-    )
-  )
-
-;;lsp-mode
-;; (use-package lsp-mode
+;; (use-package eglot
 ;;   :defer t
-;;   :hook ((js2-mode . lsp-deferred)
-;;          (rsjx-mode . lsp-deferred)
-;;          (scss-mode . lsp-deferred)
-;;          (web-mode . lsp-deferred)
-;;          (typescript-mode . lsp-deferred)
-;;          (rustic-mode . lsp-deferred)
-;;          (csharp-mode . lsp-deferred)
-;;          (elixir-mode . lsp-deferred)
-;;          (yaml-mode . lsp-deferred)
-;;          (json-mode . lsp-deferred)
-;;          (go-mode . lsp-deferred)
-;;          ;; (python-mode . lsp-deferred)
-;;          (lsp-mode . lsp-enable-which-key-integration)
+;;   :after (:all yasnippet jsonrpc flymake project xref eldoc)
+;;   :hook ((js2-mode . eglot-ensure)
+;;          (rsjx-mode . eglot-ensure)
+;;          (scss-mode . eglot-ensure)
+;;          (web-mode . eglot-ensure)
+;;          (typescript-mode . eglot-ensure)
+;;          (rustic-mode . eglot-ensure)
+;;          (csharp-mode . eglot-ensure)
+;;          (elixir-mode . eglot-ensure)
+;;          (yaml-mode . eglot-ensure)
+;;          (json-mode . eglot-ensure)
+;;          (go-mode . eglot-ensure)
 ;;          )
-;;   :commands (lsp lsp-deferred)
 ;;   :bind
 ;;   ([remap xref-goto-xref] . custo/xref-goto-xref)
 ;;   :config
-;;   (setq lsp-completion-provider :none
-;;         lsp-file-watch-threshold 100
-;;         lsp-headerline-breadcrumb-enable nil
-;;         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-;;         lsp-ui-doc-enable nil
-;;         lsp-idle-delay 0.500
-;;         lsp-log-io nil
-;;         )
 ;;   (custo/local-leader-key
 ;;     :keymaps '(js2-mode-map
 ;;                rjsx-mode-map
@@ -1165,37 +1115,91 @@
 ;;                gdscript-mode-map
 ;;                lsp-mode-map
 ;;                lsp-ui-mode-map)
-;;     "a" '(lsp-execute-code-action :wk "excute code action")
-;;     "g r" '(lsp-find-references :wk "goto references")
-;;     "g r" '(lsp-find-references :wk "goto references")
-;;     "g p" '(lsp-ui-peek-find-references :which-key "peek references")
-;;     "g g" '(lsp-find-definition :which-key "goto definition")
-;;     "l" '(:ignore t :wk "lsp")
-;;     "l g" '(lsp-ui-doc-glance :wk "glance symbol")
-;;     "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-;;     "o" '(lsp-ui-imenu :which-key "overview")
+;;     "a" '(eglot-code-actions :wk "excute code action")
+;;     "g r" '(xref-find-references :wk "goto references")
+;;     "g g" '(eglot-find-implementation :wk "goto definition")
 ;;     "r" '(:ignore t :which-key "refactor")
-;;     "r r" '(lsp-rename :which-key "rename")
+;;     "r r" '(eglot-rename :which-key "rename")
 ;;     "=" '(:ignore t :which-key "format")
-;;     "= l" '(lsp-format-buffer :which-key "format with lsp")
+;;     "= l" '(eglot-format-buffer :wk "format with eglot")
 ;;     )
 ;;   )
 
-;; (use-package lsp-pyright
-;;   :after (:all lsp-mode python)
-;;   :hook (python-mode .
-;;                      (lambda ()
-;;                        (require 'lsp-pyright)
-;;                        (lsp-deferred)))
-;;   )
+;;lsp-mode
+(use-package lsp-mode
+  :defer t
+  :hook ((js2-mode . lsp-deferred)
+         (rsjx-mode . lsp-deferred)
+         (scss-mode . lsp-deferred)
+         (web-mode . lsp-deferred)
+         (typescript-mode . lsp-deferred)
+         (rustic-mode . lsp-deferred)
+         (csharp-mode . lsp-deferred)
+         (elixir-mode . lsp-deferred)
+         (yaml-mode . lsp-deferred)
+         (json-mode . lsp-deferred)
+         (go-mode . lsp-deferred)
+         ;; (python-mode . lsp-deferred)
+         (lsp-mode . lsp-enable-which-key-integration)
+         )
+  :commands (lsp lsp-deferred)
+  :bind
+  ([remap xref-goto-xref] . custo/xref-goto-xref)
+  :config
+  (setq lsp-completion-provider :capf
+        lsp-file-watch-threshold 100
+        lsp-headerline-breadcrumb-enable nil
+        ;; lsp-headerline-breadcrumb-segments '(project file symbols)
+        lsp-ui-doc-enable nil
+        lsp-idle-delay 0.500
+        lsp-log-io nil
+        )
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map
+               rjsx-mode-map
+               rustic-mode-map
+               typescript-mode-map
+               csharp-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               web-mode-map
+               go-mode-map
+               python-mode-map
+               gdscript-mode-map
+               lsp-mode-map
+               lsp-ui-mode-map)
+    "a" '(lsp-execute-code-action :wk "excute code action")
+    "g r" '(lsp-find-references :wk "goto references")
+    "g r" '(lsp-find-references :wk "goto references")
+    "g p" '(lsp-ui-peek-find-references :which-key "peek references")
+    "g g" '(lsp-find-definition :which-key "goto definition")
+    "l" '(:ignore t :wk "lsp")
+    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
+    "o" '(lsp-ui-imenu :which-key "overview")
+    "r" '(:ignore t :which-key "refactor")
+    "r r" '(lsp-rename :which-key "rename")
+    "=" '(:ignore t :which-key "format")
+    "= l" '(lsp-format-buffer :which-key "format with lsp")
+    )
+  )
+
+(use-package lsp-pyright
+  :after (:all lsp-mode python)
+  :hook (python-mode .
+                     (lambda ()
+                       (require 'lsp-pyright)
+                       (lsp-deferred)))
+  )
 
 ;; prettier lsp
-;; (use-package lsp-ui
-;;   :defer t
-;;   :after lsp-mode
-;;   :hook
-;;   (lsp-mode . lsp-ui-mode)
-;;   )
+(use-package lsp-ui
+  :defer t
+  :after lsp-mode
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  )
 
 ;; error checking
 (use-package flycheck
@@ -1413,13 +1417,16 @@
   (org-superstar-configure-like-org-bullets)
   )
 
-
+(defun custo/visual-fill ()
+  "When in GUI mode, enable visual fill column."
+  (when (display-graphic-p)
+    (visual-fill-column-mode 1)))
 
 (use-package visual-fill-column
   :defer t
   :hook
-  (org-mode . visual-fill-column-mode)
-  (markdown-mode . visual-fill-column-mode)
+  (org-mode . custo/visual-fill)
+  (markdown-mode . custo/visual-fill)
   :config
   (setq visual-fill-column-width 100
         visual-fill-column-center-text t)
@@ -1490,12 +1497,12 @@
   :hook (circe-channel-mode . enable-circe-color-nicks)
   )
 
-(use-package treemacs
-  :defer t
-  :commands treemacs
-  :config
-  (setq treemacs-width 25)
-  )
+;; (use-package treemacs
+;;   :defer t
+;;   :commands treemacs
+;;   :config
+;;   (setq treemacs-width 25)
+;;   )
 
 ;; (use-package lsp-treemacs
 ;;   :defer t
@@ -1503,20 +1510,20 @@
 ;;   :commands lsp-treemacs-errors-list
 ;;   )
 
-(use-package treemacs-evil
-  :defer t
-  :after (:all treemacs evil)
-  )
+;; (use-package treemacs-evil
+;;   :defer t
+;;   :after (:all treemacs evil)
+;;   )
 
-(use-package treemacs-projectile
-  :defer t
-  :after (:all treemacs projectile)
-  )
+;; (use-package treemacs-projectile
+;;   :defer t
+;;   :after (:all treemacs projectile)
+;;   )
 
-(use-package treemacs-magit
-  :defer t
-  :after (:all treemacs magit)
-  )
+;; (use-package treemacs-magit
+;;   :defer t
+;;   :after (:all treemacs magit)
+;;   )
 
 (use-package vterm
   :defer t
