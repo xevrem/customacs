@@ -212,6 +212,9 @@
 
 ;; minad' and oantolin's awesome packages:
 (use-package vertico
+  :straight '(:type git :host github
+              :repo "minad/vertico"
+              :branch "main")
   :defer t
   :hook
   (after-init . vertico-mode)
@@ -230,8 +233,6 @@
   :after vertico
   :custom
   (consult-project-root-function #'custo/get-project-root)
-  ;; :config
-  ;; (setq consult-grep-command)
   )
 
 (use-package consult-flycheck
@@ -487,13 +488,17 @@
   (tty-setup . xclip-mode)
   )
 
+(use-package yasnippet-snippets)
+
 ;; yasnippet
 (use-package yasnippet
   :defer t
-  :after prog-mode
-  :commands (yas-minor-mode-on
+  :after yasnippet-snippets
+  :commands (yas-reload-all
+             yas-minor-mode-on
              yas-lookup-snippet)
   :hook
+  (after-init . yas-reload-all)
   (text-mode . yas-minor-mode-on)
   (prog-mode . yas-minor-mode-on)
   (conf-mode . yas-minor-mode-on)
@@ -823,10 +828,11 @@
 (use-package company
   :defer t
   ;; :after lsp-mode
-  :after elgot-mode
+  ;; :after eglot
   :hook
-  (evil-insert-state-entry . (lambda () (company-mode 1)))
-  (evil-insert-state-exit . (lambda () (company-mode 0)))
+  (eglot--managed-mode . company-mode)
+  ;; (evil-insert-state-entry . (lambda () (company-mode 1)))
+  ;; (evil-insert-state-exit . (lambda () (company-mode 0)))
   :bind (;; only active when trying to complete a selection
          (:map company-active-map
                ;; complete the currently chosen selection
@@ -837,10 +843,10 @@
                ("<backtab>" . company-select-previous)
                )
          ;; only make tab start completions if lsp is active
-         (:map lsp-mode-map
-               ;; start the completion process
-               ("<tab>" . company-indent-or-complete-common)
-               )
+         ;; (:map lsp-mode-map
+         ;;       ;; start the completion process
+         ;;       ("<tab>" . company-indent-or-complete-common)
+         ;;       )
          (:map eglot-mode-map
                ;; start the completion process
                ("<tab>" . company-indent-or-complete-common)
@@ -1066,9 +1072,15 @@
   (xref-goto-xref t)
   )
 
+(use-package jsonrpc)
+(use-package flymake)
+(use-package project)
+(use-package xref)
+(use-package eldoc)
 
 (use-package eglot
   :defer t
+  :after (:all yasnippet jsonrpc flymake project xref eldoc)
   :hook ((js2-mode . eglot-ensure)
          (rsjx-mode . eglot-ensure)
          (scss-mode . eglot-ensure)
