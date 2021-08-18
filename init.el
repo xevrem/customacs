@@ -738,11 +738,16 @@
   :hook
   (prog-mode . symbol-overlay-mode)
   :config
-  (defhydra hydra-symbol-overlay (:timeout 4)
+  (defhydra hydra-symbol-overlay (:timeout nil)
     "symbol find and replace"
-    ("q" symbol-overlay-remove-all "quit" :exit t)
-    ("m" symbol-overlay-put "mark symbol")
-    ("r" symbol-overlay-query-replace "find and replace")
+    ("q" "quit" :exit t)
+    ("d" symbol-overlay-remove-all "unmark all symbols" :exit t)
+    ("m" symbol-overlay-put "toggle symbol")
+    ("r" symbol-overlay-rename "rename symbol")
+    ("Q" symbol-overlay-query-replace "find and replace symbol")
+    ("t" symbol-overlay-toggle-in-scope "toggle scope")
+    ("n" symbol-overlay-jump-next "next symbol")
+    ("p" symbol-overlay-jump-prev "prev symbol")
     )
   (custo/leader-key
     "s o" '(hydra-symbol-overlay/body :wk "symbol overlay")
