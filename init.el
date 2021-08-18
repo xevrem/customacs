@@ -591,6 +591,7 @@
   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
   ;; ":" '(counsel-M-x :wk "M-x")
   ":" '(execute-extended-command :wk "M-x")
+  "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
   "a" '(:ignore t :wk "apps")
   "a c" '(circe :wk "circe")
   "a e" '(eww :wk "eww")
@@ -675,7 +676,6 @@
   )
 
 
-
 (use-package yasnippet-snippets)
 
 ;; yasnippet
@@ -699,6 +699,8 @@
 ;; hydra to build menus
 (use-package hydra
   :defer t
+  :after which-key
+  :commands (defhydra)
   :config
   (defhydra hydra-text-scale (:timeout 4)
     "scale text"
@@ -714,6 +716,7 @@
 
 (use-package undo-tree
   :defer t
+  :after hydra
   :hook
   (prog-mode . undo-tree-mode)
   (org-mode . undo-tree-mode)
@@ -726,6 +729,23 @@
     )
   (custo/leader-key
     "u" '(hydra-undo-tree/body :which-key "undo/redo")
+    )
+  )
+
+(use-package symbol-overlay
+  :defer t
+  :after hydra
+  :hook
+  (prog-mode . symbol-overlay-mode)
+  :config
+  (defhydra hydra-symbol-overlay (:timeout 4)
+    "symbol find and replace"
+    ("q" symbol-overlay-remove-all "quit" :exit t)
+    ("m" symbol-overlay-put "mark symbol")
+    ("r" symbol-overlay-query-replace "find and replace")
+    )
+  (custo/leader-key
+    "s o" '(hydra-symbol-overlay/body :wk "symbol overlay")
     )
   )
 
