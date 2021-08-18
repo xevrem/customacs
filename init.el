@@ -181,6 +181,13 @@
     )
   )
 
+(use-package emacs-async
+ :config
+ (async-bytecomp-package-mode 1)
+ (dired-async-mode 1)
+ )
+
+
 
 ;; restart
 (use-package restart-emacs
