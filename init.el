@@ -67,7 +67,7 @@
       auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
 
 ;; native comp insanity
-;; if native comp is used, cache copiled code
+;; if native comp is used, cache compiled code
 (when (boundp 'native-comp-eln-load-path)
   (setcar native-comp-eln-load-path
           (expand-file-name "eln-cache/" user-emacs-directory)))
@@ -181,12 +181,12 @@
     )
   )
 
+
 (use-package emacs-async
  :config
  (async-bytecomp-package-mode 1)
  (dired-async-mode 1)
  )
-
 
 
 ;; restart
@@ -195,11 +195,13 @@
   :commands restart-emacs
   )
 
+
 (use-package savehist
   :defer t
   :hook
   (after-init . savehist-mode)
   )
+
 
 (use-package dashboard
   :defer t
@@ -216,6 +218,7 @@
         dashboard-set-file-icons t
         )
   )
+
 
 ;; minad' and oantolin's awesome packages:
 (use-package vertico
@@ -238,9 +241,15 @@
 (use-package consult
   :defer t
   :after vertico
+  :commands (consult-xref)
   :custom
   (consult-project-root-function #'custo/get-project-root)
+  :config
+  (setq consult-preview-key nil
+        xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
   )
+
 
 (use-package consult-flycheck
   :defer t
@@ -315,7 +324,7 @@
 
   ;; Enable indentation+completion using the TAB key.
   ;; Completion is often bound to M-TAB.
-  (setq tab-always-indent 'complete)
+  ;; (setq tab-always-indent 'complete)
   )
 
 
@@ -604,7 +613,7 @@
   "a e" '(eww :wk "eww")
   "a p" '(prodigy :wk "prodigy")
   "a t" '(vterm :wk "terminal")
-  "a T" '(custo/launch-vterm :wk "terminal")
+  "a T" '(custo/launch-vterm :wk "terminal in emacs mode")
   "b" '(:ignore t :which-key "buffer")
   ;; "b b" '(counsel-switch-buffer :which-key "switch buffers")
   "b b" '(switch-to-buffer :which-key "switch buffers")
@@ -715,9 +724,17 @@
     ("k" (text-scale-adjust -0.1) "out")
     ("f" nil "finished" :exit t)
     )
+  (defhydra hydra-window-resize (:timeout 4)
+    "resize window"
+    ("l" enlarge-window "enlarge window")
+    ("h" shrink-window "shrink window")
+    ("q" nil "done" :exit t)
+    )
+  
   ;; since custo leader keys are defined, we can bind to them now :D
   (custo/leader-key
-    "t s" '(hydra-text-scale/body :which-key "scale text")
+    "t s" '(hydra-text-scale/body :wk "scale text")
+    "w r" '(hydra-window-resize/body :wk "resize window")
     )
   )
 
@@ -868,11 +885,11 @@
 ;; completion mini buffers
 (use-package company
   :defer t
-  ;; :after lsp-mode
+  :after lsp
   ;; :after eglot
   :hook
-  ;; (lsp-mode . company-mode)
-  (eglot--managed-mode . company-mode)
+  (lsp-mode . company-mode)
+  ;; (eglot--managed-mode . company-mode)
   ;; (evil-insert-state-entry . (lambda () (company-mode 1)))
   ;; (evil-insert-state-exit . (lambda () (company-mode 0)))
   :bind (;; only active when trying to complete a selection
@@ -881,18 +898,21 @@
                ("RET" . company-complete-selection)
                ;; goto next selection
                ("<tab>" . company-select-next)
+               ("TAB" . company-select-next)
                ;; goto previous selection
                ("<backtab>" . company-select-previous)
                )
          ;; only make tab start completions if lsp is active
-         ;; (:map lsp-mode-map
-         ;;       ;; start the completion process
-         ;;       ("<tab>" . company-indent-or-complete-common)
-         ;;       )
-         (:map eglot-mode-map
+         (:map lsp-mode-map
                ;; start the completion process
                ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
                )
+         ;; (:map eglot-mode-map
+         ;;       ;; start the completion process
+         ;;       ("<tab>" . company-indent-or-complete-common)
+         ;;       ("TAB" . company-indent-or-complete-common)
+         ;;       )
          )
   :config
   (setq company-backends '(company-capf)
@@ -1003,7 +1023,7 @@
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
+        rustic-lsp-client 'lsp
         rustic-lsp-server 'rust-analyzer
         rustic-indent-offset 4
         rustic-format-on-save t)
@@ -1123,78 +1143,24 @@
 (use-package xref)
 (use-package eldoc)
 
-(use-package eglot
-  :defer t
-  :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  :hook ((js2-mode . eglot-ensure)
-         (rsjx-mode . eglot-ensure)
-         (scss-mode . eglot-ensure)
-         (web-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (rustic-mode . eglot-ensure)
-         (csharp-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure)
-         (yaml-mode . eglot-ensure)
-         (json-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         )
-  :bind
-  ([remap xref-goto-xref] . custo/xref-goto-xref)
-  :config
-  (custo/local-leader-key
-    :keymaps '(js2-mode-map
-               rjsx-mode-map
-               rustic-mode-map
-               typescript-mode-map
-               csharp-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               web-mode-map
-               go-mode-map
-               python-mode-map
-               gdscript-mode-map)
-    "a" '(eglot-code-actions :wk "excute code action")
-    "g r" '(xref-find-references :wk "goto references")
-    "g g" '(eglot-find-implementation :wk "goto definition")
-    "r" '(:ignore t :wk "refactor")
-    "r r" '(eglot-rename :wk "rename")
-    "=" '(:ignore t :wk "format")
-    "= l" '(eglot-format-buffer :wk "format with eglot")
-    "e" '(:ignore t :wk "errors")
-    "e l" '(flymake-show-diagnostics-buffer :wk "list errors")
-    )
-  )
-
-;;lsp-mode
-;; (use-package lsp-mode
+;; (use-package eglot
 ;;   :defer t
-;;   :hook ((js2-mode . lsp-deferred)
-;;          (rsjx-mode . lsp-deferred)
-;;          (scss-mode . lsp-deferred)
-;;          (web-mode . lsp-deferred)
-;;          (typescript-mode . lsp-deferred)
-;;          (rustic-mode . lsp-deferred)
-;;          (csharp-mode . lsp-deferred)
-;;          (elixir-mode . lsp-deferred)
-;;          (yaml-mode . lsp-deferred)
-;;          (json-mode . lsp-deferred)
-;;          (go-mode . lsp-deferred)
-;;          ;; (python-mode . lsp-deferred)
-;;          (lsp-mode . lsp-enable-which-key-integration)
+;;   :after (:all yasnippet jsonrpc flymake project xref eldoc)
+;;   :hook ((js2-mode . eglot-ensure)
+;;          (rsjx-mode . eglot-ensure)
+;;          (scss-mode . eglot-ensure)
+;;          (web-mode . eglot-ensure)
+;;          (typescript-mode . eglot-ensure)
+;;          (rustic-mode . eglot-ensure)
+;;          (csharp-mode . eglot-ensure)
+;;          (elixir-mode . eglot-ensure)
+;;          (yaml-mode . eglot-ensure)
+;;          (json-mode . eglot-ensure)
+;;          (go-mode . eglot-ensure)
 ;;          )
-;;   :commands (lsp lsp-deferred)
 ;;   :bind
 ;;   ([remap xref-goto-xref] . custo/xref-goto-xref)
 ;;   :config
-;;   (setq lsp-completion-provider :capf
-;;         lsp-file-watch-threshold 100
-;;         lsp-headerline-breadcrumb-enable nil
-;;         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-;;         lsp-ui-doc-enable nil
-;;         lsp-idle-delay 0.500
-;;         lsp-log-io nil
-;;         )
 ;;   (custo/local-leader-key
 ;;     :keymaps '(js2-mode-map
 ;;                rjsx-mode-map
@@ -1207,74 +1173,127 @@
 ;;                web-mode-map
 ;;                go-mode-map
 ;;                python-mode-map
-;;                gdscript-mode-map
-;;                lsp-mode-map
-;;                lsp-ui-mode-map)
-;;     "a" '(lsp-execute-code-action :wk "excute code action")
-;;     "g r" '(lsp-find-references :wk "goto references")
-;;     "g r" '(lsp-find-references :wk "goto references")
-;;     "g p" '(lsp-ui-peek-find-references :which-key "peek references")
-;;     "g g" '(lsp-find-definition :which-key "goto definition")
-;;     "l" '(:ignore t :wk "lsp")
-;;     "l g" '(lsp-ui-doc-glance :wk "glance symbol")
-;;     "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-;;     "o" '(lsp-ui-imenu :which-key "overview")
-;;     "r" '(:ignore t :which-key "refactor")
-;;     "r r" '(lsp-rename :which-key "rename")
-;;     "=" '(:ignore t :which-key "format")
-;;     "= l" '(lsp-format-buffer :which-key "format with lsp")
+;;                gdscript-mode-map)
+;;     "a" '(eglot-code-actions :wk "excute code action")
+;;     "g r" '(xref-find-references :wk "goto references")
+;;     "g g" '(eglot-find-implementation :wk "goto definition")
+;;     "r" '(:ignore t :wk "refactor")
+;;     "r r" '(eglot-rename :wk "rename")
+;;     "=" '(:ignore t :wk "format")
+;;     "= l" '(eglot-format-buffer :wk "format with eglot")
+;;     "e" '(:ignore t :wk "errors")
+;;     "e l" '(consult-flymake :wk "list errors")
 ;;     )
 ;;   )
 
-;; (use-package lsp-pyright
-;;   :after (:all lsp-mode python)
-;;   :hook (python-mode .
-;;                      (lambda ()
-;;                        (require 'lsp-pyright)
-;;                        (lsp-deferred)))
-;;   )
+;; lsp-mode
+(use-package lsp-mode
+  :defer t
+  :hook ((js2-mode . lsp-deferred)
+         (rsjx-mode . lsp-deferred)
+         (scss-mode . lsp-deferred)
+         (web-mode . lsp-deferred)
+         (typescript-mode . lsp-deferred)
+         (rustic-mode . lsp-deferred)
+         (csharp-mode . lsp-deferred)
+         (elixir-mode . lsp-deferred)
+         (yaml-mode . lsp-deferred)
+         (json-mode . lsp-deferred)
+         (go-mode . lsp-deferred)
+         ;; (python-mode . lsp-deferred)
+         (lsp-mode . lsp-enable-which-key-integration)
+         )
+  :commands (lsp lsp-deferred)
+  :bind
+  ([remap xref-goto-xref] . custo/xref-goto-xref)
+  :config
+  (setq lsp-completion-provider :capf
+        lsp-file-watch-threshold 100
+        lsp-headerline-breadcrumb-enable nil
+        ;; lsp-headerline-breadcrumb-segments '(project file symbols)
+        lsp-ui-doc-enable nil
+        lsp-idle-delay 0.500
+        lsp-log-io nil
+        )
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map
+               rjsx-mode-map
+               rustic-mode-map
+               typescript-mode-map
+               csharp-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               web-mode-map
+               go-mode-map
+               python-mode-map
+               gdscript-mode-map
+               lsp-mode-map
+               lsp-ui-mode-map)
+    "a" '(lsp-execute-code-action :wk "excute code action")
+    "g r" '(lsp-find-references :wk "goto references")
+    "g p" '(lsp-ui-peek-find-references :which-key "peek references")
+    "g g" '(lsp-find-definition :which-key "goto definition")
+    "l" '(:ignore t :wk "lsp")
+    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
+    "o" '(lsp-ui-imenu :which-key "overview")
+    "r" '(:ignore t :which-key "refactor")
+    "r r" '(lsp-rename :which-key "rename")
+    "=" '(:ignore t :which-key "format")
+    "= l" '(lsp-format-buffer :which-key "format with lsp")
+    )
+  )
 
-;; ;; prettier lsp
-;; (use-package lsp-ui
-;;   :defer t
-;;   :after lsp-mode
-;;   :hook
-;;   (lsp-mode . lsp-ui-mode)
-;;   )
+(use-package lsp-pyright
+  :after (:all lsp-mode python)
+  :hook (python-mode .
+                     (lambda ()
+                       (require 'lsp-pyright)
+                       (lsp-deferred)))
+  )
+
+;; prettier lsp
+(use-package lsp-ui
+  :defer t
+  :after lsp-mode
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  )
 
 ;; error checking
-;; (use-package flycheck
-;;   :defer t
-;;   :hook
-;;   (prog-mode . flycheck-mode)
-;;   :config
-;;   (setq flycheck-disabled-checkers
-;;                 (append flycheck-disabled-checkers
-;;                         '(javascript-jshint)))
-;;   (setq flycheck-temp-prefix ".flycheck")
-;;   (flycheck-add-mode 'javascript-eslint 'js2-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
-;;   (custo/leader-key
-;;     "e" '(:ignore t :wk "errors")
-;;     ;; "e l" '(counsel-flycheck :wk "list errors")
-;;     "e l" '(consult-flycheck :wk "list errors")
-;;     )
-;;   (custo/local-leader-key
-;;     :keymaps '(js2-mode-map
-;;                rsjx-mode-map
-;;                typescript-mode-map
-;;                rustic-mode-map
-;;                elixir-mode-map
-;;                csharp-mode-map
-;;                go-mode-map
-;;                )
-;;     "e" '(:ignore t :wk "errors")
-;;     ;; "e l" '(counsel-flycheck :wk "list errors")
-;;     "e l" '(consult-flycheck :wk "list errors")
-;;     )
-;;   )
+(use-package flycheck
+  :defer t
+  :hook
+  (prog-mode . flycheck-mode)
+  :config
+  (setq flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
+  (setq flycheck-temp-prefix ".flycheck")
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (custo/leader-key
+    "e" '(:ignore t :wk "errors")
+    ;; "e l" '(counsel-flycheck :wk "list errors")
+    "e l" '(consult-flycheck :wk "list errors")
+    )
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map
+               rsjx-mode-map
+               typescript-mode-map
+               rustic-mode-map
+               elixir-mode-map
+               csharp-mode-map
+               go-mode-map
+               )
+    "e" '(:ignore t :wk "errors")
+    ;; "e l" '(counsel-flycheck :wk "list errors")
+    "e l" '(consult-flycheck :wk "list errors")
+    )
+  )
 
 (use-package hl-todo
   :defer t
@@ -1474,22 +1493,7 @@
   )
 
 
-;; (use-package centaur-tabs
-;;   :defer t
-;;   :hook
-;;   (after-init . centaur-tabs-mode)
-;;   :config
-;;   (setq centaur-tabs-height 32)
-;;   (setq centaur-tabs-bar-height 43)
-;;   (setq centaur-tabs-set-bar 'under)
-;;   (setq centaur-tabs-set-icons t)
-;;   (setq centaur-tabs-set-greyout-icons t)
-;;   (setq centaur-tabs-icon-scale-factor 0.75)
-;;   (setq x-underline-at-descent-line t)
-;; )
-
-;; terminal related package
-
+;; terminal related packages
 (use-package evil-terminal-cursor-changer
   :defer t
   :hook
@@ -1538,33 +1542,6 @@
   :hook (circe-channel-mode . enable-circe-color-nicks)
   )
 
-;; (use-package treemacs
-;;   :defer t
-;;   :commands treemacs
-;;   :config
-;;   (setq treemacs-width 25)
-;;   )
-
-;; (use-package lsp-treemacs
-;;   :defer t
-;;   :after (:all treemacs lsp-mode)
-;;   :commands lsp-treemacs-errors-list
-;;   )
-
-;; (use-package treemacs-evil
-;;   :defer t
-;;   :after (:all treemacs evil)
-;;   )
-
-;; (use-package treemacs-projectile
-;;   :defer t
-;;   :after (:all treemacs projectile)
-;;   )
-
-;; (use-package treemacs-magit
-;;   :defer t
-;;   :after (:all treemacs magit)
-;;   )
 
 (use-package vterm
   :defer t
