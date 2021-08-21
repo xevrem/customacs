@@ -182,13 +182,6 @@
   )
 
 
-(use-package emacs-async
- :config
- (async-bytecomp-package-mode 1)
- (dired-async-mode 1)
- )
-
-
 ;; restart
 (use-package restart-emacs
   :defer t
@@ -307,6 +300,7 @@
   :after (evil eglot orderless)
   :hook
   (eglot--managed-mode . corfu-mode)
+  (emacs-lisp-mode . corfu-mode)
   :bind (:map corfu-map
               ("TAB" . corfu-next)
               ("<tab>" . corfu-next)
@@ -337,61 +331,6 @@
   :defer t
   :commands recentf-open-files
   )
-
-
-
-;; ivy trio
-;; (use-package swiper
-;;   :defer t
-;;   :commands swiper
-;;   )
-
-;; use counsel for completions over
-;; default M-x and some other things
-;; (use-package counsel
-;;   :defer t
-;;   :commands (counsel-M-x
-;;              counsel-find-file
-;;              counsel-switch-buffer
-;;              counsel-recentf
-;;              counsel-load-theme
-;;              counsel-flycheck)
-;;   )
-
-;; (use-package ivy
-;;   :defer t
-;;   :after orderless
-;;   :hook
-;;   (after-init . ivy-mode)
-;;   ;; we bind here in ivy so that they are loaded dynamically
-;;   :bind (("C-s" . swiper)
-;;          ("M-x" . counsel-M-x)
-;;          ("C-x C-f" . counsel-find-file)
-;;          )
-;;   :config
-;;   (setq ivy-use-virtual-buffers t
-;;         enable-recursive-minibuffers t
-;;         ivy-re-builders-alist '((t . orderless-ivy-re-builder))
-;;         )
-;;   )
-
-;; provide more helpful info in ivy panels
-;; (use-package ivy-rich
-;;   :defer t
-;;   :after ivy
-;;   :hook
-;;   (ivy-mode . ivy-rich-mode)
-;;   )
-
-;; good fuzzy completions
-;; (use-package prescient)
-
-;; (use-package ivy-prescient
-;;   :defer t
-;;   :after (:all ivy prescient)
-;;   :hook
-;;   (ivy-mode . ivy-prescient-mode)
-;;   )
 
 ;; used by projectile-ripgrep
 (use-package ripgrep)
@@ -807,9 +746,9 @@
              projectile-switch-to-buffer)
   :hook
   (vertico-mode . projectile-mode)
-  ;; (ivy-mode . projectile-mode)
-  ;; :custom
-  ;; (projectile-completion-system 'ivy)
+  :custom
+  ;; this allows projectile to use orderless
+  (projectile-completion-system 'default)
   :config
   (custo/leader-key
     "p" '(projectile-command-map :wk "projectile")
@@ -817,19 +756,6 @@
     "p a" '(projectile-add-known-project :which-key "add project"))
   )
   
-;; add counsel capability
-;; (use-package counsel-projectile
-;;   :after projectile
-;;   :commands (counsel-projectile-switch-project
-;;              counsel-projectile-switch-to-buffer
-;;              counsel-projectile-find-file)
-;;   :config
-;;   (custo/leader-key
-;;     "b B" '(counsel-projectile-switch-to-buffer :wk "switch project buffer")
-;;   )
-;;   :init
-;;   (counsel-projectile-mode t)
-;;   )
 
 (use-package find-file-in-project
   :defer t
@@ -949,13 +875,6 @@
 ;;   :hook (company-mode . company-box-mode)
 ;;   )
 
-;; (use-package company-prescient
-;;   :defer t
-;;   :after (:all company prescient)
-;;   :hook
-;;   (company-mode . company-prescient-mode)
-;;   )
-
 ;; better javascript mode
 (use-package js2-mode
   :defer t
@@ -986,10 +905,6 @@
     "d" '(:ignore t :which-key "jsdoc")
     "d f" '(js-doc-insert-function-doc :which-key "jsdoc function"))
   )
-
-;; (use-package js-react-redux-yasnippets
-;;   :after (:all yasnippet js2-mode)
-;;   )
 
 ;; format js and jsx
 (use-package prettier
@@ -1038,7 +953,6 @@
     "c r" '(rustic-cargo-run :wk "cargo run")
     "c t" '(rustic-cargo-test :wk "cargo test")
     )
-  ;; (push 'rustic-cargo-clippy 'flycheck-checkers)
   )
 
 (use-package csharp-mode
