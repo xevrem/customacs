@@ -1026,7 +1026,7 @@
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'eglot
-        rustic-lsp-server 'rls
+        rustic-lsp-server 'rust-analyzer
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
@@ -1211,7 +1211,7 @@
 ;;   :bind
 ;;   ([remap xref-goto-xref] . custo/xref-goto-xref)
 ;;   :config
-;;   (setq lsp-completion-provider :none
+;;   (setq lsp-completion-provider :capf
 ;;         lsp-file-watch-threshold 100
 ;;         lsp-headerline-breadcrumb-enable nil
 ;;         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
