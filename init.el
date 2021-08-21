@@ -304,18 +304,20 @@
 ;; alternate completion engine to company
 (use-package corfu
   :defer t
-  :after (evil eglot)
+  :after (evil eglot orderless)
   :hook
-  (prog-mode . corfu-mode)
-  ;; (evil-insert-state-entry . (lambda () (corfu-mode 1)))
-  ;; (evil-insert-state-exit . (lambda () (corfu-mode 0)))
+  (eglot--managed-mode . corfu-mode)
   :bind (:map corfu-map
               ("TAB" . corfu-next)
               ("<tab>" . corfu-next)
+              ("S-TAB" . corfu-previous)
               ("<backtab>" . corfu-previous)
               )
   :custom
   (corfu-cycle t)
+  :config
+  ;; since we use orderless
+  (setq corfu-quit-at-boundary nil)
   )
  
 
@@ -964,8 +966,6 @@
   (setq js-indent-level 2)
   :hook
   (js2-mode . yas-minor-mode)
-  ;; :config
-  ;; (rainbow-identifiers-mode nil)
   )
 
 ;; teach js2-mode how to jsx
