@@ -258,16 +258,12 @@
 
 (use-package orderless
   :config
-  (orderless-define-completion-style orderless+initialism
-    (orderless-matching-styles '(orderless-initialism
-                                 orderless-literal
-                                 orderless-regexp)))
-  (setq completion-styles '(orderless+initialism)
+  (setq completion-styles '(orderless)
         completion-category-defaults nil
         completion-category-overrides '((file (styles . (partial-completion)))
-                                        (command (styles orderless+initialism))
-                                        (symbol (styles orderless+initialism))
-                                        (variable (styles orderless+initialism)))
+                                        (command (styles orderless))
+                                        (symbol (styles orderless))
+                                        (variable (styles orderless)))
         )
   )
 
@@ -393,7 +389,8 @@
                one-themes
                challenger-deep-theme)
   :hook
-  (prog-mode . rainbow-identifiers-mode)
+  (eglot--managed-mode . rainbow-identifiers-mode)
+  (emacs-lisp-mode . rainbow-identifiers-mode)
   )
 
 ;; make it easier to keep track of parens and braces
@@ -1411,18 +1408,34 @@
   )
 
 
+
 ;; terminal related packages
-(use-package evil-terminal-cursor-changer
+(use-package term-cursor
+  :straight '(:type git :host github
+              :repo "h0d/term-cursor.el"
+              :branch "master"
+              :file "term-cursor.el")
   :defer t
-  :hook
-  (tty-setup . evil-terminal-cursor-changer-activate)
-  :config
-  (setq evil-motion-state-cursor 'box  ; █
-        evil-visual-state-cursor 'box  ; █
-        evil-normal-state-cursor 'box  ; █
-        evil-insert-state-cursor 'bar  ; ⎸
-        evil-emacs-state-cursor  'hbar) ; _
+  :commands (term-cursor-mode)
   )
+;; if not in a graphical environment, add term cursor to prog mode hook
+(unless (display-graphic-p)
+  (add-hook 'prog-mode-hook 'term-cursor-mode)
+  )
+
+
+
+;; (use-package evil-terminal-cursor-changer
+;;   :defer t
+;;   :hook
+;;   (tty-setup . evil-terminal-cursor-changer-activate)
+;;   :config
+;;   (setq evil-motion-state-cursor 'box  ; █
+;;         evil-visual-state-cursor 'box  ; █
+;;         evil-normal-state-cursor 'box  ; █
+;;         evil-insert-state-cursor 'bar  ; ⎸
+;;         evil-emacs-state-cursor  'hbar) ; _
+;;   )
 
 
 (defconst private-file (expand-file-name "~/.private.el"))
