@@ -620,6 +620,7 @@
   ;; "s s" '(swiper :which-key "search buffer")
   "s s" '(consult-line :which-key "search buffer")
   "t" '(:ignore t :which-key "toggles")
+  "t l" '(display-line-numbers-mode :wk "toggle line numbers")
   "t r" '((lambda ()(interactive) (custo/setup-font-faces)) :wk "reset font-faces")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
   ;; "t T" '(counsel-load-theme :which-key "choose theme")
@@ -1418,6 +1419,9 @@
   :config
   (setq visual-fill-column-width 100
         visual-fill-column-center-text t)
+  (custo/leader-key
+    "t v" '((lambda () (interactive) (visual-fill-column-mode 1)) :wk "visual-fill mode on")
+    "t V" '((lambda () (interactive) (visual-fill-column-mode -1)) :wk "visual-fill mode off"))
   )
 
 
