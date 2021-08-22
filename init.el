@@ -309,7 +309,6 @@
   ;; since we use orderless
   (setq corfu-quit-at-boundary nil)
   )
- 
 
 (use-package emacs
   :init
@@ -390,6 +389,7 @@
                challenger-deep-theme)
   :hook
   (eglot--managed-mode . rainbow-identifiers-mode)
+  ;; (lsp-mode . rainbow-identifiers-mode)
   (emacs-lisp-mode . rainbow-identifiers-mode)
   )
 
@@ -400,8 +400,14 @@
                one-themes
                challenge-deep-them)
   :hook
-  (prog-mode . rainbow-delimiters-mode)
+  (eglot--managed-mode . rainbow-delimiters-mode)
+  ;; (lsp-mode . rainbow-delimiters-mode)
+  (emacs-lisp-mode . rainbow-delimiters-mode)
   )
+
+(defun custo/smart-parens ()
+                 (require 'smartparens-config)
+                 (smartparens-mode))
 
 (use-package smartparens
   :defer t
@@ -409,9 +415,9 @@
                one-themes
                challenge-deep-them)
   :hook
-  (prog-mode . (lambda ()
-                 (require 'smartparens-config)
-                 (smartparens-mode)))
+  (eglot--managed-mode . custo/smart-parens)
+  ;; (lsp-mode . custo/smart-parens)
+  (emacs-lisp-mode . custo/smart-parens)
   :config
   ;; don't interfere with yasnippets
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
@@ -424,7 +430,10 @@
   :after (:any doom-themes
                one-themes
                challenge-deep-them)
-  :hook (prog-mode . show-paren-mode)
+  :hook
+  (eglot--managed-mode . show-paren-mode)
+  ;; (lsp-mode . show-paren-mode)
+  (emacs-lisp-mode . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
         show-paren-highlight-openparen t
@@ -463,6 +472,7 @@
 ;; more better help menus
 (use-package helpful
   :defer t
+  :after which-key
   :commands (helpful-callable
              helpful-command
              helpful-function
@@ -813,7 +823,6 @@
 ;; (use-package company
 ;;   :defer t
 ;;   :after lsp
-;;   ;; :after eglot
 ;;   :hook
 ;;   (lsp-mode . company-mode)
 ;;   ;; (eglot--managed-mode . company-mode)
@@ -829,12 +838,16 @@
 ;;                ;; goto previous selection
 ;;                ("<backtab>" . company-select-previous)
 ;;                )
+;;          ;; (:map emacs-lisp-mode-map
+;;          ;;       ;; start the completion process
+;;          ;;       ("<tab>" . company-indent-or-complete-common)
+;;          ;;       ("TAB" . company-indent-or-complete-common)
+;;          ;;       )
 ;;          ;; only make tab start completions if lsp is active
 ;;          (:map lsp-mode-map
 ;;                ;; start the completion process
 ;;                ("<tab>" . company-indent-or-complete-common)
-;;                ("TAB" . company-indent-or-complete-common)
-;;                )
+;;                ("TAB" . company-indent-or-complete-common))
 ;;          ;; (:map eglot-mode-map
 ;;          ;;       ;; start the completion process
 ;;          ;;       ("<tab>" . company-indent-or-complete-common)
