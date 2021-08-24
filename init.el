@@ -226,21 +226,25 @@
         completion-in-region-function #'consult-completion-in-region)
   )
 
-(defun custo/get-project-root ()
-  "Get the current project root."
-  (when (fboundp 'projectile-project-root)
-    (projectile-project-root)))
 
 (use-package consult
   :defer t
   :after vertico
-  :commands (consult-xref)
-  :custom
-  (consult-project-root-function #'custo/get-project-root)
+  :commands (consult-xref
+             consult-line
+             consult-recent-file
+             consult-flymake)
   :config
-  (setq consult-preview-key nil
-        xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
+  (consult-customize
+   consult-theme
+   :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-file consult--source-project-file consult--source-bookmark
+   :preview-key (kbd "M-."))
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref
+        consult-project-root-function #'projectile-project-root)
   )
 
 
@@ -249,12 +253,14 @@
   :after (:all consult flycheck)
   )
 
+
 (use-package marginalia
   :defer t
   :after vertico
   :hook
   (vertico-mode . marginalia-mode)
   )
+
 
 (use-package orderless
   :config
@@ -273,6 +279,7 @@
     (setq input (orderless-pattern-compiler input))
     (cons input (lambda (str) (orderless--highlight input str))))
 
+
 (use-package affe
   :straight '(:type git :host github
               :repo "minad/affe"
@@ -289,6 +296,7 @@
         affe-grep-command "/usr/local/bin/rg --null --color=never --max-columns=1000 --no-heading --line-number -v ^$ ."
         )
   )
+
 
 ;; alternate completion engine to company
 (use-package corfu
@@ -309,6 +317,7 @@
   ;; since we use orderless
   (setq corfu-quit-at-boundary nil)
   )
+
 
 (use-package emacs
   :init
@@ -613,19 +622,22 @@
   "q Q" '(kill-emacs :which-key "quit no-save")
   "q r" '(restart-emacs :which-key "restart emacs")
   "s" '(:ignore t :which-key "search")
-  "s p" '(projectile-ripgrep :wk "search project")
+  ;; "s p" '(projectile-ripgrep :wk "search project")
   ;; "s p" '(counsel-projectile-rg :which-key "search project")
-  ;; "s p" '(consult-ripgrep :which-key "search project")
+  "s p" '(consult-ripgrep :which-key "search project")
   ;; "s p" '(affe-grep :which-key "search project")
   ;; "s s" '(swiper :which-key "search buffer")
-  "s s" '(consult-line :which-key "search buffer")
+  "s s" '(consult-line :wk "search buffer")
   "t" '(:ignore t :which-key "toggles")
   "t l" '(display-line-numbers-mode :wk "toggle line numbers")
-  "t r" '((lambda ()(interactive) (custo/setup-font-faces)) :wk "reset font-faces")
+  "t r" '((lambda ()
+            (interactive)
+            (custo/setup-font-faces))
+          :wk "reset font-faces")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
   ;; "t T" '(counsel-load-theme :which-key "choose theme")
-  ;; "t T" '(consult-theme :wk "choose theme")
-  "t T" '(load-theme :wk "choose theme")
+  "t T" '(consult-theme :wk "choose theme")
+  ;; "t T" '(load-theme :wk "choose theme")
   "w" '(:ignore t :which-key "window")
   "w w" '(other-window :which-key "other window")
   "w d" '(delete-window :which-key "delete window")
@@ -751,7 +763,8 @@
   :commands (projectile-command-map
              projectile-find-file
              projectile-switch-project
-             projectile-switch-to-buffer)
+             projectile-switch-to-buffer
+             projectile-project-root)
   :hook
   (vertico-mode . projectile-mode)
   :custom
