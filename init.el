@@ -454,15 +454,15 @@
 
 (use-package clipetty
   :defer t
-  :hook
-  (tty-setup . global-clipetty-mode)
   )
-
 
 (use-package xclip
   :defer t
-  :hook
-  (tty-setup . xclip-mode)
+  )
+
+(unless (display-graphic-p)
+  (add-hook 'prog-mode-hook 'xclip-mode)
+  (add-hook 'prog-mode-hook 'clipetty-mode)
   )
 
 
@@ -1440,32 +1440,39 @@
 
 
 ;; terminal related packages
-(use-package term-cursor
-  :straight '(:type git :host github
-              :repo "h0d/term-cursor.el"
-              :branch "master"
-              :file "term-cursor.el")
-  :defer t
-  :commands (term-cursor-mode)
-  )
-;; if not in a graphical environment, add term cursor to prog mode hook
-(unless (display-graphic-p)
-  (add-hook 'prog-mode-hook 'term-cursor-mode)
-  )
-
-
-
-;; (use-package evil-terminal-cursor-changer
+;; (use-package term-cursor
+;;   :straight '(:type git :host github
+;;               :repo "h0d/term-cursor.el"
+;;               :branch "master"
+;;               :file "term-cursor.el")
 ;;   :defer t
-;;   :hook
-;;   (tty-setup . evil-terminal-cursor-changer-activate)
-;;   :config
-;;   (setq evil-motion-state-cursor 'box  ; █
-;;         evil-visual-state-cursor 'box  ; █
-;;         evil-normal-state-cursor 'box  ; █
-;;         evil-insert-state-cursor 'bar  ; ⎸
-;;         evil-emacs-state-cursor  'hbar) ; _
+;;   :commands (term-cursor-mode)
 ;;   )
+;; ;; if not in a graphical environment, add term cursor to prog mode hook
+;; (unless (display-graphic-p)
+;;   (add-hook 'prog-mode-hook 'term-cursor-mode)
+;;   )
+
+
+(use-package evil-terminal-cursor-changer
+  :defer t
+  :hook
+  (tty-setup . evil-terminal-cursor-changer-activate)
+  :config
+  (setq evil-motion-state-cursor 'box  ; █
+        evil-visual-state-cursor 'box  ; █
+        evil-normal-state-cursor 'box  ; █
+        evil-insert-state-cursor 'bar  ; ⎸
+        evil-emacs-state-cursor  'hbar) ; _
+  )
+
+;; ensure we only set these hooks if we're not in a graphical environment
+(unless (display-graphic-p)
+  ;; run this hook after we have initialized the first time
+  (add-hook 'after-init-hook 'evil-terminal-cursor-changer-activate)
+  ;; re-run this hook if we create a new frame from daemonized Emacs
+  (add-hook 'server-after-make-frame-hook 'evil-terminal-cursor-changer-activate)
+  )
 
 
 (defconst private-file (expand-file-name "~/.private.el"))
