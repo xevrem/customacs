@@ -1022,11 +1022,14 @@
   :mode ("\\.py\\'" . python-mode)
   )
 
-;; (use-package pyenv-mode
-;;   :defer t
-;;   :after python
-;;   :hook (python-mode . pyenv-mode)
-;;   )
+(use-package pyenv-mode
+  :straight (:type git :host github
+                   :repo "pythonic-emacs/pyenv-mode"
+                   :branch "master"
+                   )
+  :defer t
+  :hook (python-mode . pyenv-mode)
+  )
 
 (use-package json-mode
   :defer t
