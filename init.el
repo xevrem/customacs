@@ -75,15 +75,6 @@
 ;; disable lockfiles
 ;;(setq create-lockfiles nil)
 
-;; create some font size defaults
-;; may need to customize
-(defvar custo/default-font-size 153)
-(defvar custo/default-variable-font-size 153)
-
-;; setup tty hook var
-(defvar custo/tty-p nil)
-(add-hook 'tty-setup-hook (lambda () (setq-default custo/tty-p t)))
-
 
 ;; if in macOS, set size appropriately
 ;; otherwise assume linux
@@ -94,23 +85,10 @@
   (push '(tool-bar-lines . 0) default-frame-alist)
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
-    ;; adjust fonts based on OS
-    (if (eq system-type 'darwin)
-        (progn
-          (setq custo/default-font-size 192)
-          (setq custo/default-variable-font-size 192)
-          ;; set default font
-          (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
-          ;; Set the fixed pitch face
-          (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
-          )
-      (progn
-        ;; set default font
-        (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
-        ;; Set the fixed pitch face
-        (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
-        )
-      )
+    ;; set default font
+    (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
+    ;; Set the fixed pitch face
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
     ;; Set the variable pitch face which is the same for mac and linux
     (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
     ;; after org-mode we want to adjust font sizes
