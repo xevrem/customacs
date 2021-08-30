@@ -278,9 +278,10 @@
 ;; alternate completion engine to company
 (use-package corfu
   :defer t
-  :after (evil eglot orderless)
+  :after (evil orderless)
   :hook
   (eglot--managed-mode . corfu-mode)
+  ;; (lsp-mode . corfu-mode)
   (emacs-lisp-mode . corfu-mode)
   :bind (:map corfu-map
               ("TAB" . corfu-next)
@@ -1122,14 +1123,14 @@
 ;;          (yaml-mode . lsp-deferred)
 ;;          (json-mode . lsp-deferred)
 ;;          (go-mode . lsp-deferred)
-;;          ;; (python-mode . lsp-deferred)
 ;;          (lsp-mode . lsp-enable-which-key-integration)
 ;;          )
 ;;   :commands (lsp lsp-deferred)
 ;;   :bind
 ;;   ([remap xref-goto-xref] . custo/xref-goto-xref)
 ;;   :config
-;;   (setq lsp-completion-provider :capf
+;;   ;; (setq lsp-completion-provider :capf
+;;   (setq lsp-completion-provider :none
 ;;         lsp-file-watch-threshold 100
 ;;         lsp-headerline-breadcrumb-enable nil
 ;;         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
@@ -1168,7 +1169,7 @@
 ;;   )
 
 ;; (use-package lsp-pyright
-;;   :after (:all lsp-mode python)
+;;   :after (:all lsp python)
 ;;   :hook (python-mode .
 ;;                      (lambda ()
 ;;                        (require 'lsp-pyright)
@@ -1178,7 +1179,7 @@
 ;; ;; prettier lsp
 ;; (use-package lsp-ui
 ;;   :defer t
-;;   :after lsp-mode
+;;   :after lsp
 ;;   :hook
 ;;   (lsp-mode . lsp-ui-mode)
 ;;   )
@@ -1206,6 +1207,7 @@
 ;;     :keymaps '(js2-mode-map
 ;;                rsjx-mode-map
 ;;                typescript-mode-map
+;;                typescript-tsx-mode-map
 ;;                rustic-mode-map
 ;;                elixir-mode-map
 ;;                csharp-mode-map
@@ -1420,39 +1422,39 @@
 
 
 ;; terminal related packages
-;; (use-package term-cursor
-;;   :straight '(:type git :host github
-;;               :repo "h0d/term-cursor.el"
-;;               :branch "master"
-;;               :file "term-cursor.el")
-;;   :defer t
-;;   :commands (term-cursor-mode)
-;;   )
-;; ;; if not in a graphical environment, add term cursor to prog mode hook
-;; (unless (display-graphic-p)
-;;   (add-hook 'prog-mode-hook 'term-cursor-mode)
-;;   )
-
-
-(use-package evil-terminal-cursor-changer
+(use-package term-cursor
+  :straight '(:type git :host github
+              :repo "h0d/term-cursor.el"
+              :branch "master"
+              :file "term-cursor.el")
   :defer t
-  :hook
-  (tty-setup . evil-terminal-cursor-changer-activate)
-  :config
-  (setq evil-motion-state-cursor 'box  ; █
-        evil-visual-state-cursor 'box  ; █
-        evil-normal-state-cursor 'box  ; █
-        evil-insert-state-cursor 'bar  ; ⎸
-        evil-emacs-state-cursor  'hbar) ; _
+  :commands (term-cursor-mode)
+  )
+;; if not in a graphical environment, add term cursor to prog mode hook
+(unless (display-graphic-p)
+  (add-hook 'prog-mode-hook 'term-cursor-mode)
   )
 
-;; ensure we only set these hooks if we're not in a graphical environment
-(unless (display-graphic-p)
-  ;; run this hook after we have initialized the first time
-  (add-hook 'after-init-hook 'evil-terminal-cursor-changer-activate)
-  ;; re-run this hook if we create a new frame from daemonized Emacs
-  (add-hook 'server-after-make-frame-hook 'evil-terminal-cursor-changer-activate)
-  )
+
+;; (use-package evil-terminal-cursor-changer
+;;   :defer t
+;;   :hook
+;;   (tty-setup . evil-terminal-cursor-changer-activate)
+;;   :config
+;;   (setq evil-motion-state-cursor 'box  ; █
+;;         evil-visual-state-cursor 'box  ; █
+;;         evil-normal-state-cursor 'box  ; █
+;;         evil-insert-state-cursor 'bar  ; ⎸
+;;         evil-emacs-state-cursor  'hbar) ; _
+;;   )
+
+;; ;; ensure we only set these hooks if we're not in a graphical environment
+;; (unless (display-graphic-p)
+;;   ;; run this hook after we have initialized the first time
+;;   (add-hook 'after-init-hook 'evil-terminal-cursor-changer-activate)
+;;   ;; re-run this hook if we create a new frame from daemonized Emacs
+;;   (add-hook 'server-after-make-frame-hook 'evil-terminal-cursor-changer-activate)
+;;   )
 
 
 (defconst private-file (expand-file-name "~/.private.el"))
