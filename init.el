@@ -810,6 +810,9 @@
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   )
 
+(use-package forge
+  :after magit)
+
 
 ;; completion mini buffers
 (use-package company
@@ -1088,6 +1091,7 @@
 ;;                rjsx-mode-map
 ;;                rustic-mode-map
 ;;                typescript-mode-map
+;;                typescript-tsx-mode-map
 ;;                csharp-mode-map
 ;;                elixir-mode-map
 ;;                yaml-mode-map
