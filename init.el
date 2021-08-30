@@ -344,8 +344,8 @@
 
 (use-package challenger-deep-theme
   :after doom-modeline
-  :config
-  (load-theme 'challenger-deep t)
+  ;; :config
+  ;; (load-theme 'challenger-deep t)
   )
 
 (use-package doom-themes
@@ -353,6 +353,7 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
+  (load-theme 'doom-challenger-deep t)
   )
 
 ;; for certian versions of emacs, we need to change the backgroun
@@ -820,9 +821,6 @@
   :hook
   (lsp-mode . company-mode)
   (emacs-lisp-mode . company-mode)
-  ;; (eglot--managed-mode . company-mode)
-  ;; (evil-insert-state-entry . (lambda () (company-mode 1)))
-  ;; (evil-insert-state-exit . (lambda () (company-mode 0)))
   :bind (;; only active when trying to complete a selection
          (:map company-active-map
                ;; complete the currently chosen selection
@@ -833,27 +831,23 @@
                ;; goto previous selection
                ("<backtab>" . company-select-previous)
                )
-         ;; (:map emacs-lisp-mode-map
-         ;;       ;; start the completion process
-         ;;       ("<tab>" . company-indent-or-complete-common)
-         ;;       ("TAB" . company-indent-or-complete-common)
-         ;;       )
+         (:map emacs-lisp-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               )
          ;; only make tab start completions if lsp is active
          (:map prog-mode-map
                ;; start the completion process
                ("<tab>" . company-indent-or-complete-common)
                ("TAB" . company-indent-or-complete-common))
-         ;; (:map eglot-mode-map
-         ;;       ;; start the completion process
-         ;;       ("<tab>" . company-indent-or-complete-common)
-         ;;       ("TAB" . company-indent-or-complete-common)
-         ;;       )
          )
   :config
-  (setq company-backends '(company-capf)
-        company-idle-delay 0.2
+  (setq company-idle-delay 0.5
+        ;; company-backends '(company-capf)
         company-minimum-prefix-length 2
         company-selection-wrap-around t
+        company-tooltip-limit 25
         ;;
         ;; Good Ideas from DOOM:
         ;;
@@ -867,6 +861,7 @@
         ;; suggests text your open buffers). This prevents Company from causing
         ;; lag once you have a lot of buffers open.
         company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers nil
         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
         ;; domain-specific words with particular casing.
         company-dabbrev-ignore-case nil
@@ -1121,6 +1116,7 @@
          (scss-mode . lsp-deferred)
          (web-mode . lsp-deferred)
          (typescript-mode . lsp-deferred)
+         (typescript-tsx-mode . lsp-deferred)
          (rustic-mode . lsp-deferred)
          (csharp-mode . lsp-deferred)
          (elixir-mode . lsp-deferred)
@@ -1204,12 +1200,12 @@
   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
-    ;; "e l" '(counsel-flycheck :wk "list errors")
     "e l" '(consult-flycheck :wk "list errors")
     )
   (custo/local-leader-key
     :keymaps '(js2-mode-map
                rsjx-mode-map
+               web-mode-map
                typescript-mode-map
                typescript-tsx-mode-map
                rustic-mode-map
@@ -1218,7 +1214,6 @@
                go-mode-map
                )
     "e" '(:ignore t :wk "errors")
-    ;; "e l" '(counsel-flycheck :wk "list errors")
     "e l" '(consult-flycheck :wk "list errors")
     )
   )
