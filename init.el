@@ -941,7 +941,8 @@
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'lsp
-        rustic-lsp-server 'rls
+        rustic-lsp-server 'rust-analyzer
+        lsp-rust-analyzer-proc-macro-enable t
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
