@@ -952,6 +952,7 @@
     "c" '(:ignore t :wk "cargo commands")
     "c b" '(rustic-cargo-build :wk "cargo build")
     "c c" '(rustic-cargo-check :wk "cargo check")
+    "c C" '(rustic-cargo-clippy :wk "cargo clippy")
     "c r" '(rustic-cargo-run :wk "cargo run")
     "c t" '(rustic-cargo-test :wk "cargo test")
     )
