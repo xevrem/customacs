@@ -295,6 +295,7 @@
   (ivy-mode . counsel-mode)
   )
 
+<<<<<<< HEAD
 (use-package ivy
   :defer t
   :after orderless
@@ -320,6 +321,29 @@
   :hook
   (ivy-mode . ivy-rich-mode)
   )
+=======
+;; alternate completion engine to company
+;; (use-package corfu
+;;   :defer t
+;;   :after (evil orderless)
+;;   :hook
+;;   (eglot--managed-mode . corfu-mode)
+;;   ;; (lsp-mode . corfu-mode)
+;;   (emacs-lisp-mode . corfu-mode)
+;;   :bind (:map corfu-map
+;;               ("TAB" . corfu-next)
+;;               ("<tab>" . corfu-next)
+;;               ("S-TAB" . corfu-previous)
+;;               ("<backtab>" . corfu-previous)
+;;               )
+;;   :custom
+;;   (corfu-cycle t)
+;;   :config
+;;   ;; since we use orderless
+;;   (setq corfu-quit-at-boundary nil)
+;;   )
+
+>>>>>>> 8c9751b (Revert "Revert "Revert "corfu + eglot and some minor tweaks""")
 
 ;; good fuzzy completions
 ;; (use-package prescient)
@@ -364,7 +388,7 @@
 
         ;; Enable indentation+completion using the TAB key.
         ;; Completion is often bound to M-TAB.
-        tab-always-indent 'complete
+        ;; tab-always-indent 'complete
         )
   )
 
@@ -1024,9 +1048,9 @@
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
+        rustic-lsp-client 'lsp
         rustic-lsp-server 'rust-analyzer
-        ;; lsp-rust-analyzer-proc-macro-enable t
+        lsp-rust-analyzer-proc-macro-enable t
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
@@ -1052,8 +1076,8 @@
 (use-package omnisharp
   :defer t
   :mode ("\\.cs\\'" . omnisharp-mode)
-  ;; :after company
-  :after corfu
+  :after company
+  ;; :after corfu
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -1063,7 +1087,7 @@
         c-basic-offset 2
         tab-width 2
         evil-shift-width 2)
-  ;; (add-to-list 'company-backends 'company-omnisharp)
+  (add-to-list 'company-backends 'company-omnisharp)
   (custo/local-leader-key
     :keymaps '(csharp-mode-map omnisharp-mode-map)
     "o" '(:ignore t :which-key "omnisharp")
