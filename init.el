@@ -295,7 +295,7 @@
   (ivy-mode . counsel-mode)
   )
 
-<<<<<<< HEAD
+
 (use-package ivy
   :defer t
   :after orderless
@@ -321,29 +321,7 @@
   :hook
   (ivy-mode . ivy-rich-mode)
   )
-=======
-;; alternate completion engine to company
-;; (use-package corfu
-;;   :defer t
-;;   :after (evil orderless)
-;;   :hook
-;;   (eglot--managed-mode . corfu-mode)
-;;   ;; (lsp-mode . corfu-mode)
-;;   (emacs-lisp-mode . corfu-mode)
-;;   :bind (:map corfu-map
-;;               ("TAB" . corfu-next)
-;;               ("<tab>" . corfu-next)
-;;               ("S-TAB" . corfu-previous)
-;;               ("<backtab>" . corfu-previous)
-;;               )
-;;   :custom
-;;   (corfu-cycle t)
-;;   :config
-;;   ;; since we use orderless
-;;   (setq corfu-quit-at-boundary nil)
-;;   )
 
->>>>>>> 8c9751b (Revert "Revert "Revert "corfu + eglot and some minor tweaks""")
 
 ;; good fuzzy completions
 ;; (use-package prescient)
@@ -603,6 +581,7 @@
   :hook
   (evil-mode . evil-collection-init)
   )
+
 
 (use-package evil-commentary
   :defer t
