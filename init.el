@@ -811,6 +811,68 @@
   :after magit)
 
 
+;; completion mini buffers
+(use-package company
+  :defer t
+  :hook
+  (lsp-mode . company-mode)
+  (emacs-lisp-mode . company-mode)
+  :bind (;; only active when trying to complete a selection
+         (:map company-active-map
+               ;; complete the currently chosen selection
+               ("RET" . company-complete-selection)
+               ;; goto next selection
+               ("<tab>" . company-select-next)
+               ("TAB" . company-select-next)
+               ;; goto previous selection
+               ("<backtab>" . company-select-previous)
+               )
+         (:map emacs-lisp-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               )
+         ;; only make tab start completions if lsp is active
+         (:map prog-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               ("<backtab>" . counsel-company)
+               ("S-TAB" . counsel-company))
+         )
+  :config
+  (setq company-idle-delay nil;;0.5
+        ;; company-backends '(company-capf)
+        company-minimum-prefix-length 2
+        company-selection-wrap-around t
+        company-tooltip-limit 25
+        ;;
+        ;; Good Ideas from DOOM:
+        ;;
+        ;; These auto-complete the current selection when
+        ;; `company-auto-complete-chars' is typed. This is too magical. We
+        ;; already have the much more explicit RET and TAB.
+        company-auto-complete nil
+        company-auto-complete-chars nil
+
+        ;; Only search the current buffer for `company-dabbrev' (a backend that
+        ;; suggests text your open buffers). This prevents Company from causing
+        ;; lag once you have a lot of buffers open.
+        company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers nil
+        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+        ;; domain-specific words with particular casing.
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil
+        )
+  )
+
+(use-package company-box
+  :defer t
+  :after company
+  :hook (company-mode . company-box-mode)
+  )
+
 ;; better javascript mode
 (use-package js2-mode
   :defer t
@@ -901,7 +963,8 @@
 (use-package omnisharp
   :defer t
   :mode ("\\.cs\\'" . omnisharp-mode)
-  :after corfu
+  :after company
+  ;; :after corfu
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -911,6 +974,7 @@
         c-basic-offset 2
         tab-width 2
         evil-shift-width 2)
+  (add-to-list 'company-backends 'company-omnisharp)
   (custo/local-leader-key
     :keymaps '(csharp-mode-map omnisharp-mode-map)
     "o" '(:ignore t :which-key "omnisharp")
