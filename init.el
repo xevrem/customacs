@@ -190,52 +190,52 @@
 
 
 ;; minad' and oantolin's awesome packages:
-(use-package vertico
-  :straight '(:type git :host github
-              :repo "minad/vertico"
-              :branch "main")
-  :defer t
-  :hook
-  (after-init . vertico-mode)
-  :config
-  (setq vertico-cycle t
-        completion-in-region-function #'consult-completion-in-region)
-  )
+;; (use-package vertico
+;;   :straight '(:type git :host github
+;;               :repo "minad/vertico"
+;;               :branch "main")
+;;   :defer t
+;;   :hook
+;;   (after-init . vertico-mode)
+;;   :config
+;;   (setq vertico-cycle t
+;;         completion-in-region-function #'consult-completion-in-region)
+;;   )
 
 
-(use-package consult
-  :defer t
-  :after vertico
-  :commands (consult-xref
-             consult-line
-             consult-recent-file
-             consult-flymake)
-  :config
-  (consult-customize
-   consult-theme
-   :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-file consult--source-project-file consult--source-bookmark
-   :preview-key (kbd "M-."))
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref
-        consult-project-root-function #'projectile-project-root)
-  )
+;; (use-package consult
+;;   :defer t
+;;   :after vertico
+;;   :commands (consult-xref
+;;              consult-line
+;;              consult-recent-file
+;;              consult-flymake)
+;;   :config
+;;   (consult-customize
+;;    consult-theme
+;;    :preview-key '(:debounce 0.2 any)
+;;    consult-ripgrep consult-git-grep consult-grep
+;;    consult-bookmark consult-recent-file consult-xref
+;;    consult--source-file consult--source-project-file consult--source-bookmark
+;;    :preview-key (kbd "M-."))
+;;   (setq xref-show-xrefs-function #'consult-xref
+;;         xref-show-definitions-function #'consult-xref
+;;         consult-project-root-function #'projectile-project-root)
+;;   )
 
 
-(use-package consult-flycheck
-  :defer t
-  :after (:all consult flycheck)
-  )
+;; (use-package consult-flycheck
+;;   :defer t
+;;   :after (:all consult flycheck)
+;;   )
 
 
-(use-package marginalia
-  :defer t
-  :after vertico
-  :hook
-  (vertico-mode . marginalia-mode)
-  )
+;; (use-package marginalia
+;;   :defer t
+;;   :after vertico
+;;   :hook
+;;   (vertico-mode . marginalia-mode)
+;;   )
 
 
 (use-package orderless
@@ -250,75 +250,76 @@
   )
 
 
-(defun affe-orderless-regexp-compiler (input _type)
-  "Affe regex compiler that utilizes orderless when searching for INPUT."
-    (setq input (orderless-pattern-compiler input))
-    (cons input (lambda (str) (orderless--highlight input str))))
+;; (defun affe-orderless-regexp-compiler (input _type)
+;;   "Affe regex compiler that utilizes orderless when searching for INPUT."
+;;     (setq input (orderless-pattern-compiler input))
+;;     (cons input (lambda (str) (orderless--highlight input str))))
 
 
-(use-package affe
-  :straight '(:type git :host github
-              :repo "minad/affe"
-              :branch "main")
-  :defer t
-  :after (:all vertico consult orderless)
-  :commands (affe-grep
-             affe-find)
-  :config
-  ;; Configure Orderless
-  (setq affe-regexp-function #'orderless-pattern-compiler
-        affe-highlight-function #'orderless--highlight
-        affe-regexp-compiler #'affe-orderless-regexp-compiler
-        affe-grep-command "/usr/local/bin/rg --null --color=never --max-columns=1000 --no-heading --line-number -v ^$ ."
-        )
-  )
-
-;; ivy trio
-;; (use-package swiper
+;; (use-package affe
+;;   :straight '(:type git :host github
+;;               :repo "minad/affe"
+;;               :branch "main")
 ;;   :defer t
-;;   :commands swiper
-;;   )
-
-;; ;; use counsel for completions over
-;; ;; default M-x and some other things
-;; (use-package counsel
-;;   :defer t
-;;   :after ivy
-;;   :commands (counsel-M-x
-;;              counsel-find-file
-;;              counsel-switch-buffer
-;;              counsel-recentf
-;;              counsel-load-theme
-;;              counsel-flycheck)
-;;   :hook
-;;   (ivy-mode . counsel-mode)
-;;   )
-
-;; (use-package ivy
-;;   :defer t
-;;   :after orderless
-;;   :hook
-;;   (after-init . ivy-mode)
-;;   ;; we bind here in ivy so that they are loaded dynamically
-;;   :bind (("C-s" . swiper)
-;;          ("M-x" . counsel-M-x)
-;;          ("C-x C-f" . counsel-find-file)
-;;          )
+;;   :after (:all vertico consult orderless)
+;;   :commands (affe-grep
+;;              affe-find)
 ;;   :config
-;;   (setq ivy-use-virtual-buffers t
-;;         enable-recursive-minibuffers t
-;;         ivy-initial-inputs-alist nil
-;;         ivy-re-builders-alist '((t . orderless-ivy-re-builder))
+;;   ;; Configure Orderless
+;;   (setq affe-regexp-function #'orderless-pattern-compiler
+;;         affe-highlight-function #'orderless--highlight
+;;         affe-regexp-compiler #'affe-orderless-regexp-compiler
+;;         affe-grep-command "/usr/local/bin/rg --null --color=never --max-columns=1000 --no-heading --line-number -v ^$ ."
 ;;         )
 ;;   )
 
-;; ;; provide more helpful info in ivy panels
-;; (use-package ivy-rich
-;;   :defer t
-;;   :after ivy
-;;   :hook
-;;   (ivy-mode . ivy-rich-mode)
-;;   )
+;; ivy trio
+(use-package swiper
+  :defer t
+  :commands swiper
+  )
+
+;; use counsel for completions over
+;; default M-x and some other things
+(use-package counsel
+  :defer t
+  :after ivy
+  :commands (counsel-M-x
+             counsel-find-file
+             counsel-switch-buffer
+             counsel-recentf
+             counsel-load-theme
+             counsel-flycheck
+             counsel-company)
+  :hook
+  (ivy-mode . counsel-mode)
+  )
+
+(use-package ivy
+  :defer t
+  :after orderless
+  :hook
+  (after-init . ivy-mode)
+  ;; we bind here in ivy so that they are loaded dynamically
+  :bind (("C-s" . swiper)
+         ("M-x" . counsel-M-x)
+         ("C-x C-f" . counsel-find-file)
+         )
+  :config
+  (setq ivy-use-virtual-buffers t
+        enable-recursive-minibuffers t
+        ivy-initial-inputs-alist nil
+        ivy-re-builders-alist '((t . orderless-ivy-re-builder))
+        )
+  )
+
+;; provide more helpful info in ivy panels
+(use-package ivy-rich
+  :defer t
+  :after ivy
+  :hook
+  (ivy-mode . ivy-rich-mode)
+  )
 
 ;; good fuzzy completions
 ;; (use-package prescient)
@@ -332,29 +333,29 @@
 
 
 ;; alternate completion engine to company
-(use-package corfu
-  :defer t
-  :after (evil orderless)
-  :hook
-  (eglot--managed-mode . corfu-mode)
-  ;; (lsp-mode . corfu-mode)
-  (emacs-lisp-mode . corfu-mode)
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<tab>" . corfu-next)
-              ("S-TAB" . corfu-previous)
-              ("<backtab>" . corfu-previous)
-              )
-  :custom
-  (corfu-cycle t)
-  :config
-  ;; since we use orderless
-  (setq corfu-quit-at-boundary nil
-        ;; corfu-auto t
-        ;; corfu-auto-delay 0.2
-        ;; corfu-auto-prefix 2
-        )
-  )
+;; (use-package corfu
+;;   :defer t
+;;   :after (evil orderless)
+;;   :hook
+;;   (eglot--managed-mode . corfu-mode)
+;;   ;; (lsp-mode . corfu-mode)
+;;   (emacs-lisp-mode . corfu-mode)
+;;   :bind (:map corfu-map
+;;               ("TAB" . corfu-next)
+;;               ("<tab>" . corfu-next)
+;;               ("S-TAB" . corfu-previous)
+;;               ("<backtab>" . corfu-previous)
+;;               )
+;;   :custom
+;;   (corfu-cycle t)
+;;   :config
+;;   ;; since we use orderless
+;;   (setq corfu-quit-at-boundary nil
+;;         ;; corfu-auto t
+;;         ;; corfu-auto-delay 0.2
+;;         ;; corfu-auto-prefix 2
+;;         )
+;;   )
 
 (use-package emacs
   :init
@@ -438,8 +439,8 @@
                one-themes
                challenger-deep-theme)
   :hook
-  (eglot--managed-mode . rainbow-identifiers-mode)
-  ;; (lsp-mode . rainbow-identifiers-mode)
+  ;; (eglot--managed-mode . rainbow-identifiers-mode)
+  (lsp-mode . rainbow-identifiers-mode)
   (emacs-lisp-mode . rainbow-identifiers-mode)
   )
 
@@ -450,8 +451,8 @@
                one-themes
                challenge-deep-them)
   :hook
-  (eglot--managed-mode . rainbow-delimiters-mode)
-  ;; (lsp-mode . rainbow-delimiters-mode)
+  ;; (eglot--managed-mode . rainbow-delimiters-mode)
+  (lsp-mode . rainbow-delimiters-mode)
   (emacs-lisp-mode . rainbow-delimiters-mode)
   )
 
@@ -465,8 +466,8 @@
                one-themes
                challenge-deep-them)
   :hook
-  (eglot--managed-mode . custo/smart-parens)
-  ;; (lsp-mode . custo/smart-parens)
+  ;; (eglot--managed-mode . custo/smart-parens)
+  (lsp-mode . custo/smart-parens)
   (emacs-lisp-mode . custo/smart-parens)
   :config
   ;; don't interfere with yasnippets
@@ -481,8 +482,8 @@
                one-themes
                challenge-deep-them)
   :hook
-  (eglot--managed-mode . show-paren-mode)
-  ;; (lsp-mode . show-paren-mode)
+  ;; (eglot--managed-mode . show-paren-mode)
+  (lsp-mode . show-paren-mode)
   (emacs-lisp-mode . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
@@ -605,8 +606,8 @@
 ;; define default keybinds
 (custo/leader-key
   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
-  ;; ":" '(counsel-M-x :wk "M-x")
-  ":" '(execute-extended-command :wk "M-x")
+  ":" '(counsel-M-x :wk "M-x")
+  ;; ":" '(execute-extended-command :wk "M-x")
   "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
   "a" '(:ignore t :wk "apps")
   "a c" '(circe :wk "circe")
@@ -615,21 +616,21 @@
   "a t" '(eshell :wk "eshell")
   "a T" '(vterm :wk "vterm")
   "b" '(:ignore t :which-key "buffer")
-  ;; "b b" '(ivy-switch-buffer :which-key "switch buffers")
-  ;; "b B" '(counsel-switch-buffer :which-key "preview switch buffers")
-  "b b" '(switch-to-buffer :which-key "switch buffers")
+  "b b" '(ivy-switch-buffer :which-key "switch buffers")
+  "b B" '(counsel-switch-buffer :which-key "preview switch buffers")
+  ;; "b b" '(switch-to-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
   ;; "b i" '(counsel-ibuffer :which-key "ibuffer")
   "c" '(:ignore t :which-key "cursor")
   "c c" '(comment-line :which-key "comment line")
   "f" '(:ignore f :which-key "file")
   "f d" '(ranger :which-key "file directory")
-  ;; "f f" '(counsel-find-file :which-key "find file")
-  "f f" '(find-file :which-key "find file")
+  "f f" '(counsel-find-file :which-key "find file")
+  ;; "f f" '(find-file :which-key "find file")
   "f p" '(find-file-in-project :wk "find file in project")
   "f a" '(affe-find :wk "affe find file in project")
-  ;; "f r" '(counsel-recentf :wk "recent files")
-  "f r" '(consult-recent-file :wk "recent files")
+  "f r" '(counsel-recentf :wk "recent files")
+  ;; "f r" '(consult-recent-file :wk "recent files")
   "f R" '(recentf-open-files :wk "full recentf files")
   "f s" '(save-buffer :which-key "save file")
   ;; "f t" '(treemacs :wk "treemacs")
@@ -665,12 +666,12 @@
   "q Q" '(kill-emacs :which-key "quit no-save")
   "q r" '(restart-emacs :which-key "restart emacs")
   "s" '(:ignore t :which-key "search")
-  "s p" '(projectile-ripgrep :wk "search project")
-  ;; "s p" '(counsel-projectile-rg :which-key "search project")
+  ;; "s p" '(projectile-ripgrep :wk "search project")
+  "s p" '(counsel-projectile-rg :which-key "search project")
   "s p" '(consult-ripgrep :which-key "search project")
-  "s P" '(affe-grep :which-key "search project")
-  ;; "s s" '(swiper :which-key "search buffer")
-  "s s" '(consult-line :wk "search buffer")
+  ;; "s P" '(affe-grep :which-key "search project")
+  "s s" '(swiper :which-key "search buffer")
+  ;; "s s" '(consult-line :wk "search buffer")
   "t" '(:ignore t :which-key "toggles")
   "t l" '(display-line-numbers-mode :wk "toggle line numbers")
   "t r" '((lambda ()
@@ -678,9 +679,9 @@
             (custo/setup-font-faces))
           :wk "reset font-faces")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
-  ;; "t T" '(counsel-load-theme :which-key "choose theme")
+  "t T" '(counsel-load-theme :which-key "choose theme")
   ;; "t T" '(consult-theme :wk "choose theme")
-  "t T" '(load-theme :wk "choose theme")
+  ;; "t T" '(load-theme :wk "choose theme")
   "w" '(:ignore t :which-key "window")
   "w w" '(other-window :which-key "other window")
   "w d" '(delete-window :which-key "delete window")
@@ -822,22 +823,22 @@
   )
 
 ; add counsel capability
-;; (use-package counsel-projectile
-;;   :defer t
-;;   :after projectile
-;;   :commands (counsel-projectile-rg
-;;              counsel-projectile-switch-project
-;;              counsel-projectile-switch-to-buffer
-;;              counsel-projectile-find-file)
-;;   :hook
-;;   (projectile-mode . counsel-projectile-mode)
-;;   :config
-;;   (custo/leader-key
-;;     "b B" '(counsel-projectile-switch-to-buffer :wk "switch project buffer")
-;;   )
-;;   ;; :init
-;;   ;; (counsel-projectile-mode t)
-;;   )
+(use-package counsel-projectile
+  :defer t
+  :after projectile
+  :commands (counsel-projectile-rg
+             counsel-projectile-switch-project
+             counsel-projectile-switch-to-buffer
+             counsel-projectile-find-file)
+  :hook
+  (projectile-mode . counsel-projectile-mode)
+  :config
+  (custo/leader-key
+    "b B" '(counsel-projectile-switch-to-buffer :wk "switch project buffer")
+  )
+  ;; :init
+  ;; (counsel-projectile-mode t)
+  )
 
 
 (use-package find-file-in-project
@@ -899,66 +900,66 @@
 
 
 ;; completion mini buffers
-;; (use-package company
-;;   :defer t
-;;   :hook
-;;   (lsp-mode . company-mode)
-;;   (emacs-lisp-mode . company-mode)
-;;   :bind (;; only active when trying to complete a selection
-;;          (:map company-active-map
-;;                ;; complete the currently chosen selection
-;;                ("RET" . company-complete-selection)
-;;                ;; goto next selection
-;;                ("<tab>" . company-select-next)
-;;                ("TAB" . company-select-next)
-;;                ;; goto previous selection
-;;                ("<backtab>" . company-select-previous)
-;;                )
-;;          (:map emacs-lisp-mode-map
-;;                ;; start the completion process
-;;                ("<tab>" . company-indent-or-complete-common)
-;;                ("TAB" . company-indent-or-complete-common)
-;;                )
-;;          ;; only make tab start completions if lsp is active
-;;          (:map prog-mode-map
-;;                ;; start the completion process
-;;                ;; ("<tab>" . company-indent-or-complete-common)
-;;                ;; ("TAB" . company-indent-or-complete-common))
-;;                ("<tab>" . counsel-company)
-;;                ("TAB" . counsel-company))
-;;          )
-;;   :config
-;;   (setq company-idle-delay nil;;0.5
-;;         ;; company-backends '(company-capf)
-;;         company-minimum-prefix-length 2
-;;         company-selection-wrap-around t
-;;         company-tooltip-limit 25
-;;         ;;
-;;         ;; Good Ideas from DOOM:
-;;         ;;
-;;         ;; These auto-complete the current selection when
-;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
-;;         ;; already have the much more explicit RET and TAB.
-;;         company-auto-complete nil
-;;         company-auto-complete-chars nil
+(use-package company
+  :defer t
+  :hook
+  (lsp-mode . company-mode)
+  (emacs-lisp-mode . company-mode)
+  :bind (;; only active when trying to complete a selection
+         (:map company-active-map
+               ;; complete the currently chosen selection
+               ("RET" . company-complete-selection)
+               ;; goto next selection
+               ("<tab>" . company-select-next)
+               ("TAB" . company-select-next)
+               ;; goto previous selection
+               ("<backtab>" . company-select-previous)
+               )
+         (:map emacs-lisp-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               )
+         ;; only make tab start completions if lsp is active
+         (:map prog-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               ("<backtab>" . counsel-company)
+               ("S-TAB" . counsel-company))
+         )
+  :config
+  (setq company-idle-delay nil;;0.5
+        ;; company-backends '(company-capf)
+        company-minimum-prefix-length 2
+        company-selection-wrap-around t
+        company-tooltip-limit 25
+        ;;
+        ;; Good Ideas from DOOM:
+        ;;
+        ;; These auto-complete the current selection when
+        ;; `company-auto-complete-chars' is typed. This is too magical. We
+        ;; already have the much more explicit RET and TAB.
+        company-auto-complete nil
+        company-auto-complete-chars nil
 
-;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
-;;         ;; suggests text your open buffers). This prevents Company from causing
-;;         ;; lag once you have a lot of buffers open.
-;;         company-dabbrev-other-buffers nil
-;;         company-dabbrev-code-other-buffers nil
-;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-;;         ;; domain-specific words with particular casing.
-;;         company-dabbrev-ignore-case nil
-;;         company-dabbrev-downcase nil
-;;         )
-;;   )
+        ;; Only search the current buffer for `company-dabbrev' (a backend that
+        ;; suggests text your open buffers). This prevents Company from causing
+        ;; lag once you have a lot of buffers open.
+        company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers nil
+        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+        ;; domain-specific words with particular casing.
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil
+        )
+  )
 
-;; (use-package company-box
-;;   :defer t
-;;   :after company
-;;   :hook (company-mode . company-box-mode)
-;;   )
+(use-package company-box
+  :defer t
+  :after company
+  :hook (company-mode . company-box-mode)
+  )
 
 ;; better javascript mode
 (use-package js2-mode
@@ -1148,81 +1149,24 @@
 (use-package xref)
 (use-package eldoc)
 
-(use-package eglot
-  :defer t
-  :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  :hook ((js2-mode . eglot-ensure)
-         (rsjx-mode . eglot-ensure)
-         (scss-mode . eglot-ensure)
-         (web-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (rustic-mode . eglot-ensure)
-         (csharp-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure)
-         (yaml-mode . eglot-ensure)
-         (json-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         )
-  :bind
-  ([remap xref-goto-xref] . custo/xref-goto-xref)
-  :config
-  (custo/local-leader-key
-    :keymaps '(js2-mode-map
-               rjsx-mode-map
-               rustic-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               csharp-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               web-mode-map
-               go-mode-map
-               python-mode-map
-               gdscript-mode-map)
-    "a" '(eglot-code-actions :wk "excute code action")
-    "g r" '(xref-find-references :wk "goto references")
-    ;; "g g" '(eglot-find-implementation :wk "goto definition")
-    "g g" '(xref-find-definitions :wk "goto definition")
-    "r" '(:ignore t :wk "refactor")
-    "r r" '(eglot-rename :wk "rename")
-    "=" '(:ignore t :wk "format")
-    "= l" '(eglot-format-buffer :wk "format with eglot")
-    "e" '(:ignore t :wk "errors")
-    "e l" '(consult-flymake :wk "list errors")
-    )
-  )
-
-;; lsp-mode
-;; (use-package lsp-mode
+;; (use-package eglot
 ;;   :defer t
-;;   :hook ((js2-mode . lsp-deferred)
-;;          (rsjx-mode . lsp-deferred)
-;;          (scss-mode . lsp-deferred)
-;;          (web-mode . lsp-deferred)
-;;          (typescript-mode . lsp-deferred)
-;;          (typescript-tsx-mode . lsp-deferred)
-;;          (rustic-mode . lsp-deferred)
-;;          (csharp-mode . lsp-deferred)
-;;          (elixir-mode . lsp-deferred)
-;;          (yaml-mode . lsp-deferred)
-;;          (json-mode . lsp-deferred)
-;;          (go-mode . lsp-deferred)
-;;          (lsp-mode . lsp-enable-which-key-integration)
+;;   :after (:all yasnippet jsonrpc flymake project xref eldoc)
+;;   :hook ((js2-mode . eglot-ensure)
+;;          (rsjx-mode . eglot-ensure)
+;;          (scss-mode . eglot-ensure)
+;;          (web-mode . eglot-ensure)
+;;          (typescript-mode . eglot-ensure)
+;;          (rustic-mode . eglot-ensure)
+;;          (csharp-mode . eglot-ensure)
+;;          (elixir-mode . eglot-ensure)
+;;          (yaml-mode . eglot-ensure)
+;;          (json-mode . eglot-ensure)
+;;          (go-mode . eglot-ensure)
 ;;          )
-;;   :commands (lsp lsp-deferred)
 ;;   :bind
 ;;   ([remap xref-goto-xref] . custo/xref-goto-xref)
 ;;   :config
-;;   ;; (setq lsp-completion-provider :capf
-;;   (setq lsp-completion-provider :none
-;;         lsp-file-watch-threshold 100
-;;         lsp-headerline-breadcrumb-enable nil
-;;         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-;;         lsp-ui-doc-enable nil
-;;         lsp-idle-delay 0.500
-;;         lsp-log-io nil
-;;         )
 ;;   (custo/local-leader-key
 ;;     :keymaps '(js2-mode-map
 ;;                rjsx-mode-map
@@ -1236,74 +1180,131 @@
 ;;                web-mode-map
 ;;                go-mode-map
 ;;                python-mode-map
-;;                gdscript-mode-map
-;;                lsp-mode-map
-;;                lsp-ui-mode-map)
-;;     "a" '(lsp-execute-code-action :wk "excute code action")
-;;     "g g" '(lsp-find-definition :which-key "goto definition")
-;;     "g p" '(lsp-ui-peek-find-references :which-key "peek references")
-;;     "g r" '(lsp-find-references :wk "goto references")
-;;     "l" '(:ignore t :wk "lsp")
-;;     "l g" '(lsp-ui-doc-glance :wk "glance symbol")
-;;     "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-;;     "o" '(lsp-ui-imenu :which-key "overview")
-;;     "r" '(:ignore t :which-key "refactor")
-;;     "r r" '(lsp-rename :which-key "rename")
-;;     "=" '(:ignore t :which-key "format")
-;;     "= l" '(lsp-format-buffer :which-key "format with lsp")
-;;     )
-;;   )
-
-;; (use-package lsp-pyright
-;;   :after (:all lsp python)
-;;   :hook (python-mode .
-;;                      (lambda ()
-;;                        (require 'lsp-pyright)
-;;                        (lsp-deferred)))
-;;   )
-
-;; ;; prettier lsp
-;; (use-package lsp-ui
-;;   :defer t
-;;   :hook
-;;   (lsp-mode . lsp-ui-mode)
-;;   )
-
-;; ;; error checking
-;; (use-package flycheck
-;;   :defer t
-;;   :hook
-;;   (prog-mode . flycheck-mode)
-;;   :config
-;;   (setq flycheck-disabled-checkers
-;;                 (append flycheck-disabled-checkers
-;;                         '(javascript-jshint)))
-;;   (setq flycheck-temp-prefix ".flycheck")
-;;   (flycheck-add-mode 'javascript-eslint 'js2-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
-;;   (custo/leader-key
+;;                gdscript-mode-map)
+;;     "a" '(eglot-code-actions :wk "excute code action")
+;;     "g r" '(xref-find-references :wk "goto references")
+;;     ;; "g g" '(eglot-find-implementation :wk "goto definition")
+;;     "g g" '(xref-find-definitions :wk "goto definition")
+;;     "r" '(:ignore t :wk "refactor")
+;;     "r r" '(eglot-rename :wk "rename")
+;;     "=" '(:ignore t :wk "format")
+;;     "= l" '(eglot-format-buffer :wk "format with eglot")
 ;;     "e" '(:ignore t :wk "errors")
-;;     "e l" '(consult-flycheck :wk "list errors")
-;;     ;; "e l" '(counsel-flycheck :wk "list errors")
-;;     )
-;;   (custo/local-leader-key
-;;     :keymaps '(js2-mode-map
-;;                rsjx-mode-map
-;;                web-mode-map
-;;                typescript-mode-map
-;;                typescript-tsx-mode-map
-;;                rustic-mode-map
-;;                elixir-mode-map
-;;                csharp-mode-map
-;;                go-mode-map
-;;                )
-;;     "e" '(:ignore t :wk "errors")
-;;     "e l" '(consult-flycheck :wk "list errors")
-;;     ;; "e l" '(counsel-flycheck :wk "list errors")
+;;     "e l" '(consult-flymake :wk "list errors")
 ;;     )
 ;;   )
+
+;; lsp-mode
+(use-package lsp-mode
+  :defer t
+  :hook ((js2-mode . lsp-deferred)
+         (rsjx-mode . lsp-deferred)
+         (scss-mode . lsp-deferred)
+         (web-mode . lsp-deferred)
+         (typescript-mode . lsp-deferred)
+         (typescript-tsx-mode . lsp-deferred)
+         (rustic-mode . lsp-deferred)
+         (csharp-mode . lsp-deferred)
+         (elixir-mode . lsp-deferred)
+         (yaml-mode . lsp-deferred)
+         (json-mode . lsp-deferred)
+         (go-mode . lsp-deferred)
+         (lsp-mode . lsp-enable-which-key-integration)
+         )
+  :commands (lsp lsp-deferred)
+  :bind
+  ([remap xref-goto-xref] . custo/xref-goto-xref)
+  :config
+  (setq lsp-completion-provider :capf
+  ;; (setq lsp-completion-provider :none
+        lsp-file-watch-threshold 100
+        lsp-headerline-breadcrumb-enable nil
+        ;; lsp-headerline-breadcrumb-segments '(project file symbols)
+        lsp-ui-doc-enable nil
+        lsp-idle-delay 0.500
+        lsp-log-io nil
+        )
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map
+               rjsx-mode-map
+               rustic-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               csharp-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               web-mode-map
+               go-mode-map
+               python-mode-map
+               gdscript-mode-map
+               lsp-mode-map
+               lsp-ui-mode-map)
+    "a" '(lsp-execute-code-action :wk "excute code action")
+    "g g" '(lsp-find-definition :which-key "goto definition")
+    "g p" '(lsp-ui-peek-find-references :which-key "peek references")
+    "g r" '(lsp-find-references :wk "goto references")
+    "l" '(:ignore t :wk "lsp")
+    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
+    "o" '(lsp-ui-imenu :which-key "overview")
+    "r" '(:ignore t :which-key "refactor")
+    "r r" '(lsp-rename :which-key "rename")
+    "=" '(:ignore t :which-key "format")
+    "= l" '(lsp-format-buffer :which-key "format with lsp")
+    )
+  )
+
+(use-package lsp-pyright
+  :after (:all lsp python)
+  :hook (python-mode .
+                     (lambda ()
+                       (require 'lsp-pyright)
+                       (lsp-deferred)))
+  )
+
+;; prettier lsp
+(use-package lsp-ui
+  :defer t
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  )
+
+;; error checking
+(use-package flycheck
+  :defer t
+  :hook
+  (prog-mode . flycheck-mode)
+  :config
+  (setq flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
+  (setq flycheck-temp-prefix ".flycheck")
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (custo/leader-key
+    "e" '(:ignore t :wk "errors")
+    ;; "e l" '(consult-flycheck :wk "list errors")
+    "e l" '(counsel-flycheck :wk "list errors")
+    )
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map
+               rsjx-mode-map
+               web-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               elixir-mode-map
+               csharp-mode-map
+               go-mode-map
+               )
+    "e" '(:ignore t :wk "errors")
+    ;; "e l" '(consult-flycheck :wk "list errors")
+    "e l" '(counsel-flycheck :wk "list errors")
+    )
+  )
 
 (use-package hl-todo
   :defer t
