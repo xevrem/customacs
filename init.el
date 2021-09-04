@@ -224,12 +224,6 @@
   )
 
 
-(use-package consult-flycheck
-  :defer t
-  :after (:all consult flycheck)
-  )
-
-
 (use-package marginalia
   :defer t
   :after vertico
@@ -249,30 +243,6 @@
         )
   )
 
-
-;; alternate completion engine to company
-(use-package corfu
-  :defer t
-  :after (evil orderless)
-  :hook
-  (eglot--managed-mode . corfu-mode)
-  (emacs-lisp-mode . corfu-mode)
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<tab>" . corfu-next)
-              ("S-TAB" . corfu-previous)
-              ("<backtab>" . corfu-previous)
-              )
-  :custom
-  (corfu-cycle t)
-  :config
-  ;; since we use orderless
-  (setq corfu-quit-at-boundary nil
-        ;; corfu-auto t
-        ;; corfu-auto-delay 0.2
-        ;; corfu-auto-prefix 2
-        )
-  )
 
 (use-package emacs
   :init
@@ -518,7 +488,6 @@
 ;; define default keybinds
 (custo/leader-key
   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
-  ;; ":" '(counsel-M-x :wk "M-x")
   ":" '(execute-extended-command :wk "M-x")
   "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
   "a" '(:ignore t :wk "apps")
@@ -528,24 +497,17 @@
   "a t" '(eshell :wk "eshell")
   "a T" '(vterm :wk "vterm")
   "b" '(:ignore t :which-key "buffer")
-  ;; "b b" '(ivy-switch-buffer :which-key "switch buffers")
-  ;; "b B" '(counsel-switch-buffer :which-key "preview switch buffers")
   "b b" '(switch-to-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
-  ;; "b i" '(counsel-ibuffer :which-key "ibuffer")
   "c" '(:ignore t :which-key "cursor")
   "c c" '(comment-line :which-key "comment line")
   "f" '(:ignore f :which-key "file")
   "f d" '(ranger :which-key "file directory")
-  ;; "f f" '(counsel-find-file :which-key "find file")
   "f f" '(find-file :which-key "find file")
   "f p" '(find-file-in-project :wk "find file in project")
-  ;; "f a" '(affe-find :wk "affe find file in project")
-  ;; "f r" '(counsel-recentf :wk "recent files")
   "f r" '(consult-recent-file :wk "recent files")
   "f R" '(recentf-open-files :wk "full recentf files")
   "f s" '(save-buffer :which-key "save file")
-  ;; "f t" '(treemacs :wk "treemacs")
   "g" '(:ignore t :which-key "magit")
   "g g" '(magit-status :which-key "magit status")
   "g b" '(magit-branch :which-key "magit branch")
@@ -579,10 +541,7 @@
   "q r" '(restart-emacs :which-key "restart emacs")
   "s" '(:ignore t :which-key "search")
   ;; "s p" '(projectile-ripgrep :wk "search project")
-  ;; "s p" '(counsel-projectile-rg :which-key "search project")
   "s p" '(consult-ripgrep :which-key "search project")
-  ;; "s P" '(affe-grep :which-key "search project")
-  ;; "s s" '(swiper :which-key "search buffer")
   "s s" '(consult-line :wk "search buffer")
   "t" '(:ignore t :which-key "toggles")
   "t l" '(display-line-numbers-mode :wk "toggle line numbers")
@@ -591,7 +550,6 @@
             (custo/setup-font-faces))
           :wk "reset font-faces")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
-  ;; "t T" '(counsel-load-theme :which-key "choose theme")
   ;; "t T" '(consult-theme :wk "choose theme")
   "t T" '(load-theme :wk "choose theme")
   "w" '(:ignore t :which-key "window")
@@ -722,7 +680,6 @@
              projectile-switch-to-buffer
              projectile-project-root)
   :hook
-  ;; (ivy-mode . projectile-mode)
   (vertico-mode . projectile-mode)
   :custom
   ;; this allows projectile to use orderless
@@ -733,25 +690,6 @@
     :keymaps 'projectile-mode-map
     "p a" '(projectile-add-known-project :which-key "add project"))
   )
-
-; add counsel capability
-(use-package counsel-projectile
-  :defer t
-  :after projectile
-  :commands (counsel-projectile-rg
-             counsel-projectile-switch-project
-             counsel-projectile-switch-to-buffer
-             counsel-projectile-find-file)
-  :hook
-  (projectile-mode . counsel-projectile-mode)
-  :config
-  (custo/leader-key
-    "b B" '(counsel-projectile-switch-to-buffer :wk "switch project buffer")
-  )
-  ;; :init
-  ;; (counsel-projectile-mode t)
-  )
-
 
 (use-package find-file-in-project
   :defer t
@@ -814,8 +752,9 @@
 ;; completion mini buffers
 (use-package company
   :defer t
+  :after eglot
   :hook
-  (lsp-mode . company-mode)
+  (eglot--managed-mode . company-mode)
   (emacs-lisp-mode . company-mode)
   :bind (;; only active when trying to complete a selection
          (:map company-active-map
@@ -826,6 +765,7 @@
                ("TAB" . company-select-next)
                ;; goto previous selection
                ("<backtab>" . company-select-previous)
+               ("S-TAB" . company-select-previous)
                )
          (:map emacs-lisp-mode-map
                ;; start the completion process
@@ -833,16 +773,16 @@
                ("TAB" . company-indent-or-complete-common)
                )
          ;; only make tab start completions if lsp is active
-         (:map prog-mode-map
+         (:map eglot-mode-map
                ;; start the completion process
                ("<tab>" . company-indent-or-complete-common)
                ("TAB" . company-indent-or-complete-common)
-               ("<backtab>" . counsel-company)
-               ("S-TAB" . counsel-company))
+               )
          )
   :config
-  (setq company-idle-delay nil;;0.5
-        ;; company-backends '(company-capf)
+  (setq company-idle-delay nil
+  ;; (setq company-idle-delay 0.5
+        company-backends '(company-capf)
         company-minimum-prefix-length 2
         company-selection-wrap-around t
         company-tooltip-limit 25
@@ -957,14 +897,12 @@
   :mode "\\.cs\\'"
   :hook
   (csharp-mode . rainbow-delimiters-mode)
-  (csharp-mode . flycheck-mode)
   )
 
 (use-package omnisharp
   :defer t
   :mode ("\\.cs\\'" . omnisharp-mode)
   :after company
-  ;; :after corfu
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -1075,7 +1013,7 @@
          (json-mode . eglot-ensure)
          (go-mode . eglot-ensure)
          )
-  :bind
+  :bind 
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
   (custo/local-leader-key
@@ -1102,8 +1040,11 @@
     "= l" '(eglot-format-buffer :wk "format with eglot")
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flymake :wk "list errors")
+    "h" '(:ignore t :wk "help")
+    "h i" '(eldoc :wk "info about symbol")
     )
   )
+
 
 (use-package hl-todo
   :defer t
@@ -1121,6 +1062,7 @@
           ("WARNING" . ,(face-foreground 'warning))
           ))
   )
+
 
 ;; org stuff
 (defun custo/org-mode-setup ()
