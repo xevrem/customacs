@@ -223,6 +223,10 @@
         consult-project-root-function #'projectile-project-root)
   )
 
+(use-package consult-flycheck
+  :defer t
+  :commands consult-flycheck)
+
 
 (use-package marginalia
   :defer t
@@ -320,22 +324,24 @@
 
 (use-package rainbow-identifiers
   :defer t
-  :after (:any eglot
+  :after (:any lsp-mode
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . rainbow-identifiers-mode)
+  ;; (eglot--managed-mode . rainbow-identifiers-mode)
+  (lsp-mode . rainbow-identifiers-mode)
   (emacs-lisp-mode . rainbow-identifiers-mode)
   )
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
   :defer t
-  :after (:any eglot
+  :after (:any lsp-mode
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . rainbow-delimiters-mode)
+  ;; (eglot--managed-mode . rainbow-delimiters-mode)
+  (lsp-mode . rainbow-delimiters-mode)
   (emacs-lisp-mode . rainbow-delimiters-mode)
   )
 
@@ -345,11 +351,12 @@
 
 (use-package smartparens
   :defer t
-  :after (:any eglot
+  :after (:any lsp-mode
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . custo/smart-parens)
+  ;; (eglot--managed-mode . custo/smart-parens)
+  (lsp-mode . custo/smart-parens)
   (emacs-lisp-mode . custo/smart-parens)
   :config
   ;; don't interfere with yasnippets
@@ -360,11 +367,12 @@
 ;; highlight matching delimiters
 (use-package paren
   :defer t
-  :after (:any eglot
+  :after (:any lsp-mode
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . show-paren-mode)
+  ;; (eglot--managed-mode . show-paren-mode)
+  (lsp-mode . show-paren-mode)
   (emacs-lisp-mode . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
@@ -672,7 +680,7 @@
 ;; setup project management
 (use-package projectile
   :defer t
-  :after ivy
+  :after vertico
   ;; :diminish projectile-mode
   :commands (projectile-command-map
              projectile-find-file
@@ -752,9 +760,10 @@
 ;; completion mini buffers
 (use-package company
   :defer t
-  :after eglot
+  :after (:any lsp-mode emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . company-mode)
+  ;; (eglot--managed-mode . company-mode)
+  (lsp-mode . company-mode)
   (emacs-lisp-mode . company-mode)
   :bind (;; only active when trying to complete a selection
          (:map company-active-map
@@ -773,7 +782,7 @@
                ("TAB" . company-indent-or-complete-common)
                )
          ;; only make tab start completions if lsp is active
-         (:map eglot-mode-map
+         (:map lsp-mode-map
                ;; start the completion process
                ("<tab>" . company-indent-or-complete-common)
                ("TAB" . company-indent-or-complete-common)
@@ -876,8 +885,9 @@
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
+        rustic-lsp-client 'lsp
         rustic-lsp-server 'rust-analyzer
+        lsp-rust-analyzer-proc-macro-enable t
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
@@ -998,24 +1008,83 @@
 (use-package xref)
 (use-package eldoc)
 
-(use-package eglot
-  :defer t
-  :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  :hook ((js2-mode . eglot-ensure)
-         (rsjx-mode . eglot-ensure)
-         (scss-mode . eglot-ensure)
-         (web-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (rustic-mode . eglot-ensure)
-         (csharp-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure)
-         (yaml-mode . eglot-ensure)
-         (json-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
+;; (use-package eglot
+;;   :defer t
+;;   :after (:all yasnippet jsonrpc flymake project xref eldoc)
+;;   :hook ((js2-mode . eglot-ensure)
+;;          (rsjx-mode . eglot-ensure)
+;;          (scss-mode . eglot-ensure)
+;;          (web-mode . eglot-ensure)
+;;          (typescript-mode . eglot-ensure)
+;;          (rustic-mode . eglot-ensure)
+;;          (csharp-mode . eglot-ensure)
+;;          (elixir-mode . eglot-ensure)
+;;          (yaml-mode . eglot-ensure)
+;;          (json-mode . eglot-ensure)
+;;          (go-mode . eglot-ensure)
+;;          )
+;;   :bind
+;;   ([remap xref-goto-xref] . custo/xref-goto-xref)
+;;   :config
+;;   (custo/local-leader-key
+;;     :keymaps '(js2-mode-map
+;;                rjsx-mode-map
+;;                rustic-mode-map
+;;                typescript-mode-map
+;;                typescript-tsx-mode-map
+;;                csharp-mode-map
+;;                elixir-mode-map
+;;                yaml-mode-map
+;;                json-mode-map
+;;                web-mode-map
+;;                go-mode-map
+;;                python-mode-map
+;;                gdscript-mode-map)
+;;     "a" '(eglot-code-actions :wk "excute code action")
+;;     "g r" '(xref-find-references :wk "goto references")
+;;     ;; "g g" '(eglot-find-implementation :wk "goto definition")
+;;     "g g" '(xref-find-definitions :wk "goto definition")
+;;     "r" '(:ignore t :wk "refactor")
+;;     "r r" '(eglot-rename :wk "rename")
+;;     "=" '(:ignore t :wk "format")
+;;     "= l" '(eglot-format-buffer :wk "format with eglot")
+;;     "e" '(:ignore t :wk "errors")
+;;     "e l" '(consult-flymake :wk "list errors")
+;;     "h" '(:ignore t :wk "help")
+;;     "h i" '(eldoc :wk "info about symbol")
+;;     )
+;;   )
+
+
+;; lsp-mode
+(use-package lsp-mode
+   :defer t
+   :hook ((js2-mode . lsp-deferred)
+          (rsjx-mode . lsp-deferred)
+          (scss-mode . lsp-deferred)
+          (web-mode . lsp-deferred)
+          (typescript-mode . lsp-deferred)
+          (typescript-tsx-mode . lsp-deferred)
+          (rustic-mode . lsp-deferred)
+          (csharp-mode . lsp-deferred)
+          (elixir-mode . lsp-deferred)
+          (yaml-mode . lsp-deferred)
+          (json-mode . lsp-deferred)
+          (go-mode . lsp-deferred)
+          (lsp-mode . lsp-enable-which-key-integration)
          )
-  :bind 
+  :commands (lsp lsp-deferred)
+  :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
+  (setq lsp-completion-provider :capf
+        lsp-file-watch-threshold 100
+        lsp-headerline-breadcrumb-enable nil
+        ;; lsp-headerline-breadcrumb-segments '(project file symbols)
+        lsp-ui-doc-enable nil
+        lsp-idle-delay 0.500
+        lsp-log-io nil
+        )
   (custo/local-leader-key
     :keymaps '(js2-mode-map
                rjsx-mode-map
@@ -1030,20 +1099,72 @@
                go-mode-map
                python-mode-map
                gdscript-mode-map)
-    "a" '(eglot-code-actions :wk "excute code action")
-    "g r" '(xref-find-references :wk "goto references")
-    ;; "g g" '(eglot-find-implementation :wk "goto definition")
-    "g g" '(xref-find-definitions :wk "goto definition")
-    "r" '(:ignore t :wk "refactor")
-    "r r" '(eglot-rename :wk "rename")
-    "=" '(:ignore t :wk "format")
-    "= l" '(eglot-format-buffer :wk "format with eglot")
-    "e" '(:ignore t :wk "errors")
-    "e l" '(consult-flymake :wk "list errors")
-    "h" '(:ignore t :wk "help")
-    "h i" '(eldoc :wk "info about symbol")
+    "a" '(lsp-execute-code-action :wk "excute code action")
+    "g g" '(lsp-find-definition :which-key "goto definition")
+    "g p" '(lsp-ui-peek-find-references :which-key "peek references")
+    "g r" '(lsp-find-references :wk "goto references")
+    "l" '(:ignore t :wk "lsp")
+    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
+    "o" '(lsp-ui-imenu :which-key "overview")
+    "r" '(:ignore t :which-key "refactor")
+    "r r" '(lsp-rename :which-key "rename")
+    "=" '(:ignore t :which-key "format")
+    "= l" '(lsp-format-buffer :which-key "format with lsp")
     )
   )
+
+(use-package lsp-pyright
+  :after (:all lsp-mode python)
+  :hook (python-mode .
+                     (lambda ()
+                       (require 'lsp-pyright)
+                       (lsp-deferred)))
+  )
+
+;; prettier lsp
+(use-package lsp-ui
+  :defer t
+  :after lsp-mode
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  )
+
+;; error checking
+(use-package flycheck
+  :defer t
+  :hook
+  (prog-mode . flycheck-mode)
+  :config
+  (setq flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
+  (setq flycheck-temp-prefix ".flycheck")
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (custo/leader-key
+    "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flycheck :wk "list errors")
+    )
+  (custo/local-leader-key
+    :keymaps '(js2-mode-map
+               rsjx-mode-map
+               web-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               elixir-mode-map
+               csharp-mode-map
+               go-mode-map
+               gdscript-mode-map)
+    "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flymake :wk "list errors")
+    )
+  )
+
+
 
 
 (use-package hl-todo
