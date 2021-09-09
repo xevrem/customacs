@@ -1160,7 +1160,7 @@
                go-mode-map
                gdscript-mode-map)
     "e" '(:ignore t :wk "errors")
-    "e l" '(consult-flymake :wk "list errors")
+    "e l" '(consult-flycheck :wk "list errors")
     )
   )
 
@@ -1445,6 +1445,8 @@
 (use-package vterm
   :defer t
   :commands vterm
+  :config
+  (setq vterm-timer-delay 0.01)
   )
 
 (defun custo/launch-vterm ()
