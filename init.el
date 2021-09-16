@@ -756,6 +756,19 @@
 (use-package forge
   :after magit)
 
+;;enable super syntax highlighting
+(use-package tree-sitter
+  :defer t
+  :after tree-sitter-langs
+  :hook
+  (lsp-mode . (lambda ()
+                 (tree-sitter-mode)
+                 (tree-sitter-hl-mode)
+                 )
+             )
+  )
+(use-package tree-sitter-langs)
+
 
 ;; completion mini buffers
 (use-package company
