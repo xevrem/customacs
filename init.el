@@ -758,6 +758,10 @@
 
 ;;enable super syntax highlighting
 (use-package tree-sitter
+  :straight (:type git :host github
+                   :repo "emacs-tree-sitter/elisp-tree-sitter"
+                   :branch "release"
+                   )
   :defer t
   :after tree-sitter-langs
   :hook
@@ -767,7 +771,12 @@
                  )
              )
   )
-(use-package tree-sitter-langs)
+(use-package tree-sitter-langs
+  :straight (:type git :host github
+                   :repo "emacs-tree-sitter/tree-sitter-langs"
+                   :branch "release"
+                   )
+  )
 
 
 ;; completion mini buffers
