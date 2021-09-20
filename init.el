@@ -209,7 +209,8 @@
   :commands (consult-xref
              consult-line
              consult-recent-file
-             consult-flymake)
+             consult-flymake
+             consult-theme)
   :config
   (consult-customize
    consult-theme
@@ -301,11 +302,12 @@
   )
 
 (use-package doom-themes
-  :after doom-modeline
+  :after (doom-modeline)
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
-  (load-theme 'doom-challenger-deep t)
+  ;; (load-theme 'doom-challenger-deep t)
+  (consult-theme 'doom-palenight)
   )
 
 ;; for certian versions of emacs, we need to change the backgroun
@@ -331,6 +333,10 @@
   ;; (eglot--managed-mode . rainbow-identifiers-mode)
   (lsp-mode . rainbow-identifiers-mode)
   (emacs-lisp-mode . rainbow-identifiers-mode)
+  :conifg
+  (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
+        rainbow-identifiers-cie-l*a*b*-lightness 75
+        rainbow-identifiers-cie-l*a*b*-saturation 50)
   )
 
 ;; make it easier to keep track of parens and braces
