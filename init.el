@@ -307,7 +307,7 @@
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
   ;; (load-theme 'doom-challenger-deep t)
-  (consult-theme 'doom-palenight)
+  (consult-theme 'doom-dracula)
   )
 
 ;; for certian versions of emacs, we need to change the backgroun
