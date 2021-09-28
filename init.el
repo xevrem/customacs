@@ -322,8 +322,8 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
-  (consult-theme 'doom-challenger-deep)
-  ;; (consult-theme 'doom-dracula)
+  ;; (consult-theme 'doom-challenger-deep)
+  (consult-theme 'doom-dracula)
   )
 
 ;; for certian versions of emacs, we need to change the backgroun
