@@ -803,6 +803,9 @@
                    :repo "emacs-tree-sitter/tree-sitter-langs"
                    :branch "release"
                    )
+  :config
+  (tree-sitter-require 'tsx)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
   )
 
 
@@ -924,17 +927,17 @@
   :mode "\\.ts\\'"
   :config
   (setq typescript-indent-level 2)
-  (progn
-      (define-derived-mode typescript-tsx-mode web-mode "TypeScript-tsx")
-      (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode)))
   )
+
+(define-derived-mode typescript-tsx-mode typescript-mode "tsx")
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
 
 (use-package rustic
   :defer t
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'lsp
+        rustic-lsp-client 'eglot
         rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
         rustic-indent-offset 4
