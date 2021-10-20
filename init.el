@@ -325,8 +325,8 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
-  ;; (consult-theme 'doom-challenger-deep)
-  (consult-theme 'doom-dracula)
+  (consult-theme 'doom-challenger-deep)
+  ;; (consult-theme 'doom-dracula)
   )
 
 ;; for certian versions of emacs, we need to change the backgroun
@@ -522,6 +522,8 @@
   )
 
 
+
+
 ;; define default keybinds
 (custo/leader-key
   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
@@ -549,12 +551,13 @@
   "g g" '(magit-status :which-key "magit status")
   "g b" '(magit-branch :which-key "magit branch")
   "g B" '(magit-blame :which-key "magit blame")
-  "g s" '(:ignore s :wk "smerge")
-  "g s n" '(smerge-next :wk "goto next conflict")
-  "g s p" '(smerge-prev :wk "goto prev conflict")
-  "g s u" '(smerge-keep-upper :wk "keep upper")
-  "g s l" '(smerge-keep-lower :wk "keep lower")
-  "g s b" '(smerge-keep-all :wk "keep both")
+  ;; "g s" '(:ignore s :wk "smerge")
+  "g s" '(hydra-smerge/body :wk "smerge")
+  ;; "g s n" '(smerge-next :wk "goto next conflict")
+  ;; "g s p" '(smerge-prev :wk "goto prev conflict")
+  ;; "g s u" '(smerge-keep-upper :wk "keep upper")
+  ;; "g s l" '(smerge-keep-lower :wk "keep lower")
+  ;; "g s b" '(smerge-keep-all :wk "keep both")
   "h" '(:ignore t :which-key "custo help")
   "h d" '(:ignore t :wk "devdocs")
   "h d i" '(devdocs-install :wk "install devdocs")
@@ -644,9 +647,19 @@
     ("h" shrink-window "shrink window")
     ("q" nil "done" :exit t)
     )
+  (defhydra hydra-smerge (:timeout 4)
+    "smerge conflicts"
+    ("q" nil "done" :exit t)
+    ("n" smerge-next "next conflict")
+    ("p" smerge-prev "prev conflict")
+    ("u" smerge-keep-upper "keep upper")
+    ("l" smerge-keep-lower "keep lower")
+    ("b" smerge-keep-all "keep both")
+    )
   
   ;; since custo leader keys are defined, we can bind to them now :D
   (custo/leader-key
+    ;; "g s" '(hydra-smerge/body :wk "smerge")
     "t s" '(hydra-text-scale/body :wk "scale text")
     "w r" '(hydra-window-resize/body :wk "resize window")
     )
@@ -912,11 +925,14 @@
 
 ;; format js and jsx
 (use-package prettier
-  :after (:any js2-mode rsjx-mode typescript-mode web-mode)
+  :after (:all lsp-mode (:any js2-mode rsjx-mode typescript-mode web-mode))
   :config
   (custo/local-leader-key
     :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map web-mode-map)
-    "= =" '(prettier-prettify :wk "format with prettier"))
+    "= =" '((lambda ()
+              (interactive)
+              (prettier-prettify)
+              (lsp-eslint-apply-all-fixes)) :wk "format with prettier"))
   )
 
 
@@ -1507,7 +1523,8 @@
   :defer t
   :commands vterm
   :config
-  (setq vterm-timer-delay 0.01)
+  (setq vterm-timer-delay 0.01
+        vterm-shell "/Users/erikajonell/.asdf/shims/nu")
   )
 
 (defun custo/launch-vterm ()
