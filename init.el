@@ -22,7 +22,7 @@
 ;; adjust the startup size of emacs
 (setq initial-frame-alist
       `((width . 120) ; chars
-        (height . 45) ; lines
+        (height . 40) ; lines
         )
       )
 
@@ -114,7 +114,7 @@
       )
     ;; set current frame to 120x45 characters
     (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 45)
+    (set-frame-height (frame-focus) 40)
     )
   )
 ;; run this hook after we have initialized the first time
