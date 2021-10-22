@@ -1524,7 +1524,7 @@
   :commands vterm
   :config
   (setq vterm-timer-delay 0.01
-        vterm-shell "/Users/erikajonell/.asdf/shims/nu")
+        vterm-shell "zsh")
   )
 
 (defun custo/launch-vterm ()
