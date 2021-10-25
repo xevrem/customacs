@@ -899,7 +899,7 @@
   :defer t
   :after prog-mode
   ;; :mode "\\/.*\\.js\\'"
-  :mode "\\.js\\'"
+  :mode ("\\.js\\'" "\\.cjs\\'")
   :config
   (setq js-indent-level 2)
   :hook
@@ -913,12 +913,22 @@
   :mode ("components\\/.*\\.js\\'" "\\.jsx\\'")
   )
 
+(use-package svelte-mode
+  :defer t
+  :after prog-mode
+  :mode ("\\.svelte\\'")
+  )
+
 ;; auto-docs :D
 (use-package js-doc
   :after (:any js2-mode rjsx-mode typescript-mode)
   :config
   (custo/local-leader-key
-    :keymaps '(js2-mode-map rjsx-mode-map typescript-mode-map)
+    :keymaps '(js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               svelte-mode-map)
     "d" '(:ignore t :which-key "jsdoc")
     "d f" '(js-doc-insert-function-doc :which-key "jsdoc function"))
   )
@@ -928,7 +938,12 @@
   :after (:all lsp-mode (:any js2-mode rsjx-mode typescript-mode web-mode))
   :config
   (custo/local-leader-key
-    :keymaps '(js2-mode-map rsjx-mode-map typescript-mode-map web-mode-map)
+    :keymaps '(js2-mode-map
+               rsjx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               svelte-mode-map
+               web-mode-map)
     "= =" '((lambda ()
               (interactive)
               (prettier-prettify)
@@ -1141,6 +1156,7 @@
           (web-mode . lsp-deferred)
           (typescript-mode . lsp-deferred)
           (typescript-tsx-mode . lsp-deferred)
+          (svelte-mode . lsp-deferred)
           (rustic-mode . lsp-deferred)
           (csharp-mode . lsp-deferred)
           (elixir-mode . lsp-deferred)
@@ -1168,6 +1184,7 @@
                rustic-mode-map
                typescript-mode-map
                typescript-tsx-mode-map
+               svelte-mode-map
                csharp-mode-map
                elixir-mode-map
                yaml-mode-map
@@ -1231,6 +1248,7 @@
                web-mode-map
                typescript-mode-map
                typescript-tsx-mode-map
+               svelte-mode-map
                rustic-mode-map
                elixir-mode-map
                csharp-mode-map
