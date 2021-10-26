@@ -913,11 +913,11 @@
   :mode ("components\\/.*\\.js\\'" "\\.jsx\\'")
   )
 
-(use-package svelte-mode
-  :defer t
-  :after prog-mode
-  :mode ("\\.svelte\\'")
-  )
+;; (use-package svelte-mode
+;;   :defer t
+;;   :after prog-mode
+;;   :mode ("\\.svelte\\'")
+;;   )
 
 ;; auto-docs :D
 (use-package js-doc
@@ -928,7 +928,8 @@
                rjsx-mode-map
                typescript-mode-map
                typescript-tsx-mode-map
-               svelte-mode-map)
+               ;; svelte-mode-map
+               )
     "d" '(:ignore t :which-key "jsdoc")
     "d f" '(js-doc-insert-function-doc :which-key "jsdoc function"))
   )
@@ -942,7 +943,7 @@
                rsjx-mode-map
                typescript-mode-map
                typescript-tsx-mode-map
-               svelte-mode-map
+               ;; svelte-mode-map
                web-mode-map)
     "= =" '((lambda ()
               (interactive)
@@ -953,7 +954,7 @@
 
 (use-package web-mode
   :defer t
-  :mode ("\\.html\\'" "\\.scss\\'" "\\.css\\'")
+  :mode ("\\.html\\'" "\\.scss\\'" "\\.css\\'" "\\.svelte\\'")
   :config
   (setq web-mode-css-indent-offset 2
         web-mode-markup-indent-offset 2
