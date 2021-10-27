@@ -270,16 +270,16 @@
 ;;         )
 ;;   )
 
-(use-package emacs
-  :init
-  ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 3
+;; (use-package emacs
+;;   :init
+;;   ;; TAB cycle if there are only few candidates
+;;   (setq completion-cycle-threshold 3
 
-        ;; Enable indentation+completion using the TAB key.
-        ;; Completion is often bound to M-TAB.
-        tab-always-indent 'complete
-        )
-  )
+;;         ;; Enable indentation+completion using the TAB key.
+;;         ;; Completion is often bound to M-TAB.
+;;         tab-always-indent 'complete
+;;         )
+;;   )
 
 
 ;; show recently used files
@@ -900,11 +900,11 @@
   :mode ("components\\/.*\\.js\\'" "\\.jsx\\'")
   )
 
-;; (use-package svelte-mode
-;;   :defer t
-;;   :after prog-mode
-;;   :mode ("\\.svelte\\'")
-;;   )
+(use-package svelte-mode
+  :defer t
+  :after prog-mode
+  :mode ("\\.svelte\\'")
+  )
 
 ;; auto-docs :D
 (use-package js-doc
@@ -948,7 +948,7 @@
 
 (use-package web-mode
   :defer t
-  :mode ("\\.html\\'" "\\.scss\\'" "\\.css\\'" "\\.svelte\\'")
+  :mode ("\\.html\\'" "\\.scss\\'" "\\.css\\'"); "\\.svelte\\'")
   :config
   (setq web-mode-css-indent-offset 2
         web-mode-markup-indent-offset 2
