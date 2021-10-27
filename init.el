@@ -248,28 +248,27 @@
         )
   )
 
-(use-package corfu
-  :defer t
-  :after (evil orderless)
-  :hook
-  (eglot--managed-mode . corfu-mode)
-  (emacs-lisp-mode . corfu-mode)
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<tab>" . corfu-next)
-              ("S-TAB" . corfu-previous)
-              ("<backtab>" . corfu-previous)
-              )
-  :custom
-  (corfu-cycle t)
-  :config
-  ;; since we use orderless
-  (setq corfu-quit-at-boundary nil
-        ;; corfu-auto t
-        ;; corfu-auto-delay 0.2
-        ;; corfu-auto-prefix 2
-        )
-  )
+;; (use-package corfu
+;;   :defer t
+;;   :after (evil orderless)
+;;   :hook
+;;   (emacs-lisp-mode . corfu-mode)
+;;   :bind (:map corfu-map
+;;               ("TAB" . corfu-next)
+;;               ("<tab>" . corfu-next)
+;;               ("S-TAB" . corfu-previous)
+;;               ("<backtab>" . corfu-previous)
+;;               )
+;;   :custom
+;;   (corfu-cycle t)
+;;   :config
+;;   ;; since we use orderless
+;;   (setq corfu-quit-at-boundary nil
+;;         ;; corfu-auto t
+;;         ;; corfu-auto-delay 0.2
+;;         ;; corfu-auto-prefix 2
+;;         )
+;;   )
 
 (use-package emacs
   :init
@@ -345,12 +344,10 @@
 
 (use-package rainbow-identifiers
   :defer t
-  :after (:any eglot
-               lsp-mode
+  :after (:any lsp-mode
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . rainbow-identifiers-mode)
   (lsp-mode . rainbow-identifiers-mode)
   (emacs-lisp-mode . rainbow-identifiers-mode)
   :config
@@ -362,12 +359,10 @@
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
   :defer t
-  :after (:any eglot
-               lsp-mode
+  :after (:any lsp-mode
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . rainbow-delimiters-mode)
   (lsp-mode . rainbow-delimiters-mode)
   (emacs-lisp-mode . rainbow-delimiters-mode)
   )
@@ -378,12 +373,10 @@
 
 (use-package smartparens
   :defer t
-  :after (:any eglot
-               lsp-mode
+  :after (:any lsp-mode
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . custo/smart-parens)
   (lsp-mode . custo/smart-parens)
   (emacs-lisp-mode . custo/smart-parens)
   :config
@@ -395,12 +388,10 @@
 ;; highlight matching delimiters
 (use-package paren
   :defer t
-  :after (:any eglot
-               lsp-mode
+  :after (:any lsp-mode
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . show-paren-mode)
   (lsp-mode . show-paren-mode)
   (emacs-lisp-mode . show-paren-mode)
   :config
@@ -807,11 +798,6 @@
   :defer t
   :after tree-sitter-langs
   :hook
-  (eglot--managed-mode . (lambda ()
-                 (tree-sitter-mode)
-                 (tree-sitter-hl-mode)
-                 )
-             )
   (lsp-mode . (lambda ()
                  (tree-sitter-mode)
                  (tree-sitter-hl-mode)
@@ -830,69 +816,70 @@
 
 
 ;; completion mini buffers
-;; (use-package company
-;;   :defer t
-;;   :after (:any lsp-mode emacs-lisp-mode)
-;;   :hook
-;;   ;; (eglot--managed-mode . company-mode)
-;;   (lsp-mode . company-mode)
-;;   (emacs-lisp-mode . company-mode)
-;;   :bind (;; only active when trying to complete a selection
-;;          (:map company-active-map
-;;                ;; complete the currently chosen selection
-;;                ("RET" . company-complete-selection)
-;;                ;; goto next selection
-;;                ("<tab>" . company-select-next)
-;;                ("TAB" . company-select-next)
-;;                ;; goto previous selection
-;;                ("<backtab>" . company-select-previous)
-;;                ("S-TAB" . company-select-previous)
-;;                )
-;;          (:map emacs-lisp-mode-map
-;;                ;; start the completion process
-;;                ("<tab>" . company-indent-or-complete-common)
-;;                ("TAB" . company-indent-or-complete-common)
-;;                )
-;;          ;; only make tab start completions if lsp is active
-;;          (:map lsp-mode-map
-;;                ;; start the completion process
-;;                ("<tab>" . company-indent-or-complete-common)
-;;                ("TAB" . company-indent-or-complete-common)
-;;                )
-;;          )
-;;   :config
-;;   (setq company-idle-delay nil
-;;   ;; (setq company-idle-delay 0.5
-;;         company-backends '(company-capf)
-;;         company-minimum-prefix-length 2
-;;         company-selection-wrap-around t
-;;         company-tooltip-limit 25
-;;         ;;
-;;         ;; Good Ideas from DOOM:
-;;         ;;
-;;         ;; These auto-complete the current selection when
-;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
-;;         ;; already have the much more explicit RET and TAB.
-;;         company-auto-complete nil
-;;         company-auto-complete-chars nil
+(use-package company
+  :defer t
+  :after (:any
+          lsp-mode
+          emacs-lisp-mode)
+  :hook
+  (lsp-mode . company-mode)
+  (emacs-lisp-mode . company-mode)
+  :bind (;; only active when trying to complete a selection
+         (:map company-active-map
+               ;; complete the currently chosen selection
+               ("RET" . company-complete-selection)
+               ;; goto next selection
+               ("<tab>" . company-select-next)
+               ("TAB" . company-select-next)
+               ;; goto previous selection
+               ("<backtab>" . company-select-previous)
+               ("S-TAB" . company-select-previous)
+               )
+         (:map emacs-lisp-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               )
+         ;; only make tab start completions if lsp is active
+         (:map lsp-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               )
+         )
+  :config
+  (setq company-idle-delay nil
+  ;; (setq company-idle-delay 0.5
+        company-backends '(company-capf)
+        company-minimum-prefix-length 2
+        company-selection-wrap-around t
+        company-tooltip-limit 25
+        ;;
+        ;; Good Ideas from DOOM:
+        ;;
+        ;; These auto-complete the current selection when
+        ;; `company-auto-complete-chars' is typed. This is too magical. We
+        ;; already have the much more explicit RET and TAB.
+        company-auto-complete nil
+        company-auto-complete-chars nil
 
-;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
-;;         ;; suggests text your open buffers). This prevents Company from causing
-;;         ;; lag once you have a lot of buffers open.
-;;         company-dabbrev-other-buffers nil
-;;         company-dabbrev-code-other-buffers nil
-;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-;;         ;; domain-specific words with particular casing.
-;;         company-dabbrev-ignore-case nil
-;;         company-dabbrev-downcase nil
-;;         )
-;;   )
+        ;; Only search the current buffer for `company-dabbrev' (a backend that
+        ;; suggests text your open buffers). This prevents Company from causing
+        ;; lag once you have a lot of buffers open.
+        company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers nil
+        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+        ;; domain-specific words with particular casing.
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil
+        )
+  )
 
-;; (use-package company-box
-;;   :defer t
-;;   :after company
-;;   :hook (company-mode . company-box-mode)
-;;   )
+(use-package company-box
+  :defer t
+  :after company
+  :hook (company-mode . company-box-mode)
+  )
 
 ;; better javascript mode
 (use-package js2-mode
@@ -936,7 +923,14 @@
 
 ;; format js and jsx
 (use-package prettier
-  :after (:all lsp-mode (:any js2-mode rsjx-mode typescript-mode web-mode))
+  :after (:all
+          lsp-mode (:any
+                    js2-mode
+                    rsjx-mode
+                    typescript-mode
+                    svelte-mode-map
+                    web-mode)
+          )
   :config
   (custo/local-leader-key
     :keymaps '(js2-mode-map
@@ -976,7 +970,7 @@
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
+        rustic-lsp-client 'lsp
         rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
         rustic-indent-offset 4
@@ -1003,7 +997,7 @@
 (use-package omnisharp
   :defer t
   :mode ("\\.cs\\'" . omnisharp-mode)
-  :after corfu
+  :after company-mode
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -1025,7 +1019,8 @@
 (use-package elixir-mode
   :mode ("\\.ex\\'"
           "\\.eex\\'"
-          "\\.exs\\'")
+          "\\.exs\\'"
+          "\\.leex\\'")
   :hook
   (elixir-mode . yas-minor-mode)
   )
@@ -1085,7 +1080,7 @@
         plantuml-indent-level 2)
   )
 
-;; eglot helper functions
+;; helper functions
 (defun custo/xref-goto-xref ()
   "Customacs goto xref and quit xref buffer."
   (interactive)
@@ -1098,54 +1093,6 @@
 (use-package project)
 (use-package xref)
 (use-package eldoc)
-
-(use-package eglot
-  :defer t
-  :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  ;; :hook (
-  ;;        (js2-mode . eglot-ensure)
-  ;;        (rsjx-mode . eglot-ensure)
-  ;;        (scss-mode . eglot-ensure)
-  ;;        (web-mode . eglot-ensure)
-  ;;        (typescript-mode . eglot-ensure)
-  ;;        (rustic-mode . eglot-ensure)
-  ;;        (csharp-mode . eglot-ensure)
-  ;;        (elixir-mode . eglot-ensure)
-  ;;        (yaml-mode . eglot-ensure)
-  ;;        (json-mode . eglot-ensure)
-  ;;        (go-mode . eglot-ensure)
-  ;;        )
-  :bind
-  ([remap xref-goto-xref] . custo/xref-goto-xref)
-  :config
-  (custo/local-leader-key
-    :keymaps '(js2-mode-map
-               rjsx-mode-map
-               rustic-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               csharp-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               web-mode-map
-               go-mode-map
-               python-mode-map
-               gdscript-mode-map)
-    "a" '(eglot-code-actions :wk "excute code action")
-    "g r" '(xref-find-references :wk "goto references")
-    ;; "g g" '(eglot-find-implementation :wk "goto definition")
-    "g g" '(xref-find-definitions :wk "goto definition")
-    "r" '(:ignore t :wk "refactor")
-    "r r" '(eglot-rename :wk "rename")
-    "=" '(:ignore t :wk "format")
-    "= l" '(eglot-format-buffer :wk "format with eglot")
-    "e" '(:ignore t :wk "errors")
-    "e l" '(consult-flymake :wk "list errors")
-    "h" '(:ignore t :wk "help")
-    "h i" '(eldoc :wk "info about symbol")
-    )
-  )
 
 
 ;; lsp-mode
@@ -1170,8 +1117,8 @@
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  ;; (setq lsp-completion-provider :capf
-  (setq lsp-completion-provider :none
+  (setq lsp-completion-provider :capf
+  ;; (setq lsp-completion-provider :none
         lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
@@ -1259,8 +1206,6 @@
     "e l" '(consult-flycheck :wk "list errors")
     )
   )
-
-
 
 
 (use-package hl-todo
