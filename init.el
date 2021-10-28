@@ -274,7 +274,7 @@
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 3
+  (setq completion-cycle-threshold 1
 
         ;; Enable indentation+completion using the TAB key.
         ;; Completion is often bound to M-TAB.
