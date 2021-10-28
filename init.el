@@ -1041,7 +1041,9 @@
 (use-package elixir-mode
   :mode ("\\.ex\\'"
           "\\.eex\\'"
-          "\\.exs\\'")
+          "\\.exs\\'"
+          "\\.heex\\'"
+          "\\.leex\\'")
   :hook
   (elixir-mode . yas-minor-mode)
   )
@@ -1121,9 +1123,10 @@
   :hook (
          (js2-mode . eglot-ensure)
          (rsjx-mode . eglot-ensure)
+         (typescript-mode . eglot-ensure)
+         (svelte-mode . eglot-ensure)
          (scss-mode . eglot-ensure)
          (web-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
          (rustic-mode . eglot-ensure)
          (csharp-mode . eglot-ensure)
          (elixir-mode . eglot-ensure)
@@ -1134,6 +1137,8 @@
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
+  (add-to-list 'eglot-server-programs '(web-mode  "vls"))
+  (add-to-list 'eglot-server-programs '(svelte-mode "svelte-language-server"))
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flymake :wk "list errors")
