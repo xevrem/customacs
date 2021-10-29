@@ -819,12 +819,13 @@
                  )
              )
   )
+
 (use-package tree-sitter-langs
   :straight (:type git :host github
                    :repo "emacs-tree-sitter/tree-sitter-langs"
                    :branch "release"
                    )
-  :config
+  :init
   (tree-sitter-require 'tsx)
   (tree-sitter-require 'html)
   (tree-sitter-require 'json)
@@ -837,9 +838,10 @@
 ;; completion mini buffers
 (use-package company
   :defer t
-  :after lsp-mode
+  :after (:any lsp-mode emacs-lisp-mode)
   :hook
   (lsp-mode . company-mode)
+  (emacs-lisp-mode . company-mode)
   :bind (;; only active when trying to complete a selection
          (:map company-active-map
                ;; complete the currently chosen selection
