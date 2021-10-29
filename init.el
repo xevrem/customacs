@@ -253,7 +253,7 @@
   :after (evil orderless)
   :hook
   (eglot--managed-mode . corfu-mode)
-  (emacs-lisp-mode . corfu-mode)
+  ;; (emacs-lisp-mode . corfu-mode)
   :bind (:map corfu-map
               ("TAB" . corfu-next)
               ("<tab>" . corfu-next)
@@ -268,6 +268,7 @@
         ;; corfu-auto t
         ;; corfu-auto-delay 0.2
         ;; corfu-auto-prefix 2
+        tab-always-indent 'complete
         )
   )
 
@@ -278,10 +279,9 @@
 
         ;; Enable indentation+completion using the TAB key.
         ;; Completion is often bound to M-TAB.
-        tab-always-indent 'complete
+        ;; tab-always-indent 'complete
         )
   )
-
 
 ;; show recently used files
 (use-package recentf
@@ -456,7 +456,7 @@
   ([remap describe-key] . helpful-key)
   ([remap describe-symbol] . helpful-symbol)
   )
-  
+
 
 (defun custo/evil-hook ()
   "Custom hook to use Emacs mode."
@@ -689,6 +689,7 @@
   :hook
   (prog-mode . symbol-overlay-mode)
   :config
+  (setq symbol-overlay-scope t)
   (defhydra hydra-symbol-overlay (:timeout nil)
     "symbol find and replace"
     ("q" "quit" :exit t)
@@ -850,6 +851,12 @@
                ("<backtab>" . company-select-previous)
                ("S-TAB" . company-select-previous)
                )
+         ;;
+         (:map emacs-lisp-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               )
          ;; only make tab start completions if lsp is active
          (:map lsp-mode-map
                ;; start the completion process
@@ -859,6 +866,7 @@
          )
   :config
   (setq company-idle-delay nil
+        tab-always-indent t
   ;; (setq company-idle-delay 0.5
         company-backends '(company-capf)
         company-minimum-prefix-length 2
@@ -960,7 +968,9 @@
     "= =" '((lambda ()
               (interactive)
               (prettier-prettify)
-              (eslint-fix)) :wk "format with prettier"))
+              (lsp-eslint-fix-all)
+              ;; (eslint-fix)
+              ) :wk "format with prettier"))
   )
 
 
@@ -991,7 +1001,7 @@
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
+        rustic-lsp-client 'lsp
         rustic-lsp-server 'rls;rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
         rustic-indent-offset 4
@@ -1128,17 +1138,17 @@
 (use-package eglot
   :defer t
   :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  :hook (
-         (js2-mode . eglot-ensure)
-         (rsjx-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (typescript-tsx-mode . eglot-ensure)
-         (rustic-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure)
-         (yaml-mode . eglot-ensure)
-         (json-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         )
+  ;; :hook (
+  ;;        (js2-mode . eglot-ensure)
+  ;;        (rsjx-mode . eglot-ensure)
+  ;;        (typescript-mode . eglot-ensure)
+  ;;        (typescript-tsx-mode . eglot-ensure)
+  ;;        (rustic-mode . eglot-ensure)
+  ;;        (elixir-mode . eglot-ensure)
+  ;;        (yaml-mode . eglot-ensure)
+  ;;        (json-mode . eglot-ensure)
+  ;;        (go-mode . eglot-ensure)
+  ;;        )
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
@@ -1148,7 +1158,8 @@
     "e l" '(consult-flymake :wk "list errors")
     )
   (custo/local-leader-key
-    :keymaps '(js2-mode-map
+    :keymaps '(
+               js2-mode-map
                rjsx-mode-map
                rustic-mode-map
                typescript-mode-map
@@ -1179,6 +1190,15 @@
 (use-package lsp-mode
    :defer t
    :hook (
+          (js2-mode . lsp-deferred)
+          (rsjx-mode . lsp-deferred)
+          (typescript-mode . lsp-deferred)
+          (typescript-tsx-mode . lsp-deferred)
+          (rustic-mode . lsp-deferred)
+          (elixir-mode . lsp-deferred)
+          (yaml-mode . lsp-deferred)
+          (json-mode . lsp-deferred)
+          (go-mode . lsp-deferred)
           (web-mode . lsp-deferred)
           (svelte-mode . lsp-deferred)
           (csharp-mode . lsp-deferred)
@@ -1198,6 +1218,16 @@
         )
   (custo/local-leader-key
     :keymaps '(
+               js2-mode-map
+               rjsx-mode-map
+               rustic-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               go-mode-map
+               gdscript-mode-map
                svelte-mode-map
                scss-mode-map
                web-mode-map
@@ -1245,16 +1275,26 @@
                 (append flycheck-disabled-checkers
                         '(javascript-jshint)))
   (setq flycheck-temp-prefix ".flycheck")
-  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
     )
   (custo/local-leader-key
     :keymaps '(
+               js2-mode-map
+               rjsx-mode-map
+               rustic-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               go-mode-map
+               gdscript-mode-map
                scss-mode-map
                web-mode-map
                svelte-mode-map
