@@ -825,80 +825,76 @@
                    )
   :config
   (tree-sitter-require 'tsx)
+  (tree-sitter-require 'html)
+  (tree-sitter-require 'json)
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
+  (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
+  (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
   )
 
 
 ;; completion mini buffers
-;; (use-package company
-;;   :defer t
-;;   :after (:any lsp-mode emacs-lisp-mode)
-;;   :hook
-;;   ;; (eglot--managed-mode . company-mode)
-;;   (lsp-mode . company-mode)
-;;   (emacs-lisp-mode . company-mode)
-;;   :bind (;; only active when trying to complete a selection
-;;          (:map company-active-map
-;;                ;; complete the currently chosen selection
-;;                ("RET" . company-complete-selection)
-;;                ;; goto next selection
-;;                ("<tab>" . company-select-next)
-;;                ("TAB" . company-select-next)
-;;                ;; goto previous selection
-;;                ("<backtab>" . company-select-previous)
-;;                ("S-TAB" . company-select-previous)
-;;                )
-;;          (:map emacs-lisp-mode-map
-;;                ;; start the completion process
-;;                ("<tab>" . company-indent-or-complete-common)
-;;                ("TAB" . company-indent-or-complete-common)
-;;                )
-;;          ;; only make tab start completions if lsp is active
-;;          (:map lsp-mode-map
-;;                ;; start the completion process
-;;                ("<tab>" . company-indent-or-complete-common)
-;;                ("TAB" . company-indent-or-complete-common)
-;;                )
-;;          )
-;;   :config
-;;   (setq company-idle-delay nil
-;;   ;; (setq company-idle-delay 0.5
-;;         company-backends '(company-capf)
-;;         company-minimum-prefix-length 2
-;;         company-selection-wrap-around t
-;;         company-tooltip-limit 25
-;;         ;;
-;;         ;; Good Ideas from DOOM:
-;;         ;;
-;;         ;; These auto-complete the current selection when
-;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
-;;         ;; already have the much more explicit RET and TAB.
-;;         company-auto-complete nil
-;;         company-auto-complete-chars nil
+(use-package company
+  :defer t
+  :after lsp-mode
+  :hook
+  (lsp-mode . company-mode)
+  :bind (;; only active when trying to complete a selection
+         (:map company-active-map
+               ;; complete the currently chosen selection
+               ("RET" . company-complete-selection)
+               ;; goto next selection
+               ("<tab>" . company-select-next)
+               ("TAB" . company-select-next)
+               ;; goto previous selection
+               ("<backtab>" . company-select-previous)
+               ("S-TAB" . company-select-previous)
+               )
+         ;; only make tab start completions if lsp is active
+         (:map lsp-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               )
+         )
+  :config
+  (setq company-idle-delay nil
+  ;; (setq company-idle-delay 0.5
+        company-backends '(company-capf)
+        company-minimum-prefix-length 2
+        company-selection-wrap-around t
+        company-tooltip-limit 25
+        ;;
+        ;; Good Ideas from DOOM:
+        ;;
+        ;; These auto-complete the current selection when
+        ;; `company-auto-complete-chars' is typed. This is too magical. We
+        ;; already have the much more explicit RET and TAB.
+        company-auto-complete nil
+        company-auto-complete-chars nil
 
-;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
-;;         ;; suggests text your open buffers). This prevents Company from causing
-;;         ;; lag once you have a lot of buffers open.
-;;         company-dabbrev-other-buffers nil
-;;         company-dabbrev-code-other-buffers nil
-;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-;;         ;; domain-specific words with particular casing.
-;;         company-dabbrev-ignore-case nil
-;;         company-dabbrev-downcase nil
-;;         )
-;;   )
+        ;; Only search the current buffer for `company-dabbrev' (a backend that
+        ;; suggests text your open buffers). This prevents Company from causing
+        ;; lag once you have a lot of buffers open.
+        company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers nil
+        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+        ;; domain-specific words with particular casing.
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil
+        )
+  )
 
-;; (use-package company-box
-;;   :defer t
-;;   :after company
-;;   :hook (company-mode . company-box-mode)
-;;   )
+(use-package company-box
+  :defer t
+  :after company
+  :hook (company-mode . company-box-mode)
+  )
 
 ;; better javascript mode
 (use-package js2-mode
   :defer t
   :after prog-mode
-  ;; :mode "\\/.*\\.js\\'"
   :mode ("\\.js\\'" "\\.cjs\\'")
   :config
   (setq js-indent-level 2)
@@ -970,7 +966,8 @@
 
 (use-package web-mode
   :defer t
-  :mode ("\\.html\\'" "\\.scss\\'" "\\.css\\'"); "\\.svelte\\'")
+  :after prog-mode
+  :mode ("\\.html\\'" "\\.scss\\'" "\\.css\\'")
   :config
   (setq web-mode-css-indent-offset 2
         web-mode-markup-indent-offset 2
@@ -979,6 +976,7 @@
 
 (use-package typescript-mode
   :defer t
+  :after prog-mode
   :mode "\\.ts\\'"
   :config
   (setq typescript-indent-level 2)
@@ -989,11 +987,12 @@
 
 (use-package rustic
   :defer t
+  :after prog-mode
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'eglot
-        rustic-lsp-server 'rust-analyzer
+        rustic-lsp-server 'rls;rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
         rustic-indent-offset 4
         rustic-format-on-save nil)
@@ -1011,6 +1010,7 @@
 
 (use-package csharp-mode
   :defer t
+  :after prog-mode
   :mode "\\.cs\\'"
   :hook
   (csharp-mode . rainbow-delimiters-mode)
@@ -1019,7 +1019,7 @@
 (use-package omnisharp
   :defer t
   :mode ("\\.cs\\'" . omnisharp-mode)
-  :after corfu
+  :after company
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -1029,7 +1029,7 @@
         c-basic-offset 2
         tab-width 2
         evil-shift-width 2)
-  ;; (add-to-list 'company-backends 'company-omnisharp)
+  (add-to-list 'company-backends 'company-omnisharp)
   (custo/local-leader-key
     :keymaps '(csharp-mode-map omnisharp-mode-map)
     "o" '(:ignore t :which-key "omnisharp")
@@ -1039,6 +1039,8 @@
   )
 
 (use-package elixir-mode
+  :defer t
+  :after prog-mode
   :mode ("\\.ex\\'"
           "\\.eex\\'"
           "\\.exs\\'"
@@ -1050,6 +1052,7 @@
 
 (use-package python
   :defer t
+  :after prog-mode
   :mode ("\\.py\\'" . python-mode)
   )
 
@@ -1064,6 +1067,7 @@
 
 (use-package json-mode
   :defer t
+  :after prog-mode
   :mode "\\.json\\'"
   :hook
   (json-mode . yas-minor-mode)
@@ -1073,6 +1077,7 @@
 
 (use-package yaml-mode
   :defer t
+  :after prog-mode
   :mode ("\\.yml\\'" "\\.yaml\\'")
   :hook
   (yaml-mode . yas-minor-mode)
@@ -1082,10 +1087,12 @@
 
 (use-package gdscript-mode
   :defer t
+  :after prog-mode
   :mode "\\.gd\\'")
 
 (use-package go-mode
   :defer t
+  :after prog-mode
   :mode "\\.go\\'"
   :config
   (setq tab-width 2)
@@ -1096,6 +1103,7 @@
               :repo "skuro/plantuml-mode"
               :branch "develop")
   :defer t
+  :after prog-mode
   :mode ("\\.puml\\'" "\\.pml\\'")
   :config
   (setq plantuml-default-exec-mode 'server
@@ -1124,11 +1132,8 @@
          (js2-mode . eglot-ensure)
          (rsjx-mode . eglot-ensure)
          (typescript-mode . eglot-ensure)
-         (svelte-mode . eglot-ensure)
-         (scss-mode . eglot-ensure)
-         (web-mode . eglot-ensure)
+         (typescript-tsx-mode . eglot-ensure)
          (rustic-mode . eglot-ensure)
-         (csharp-mode . eglot-ensure)
          (elixir-mode . eglot-ensure)
          (yaml-mode . eglot-ensure)
          (json-mode . eglot-ensure)
@@ -1137,8 +1142,7 @@
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (add-to-list 'eglot-server-programs '(web-mode  "vls"))
-  (add-to-list 'eglot-server-programs '(svelte-mode "svelte-language-server"))
+  (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flymake :wk "list errors")
@@ -1149,14 +1153,12 @@
                rustic-mode-map
                typescript-mode-map
                typescript-tsx-mode-map
-               csharp-mode-map
                elixir-mode-map
                yaml-mode-map
                json-mode-map
-               web-mode-map
                go-mode-map
-               python-mode-map
-               gdscript-mode-map)
+               gdscript-mode-map
+               )
     "a" '(eglot-code-actions :wk "excute code action")
     "g r" '(xref-find-references :wk "goto references")
     ;; "g g" '(eglot-find-implementation :wk "goto definition")
@@ -1177,27 +1179,16 @@
 (use-package lsp-mode
    :defer t
    :hook (
-          ;; (js2-mode . lsp-deferred)
-          ;; (rsjx-mode . lsp-deferred)
-          ;; (scss-mode . lsp-deferred)
-          ;; (web-mode . lsp-deferred)
-          ;; (typescript-mode . lsp-deferred)
-          ;; (typescript-tsx-mode . lsp-deferred)
-          ;; (svelte-mode . lsp-deferred)
-          ;; (rustic-mode . lsp-deferred)
-          ;; (csharp-mode . lsp-deferred)
-          ;; (elixir-mode . lsp-deferred)
-          ;; (yaml-mode . lsp-deferred)
-          ;; (json-mode . lsp-deferred)
-          ;; (go-mode . lsp-deferred)
+          (web-mode . lsp-deferred)
+          (svelte-mode . lsp-deferred)
+          (csharp-mode . lsp-deferred)
           (lsp-mode . lsp-enable-which-key-integration)
          )
   :commands (lsp lsp-deferred)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  ;; (setq lsp-completion-provider :capf
-  (setq lsp-completion-provider :none
+  (setq lsp-completion-provider :capf
         lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
@@ -1207,20 +1198,11 @@
         )
   (custo/local-leader-key
     :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; rustic-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; svelte-mode-map
-               ;; csharp-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
+               svelte-mode-map
+               scss-mode-map
+               web-mode-map
+               csharp-mode-map
                python-mode-map
-               ;; gdscript-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :which-key "goto definition")
@@ -1254,39 +1236,35 @@
   )
 
 ;; ;; error checking
-;; (use-package flycheck
-;;   :defer t
-;;   :hook
-;;   (prog-mode . flycheck-mode)
-;;   :config
-;;   (setq flycheck-disabled-checkers
-;;                 (append flycheck-disabled-checkers
-;;                         '(javascript-jshint)))
-;;   (setq flycheck-temp-prefix ".flycheck")
-;;   (flycheck-add-mode 'javascript-eslint 'js2-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
-;;   (custo/leader-key
-;;     "e" '(:ignore t :wk "errors")
-;;     "e l" '(consult-flycheck :wk "list errors")
-;;     )
-;;   (custo/local-leader-key
-;;     :keymaps '(js2-mode-map
-;;                rsjx-mode-map
-;;                web-mode-map
-;;                typescript-mode-map
-;;                typescript-tsx-mode-map
-;;                svelte-mode-map
-;;                rustic-mode-map
-;;                elixir-mode-map
-;;                csharp-mode-map
-;;                go-mode-map
-;;                gdscript-mode-map)
-;;     "e" '(:ignore t :wk "errors")
-;;     "e l" '(consult-flycheck :wk "list errors")
-;;     )
-;;   )
+(use-package flycheck
+  :defer t
+  :hook
+  (prog-mode . flycheck-mode)
+  :config
+  (setq flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
+  (setq flycheck-temp-prefix ".flycheck")
+  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (custo/leader-key
+    "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flycheck :wk "list errors")
+    )
+  (custo/local-leader-key
+    :keymaps '(
+               scss-mode-map
+               web-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               python-mode-map
+               )
+    "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flycheck :wk "list errors")
+    )
+  )
 
 
 
