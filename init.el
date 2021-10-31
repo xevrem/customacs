@@ -519,9 +519,7 @@
     :states '(normal insert visual emacs)
     :prefix "SPC m"
     :global-prefix "C-SPC m")
-  )
-
-
+   )
 
 
 ;; define default keybinds
@@ -829,16 +827,18 @@
   (tree-sitter-require 'tsx)
   (tree-sitter-require 'html)
   (tree-sitter-require 'json)
+  (tree-sitter-require 'css)
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
   (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
   (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
+  (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
+  (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
   )
 
 
 ;; completion mini buffers
 (use-package company
   :defer t
-  :after (:any lsp-mode emacs-lisp-mode)
   :hook
   (lsp-mode . company-mode)
   (emacs-lisp-mode . company-mode)
@@ -854,17 +854,17 @@
                ("S-TAB" . company-select-previous)
                )
          ;;
-         (:map emacs-lisp-mode-map
+         (:map prog-mode-map
                ;; start the completion process
                ("<tab>" . company-indent-or-complete-common)
                ("TAB" . company-indent-or-complete-common)
                )
          ;; only make tab start completions if lsp is active
-         (:map lsp-mode-map
-               ;; start the completion process
-               ("<tab>" . company-indent-or-complete-common)
-               ("TAB" . company-indent-or-complete-common)
-               )
+         ;; (:map lsp-mode-map
+         ;;       ;; start the completion process
+         ;;       ("<tab>" . company-indent-or-complete-common)
+         ;;       ("TAB" . company-indent-or-complete-common)
+         ;;       )
          )
   :config
   (setq company-idle-delay nil
@@ -917,6 +917,8 @@
   :defer t
   :after prog-mode
   :mode ("components\\/.*\\.js\\'" "\\.jsx\\'")
+  :hook
+  (rjsx-mode . yas-minor-mode)
   )
 
 (use-package svelte-mode
@@ -975,11 +977,18 @@
               ) :wk "format with prettier"))
   )
 
+(use-package scss-mode
+  :defer t
+  :after prog-mode
+  :mode ("\\.scss\\'" "\\.css\\'")
+  :config
+  (setq css-indent-offset 2)
+  )
 
 (use-package web-mode
   :defer t
   :after prog-mode
-  :mode ("\\.html\\'" "\\.scss\\'" "\\.css\\'")
+  :mode ("\\.html\\'" )
   :config
   (setq web-mode-css-indent-offset 2
         web-mode-markup-indent-offset 2
@@ -990,6 +999,8 @@
   :defer t
   :after prog-mode
   :mode "\\.ts\\'"
+  :hook
+  (typescript-mode . yas-minor-mode)
   :config
   (setq typescript-indent-level 2)
   )
@@ -1001,6 +1012,8 @@
   :defer t
   :after prog-mode
   :mode ("\\.rs\\'" . rustic-mode)
+  :hook
+  (rustic-mode . yas-minor-mode)
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'lsp
@@ -1066,6 +1079,8 @@
   :defer t
   :after prog-mode
   :mode ("\\.py\\'" . python-mode)
+  :hook
+  (python-mode . yas-minor-mode)
   )
 
 (use-package pyenv-mode
@@ -1106,8 +1121,6 @@
   :defer t
   :after prog-mode
   :mode "\\.go\\'"
-  :config
-  (setq tab-width 2)
   )
 
 (use-package plantuml-mode
@@ -1198,6 +1211,7 @@
           (typescript-tsx-mode . lsp-deferred)
           (rustic-mode . lsp-deferred)
           (elixir-mode . lsp-deferred)
+          (scss-mode . lsp-deferred)
           (yaml-mode . lsp-deferred)
           (json-mode . lsp-deferred)
           (go-mode . lsp-deferred)
@@ -1206,7 +1220,7 @@
           (csharp-mode . lsp-deferred)
           (lsp-mode . lsp-enable-which-key-integration)
          )
-  :commands (lsp lsp-deferred)
+  :commands (lsp lsp-deferred lsp-mode-map)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
