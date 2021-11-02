@@ -279,7 +279,7 @@
 
         ;; Enable indentation+completion using the TAB key.
         ;; Completion is often bound to M-TAB.
-        ;; tab-always-indent 'complete
+        tab-always-indent 'complete
         )
   )
 
@@ -868,7 +868,7 @@
          )
   :config
   (setq company-idle-delay nil
-        tab-always-indent t
+        ;; tab-always-indent t
   ;; (setq company-idle-delay 0.5
         company-backends '(company-capf)
         company-minimum-prefix-length 2
@@ -972,7 +972,7 @@
     "= =" '((lambda ()
               (interactive)
               (prettier-prettify)
-              (lsp-eslint-fix-all)
+              (lsp-eslint-apply-all-fixes)
               ;; (eslint-fix)
               ) :wk "format with prettier"))
   )
@@ -1135,6 +1135,12 @@
         plantuml-server-url "http://localhost:8080"
         plantuml-indent-level 2)
   )
+
+(use-package dockerfile-mode
+  :defer t
+  :after prog-mode
+  :mode ("\\Dockerfile\\'"))
+
 
 ;; eglot helper functions
 (defun custo/xref-goto-xref ()
