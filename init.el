@@ -1017,7 +1017,7 @@
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'lsp
-        rustic-lsp-server 'rls;rust-analyzer
+        rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
         rustic-indent-offset 4
         rustic-format-on-save nil)
@@ -1218,6 +1218,7 @@
           (web-mode . lsp-deferred)
           (svelte-mode . lsp-deferred)
           (csharp-mode . lsp-deferred)
+          (gdscript-mode . lsp-deferred)
           (lsp-mode . lsp-enable-which-key-integration)
          )
   :commands (lsp lsp-deferred lsp-mode-map)
@@ -1227,6 +1228,7 @@
   (setq lsp-completion-provider :capf
         lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
+        lsp-lens-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
         lsp-ui-doc-enable nil
         lsp-idle-delay 0.500
