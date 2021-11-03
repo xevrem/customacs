@@ -248,11 +248,19 @@
         )
   )
 
+(defun custo/corfu-lsp-setup ()
+  "Ensure corfu and lsp work better together."
+  (setq-local completion-styles '(orderless)
+              completion-category-defaults nil))
+
 (use-package corfu
   :defer t
   :after (evil orderless)
   :hook
-  (eglot--managed-mode . corfu-mode)
+  ;; (eglot--managed-mode . corfu-mode)
+  ;; (lsp-mode . corfu-mode)
+  (prog-mode . corfu-mode)
+  (lsp-mode . custo/corfu-lsp-setup)
   ;; (emacs-lisp-mode . corfu-mode)
   :bind (:map corfu-map
               ("TAB" . corfu-next)
@@ -268,7 +276,7 @@
         ;; corfu-auto t
         ;; corfu-auto-delay 0.2
         ;; corfu-auto-prefix 2
-        tab-always-indent 'complete
+        ;; tab-always-indent 'complete
         )
   )
 
@@ -568,7 +576,9 @@
   "h h s" '(helpful-symbol :wk "helpful symbol")
   "h s" '(:ignore t :which-key "straight")
   "h s p" '(straight-pull-all :which-key "straight pull packages")
+  "h s P" '(straight-pull-package-and-deps :which-key "straight pull package")
   "h s b" '(straight-rebuild-all :which-key "straight build packages")
+  "h s B" '(straight-rebuild-package :which-key "straight build package")
   "m" '(:ignore t :which-key "local-leader")
   "o" '(:ignore t :which-key "org")
   "p" '(projectile-command-map :wk "projectile")
@@ -837,69 +847,69 @@
 
 
 ;; completion mini buffers
-(use-package company
-  :defer t
-  :hook
-  (lsp-mode . company-mode)
-  (emacs-lisp-mode . company-mode)
-  :bind (;; only active when trying to complete a selection
-         (:map company-active-map
-               ;; complete the currently chosen selection
-               ("RET" . company-complete-selection)
-               ;; goto next selection
-               ("<tab>" . company-select-next)
-               ("TAB" . company-select-next)
-               ;; goto previous selection
-               ("<backtab>" . company-select-previous)
-               ("S-TAB" . company-select-previous)
-               )
-         ;;
-         (:map prog-mode-map
-               ;; start the completion process
-               ("<tab>" . company-indent-or-complete-common)
-               ("TAB" . company-indent-or-complete-common)
-               )
-         ;; only make tab start completions if lsp is active
-         ;; (:map lsp-mode-map
-         ;;       ;; start the completion process
-         ;;       ("<tab>" . company-indent-or-complete-common)
-         ;;       ("TAB" . company-indent-or-complete-common)
-         ;;       )
-         )
-  :config
-  (setq company-idle-delay nil
-        ;; tab-always-indent t
-  ;; (setq company-idle-delay 0.5
-        company-backends '(company-capf)
-        company-minimum-prefix-length 2
-        company-selection-wrap-around t
-        company-tooltip-limit 25
-        ;;
-        ;; Good Ideas from DOOM:
-        ;;
-        ;; These auto-complete the current selection when
-        ;; `company-auto-complete-chars' is typed. This is too magical. We
-        ;; already have the much more explicit RET and TAB.
-        company-auto-complete nil
-        company-auto-complete-chars nil
+;; (use-package company
+;;   :defer t
+;;   :hook
+;;   (lsp-mode . company-mode)
+;;   (emacs-lisp-mode . company-mode)
+;;   :bind (;; only active when trying to complete a selection
+;;          (:map company-active-map
+;;                ;; complete the currently chosen selection
+;;                ("RET" . company-complete-selection)
+;;                ;; goto next selection
+;;                ("<tab>" . company-select-next)
+;;                ("TAB" . company-select-next)
+;;                ;; goto previous selection
+;;                ("<backtab>" . company-select-previous)
+;;                ("S-TAB" . company-select-previous)
+;;                )
+;;          ;;
+;;          (:map prog-mode-map
+;;                ;; start the completion process
+;;                ("<tab>" . company-indent-or-complete-common)
+;;                ("TAB" . company-indent-or-complete-common)
+;;                )
+;;          ;; only make tab start completions if lsp is active
+;;          ;; (:map lsp-mode-map
+;;          ;;       ;; start the completion process
+;;          ;;       ("<tab>" . company-indent-or-complete-common)
+;;          ;;       ("TAB" . company-indent-or-complete-common)
+;;          ;;       )
+;;          )
+;;   :config
+;;   (setq company-idle-delay nil
+;;         ;; tab-always-indent t
+;;   ;; (setq company-idle-delay 0.5
+;;         company-backends '(company-capf)
+;;         company-minimum-prefix-length 2
+;;         company-selection-wrap-around t
+;;         company-tooltip-limit 25
+;;         ;;
+;;         ;; Good Ideas from DOOM:
+;;         ;;
+;;         ;; These auto-complete the current selection when
+;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
+;;         ;; already have the much more explicit RET and TAB.
+;;         company-auto-complete nil
+;;         company-auto-complete-chars nil
 
-        ;; Only search the current buffer for `company-dabbrev' (a backend that
-        ;; suggests text your open buffers). This prevents Company from causing
-        ;; lag once you have a lot of buffers open.
-        company-dabbrev-other-buffers nil
-        company-dabbrev-code-other-buffers nil
-        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-        ;; domain-specific words with particular casing.
-        company-dabbrev-ignore-case nil
-        company-dabbrev-downcase nil
-        )
-  )
+;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
+;;         ;; suggests text your open buffers). This prevents Company from causing
+;;         ;; lag once you have a lot of buffers open.
+;;         company-dabbrev-other-buffers nil
+;;         company-dabbrev-code-other-buffers nil
+;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+;;         ;; domain-specific words with particular casing.
+;;         company-dabbrev-ignore-case nil
+;;         company-dabbrev-downcase nil
+;;         )
+;;   )
 
-(use-package company-box
-  :defer t
-  :after company
-  :hook (company-mode . company-box-mode)
-  )
+;; (use-package company-box
+;;   :defer t
+;;   :after company
+;;   :hook (company-mode . company-box-mode)
+;;   )
 
 ;; better javascript mode
 (use-package js2-mode
@@ -1044,7 +1054,7 @@
 (use-package omnisharp
   :defer t
   :mode ("\\.cs\\'" . omnisharp-mode)
-  :after company
+  :after corfu
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -1054,7 +1064,7 @@
         c-basic-offset 2
         tab-width 2
         evil-shift-width 2)
-  (add-to-list 'company-backends 'company-omnisharp)
+  ;; (add-to-list 'company-backends 'company-omnisharp)
   (custo/local-leader-key
     :keymaps '(csharp-mode-map omnisharp-mode-map)
     "o" '(:ignore t :which-key "omnisharp")
@@ -1231,7 +1241,7 @@
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (setq lsp-completion-provider :capf
+  (setq lsp-completion-provider :none
         lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
@@ -1613,7 +1623,7 @@
   :commands vterm
   :config
   (setq vterm-timer-delay 0.01
-        vterm-shell "zsh")
+        vterm-shell "fish")
   )
 
 (defun custo/launch-vterm ()
