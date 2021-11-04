@@ -466,26 +466,11 @@
   )
 
 
-(defun custo/evil-hook ()
-  "Custom hook to use Emacs mode."
-  (dolist (mode '(custom-mode
-                  eshell-mode
-                  git-rebase-mode
-                  term-mode
-                  ansi-term-mode
-                  vterm-mode
-                  )
-                )
-    (add-to-list 'evil-emacs-state-modes mode)
-    )
-  )
-
 ;; the very best mode
 (use-package evil
   :defer t
   :hook
   (after-init . evil-mode)
-  ;; (evil-mode . custo/evil-hook)
   :init
   (setq evil-want-integration t
         evil-want-keybinding nil
@@ -494,9 +479,8 @@
   :bind (:map evil-insert-state-map
               ("C-g" . evil-normal-state)
               )
-  :config
-  (custo/evil-hook)
  )
+
 
 ;; better evil stuff
 (use-package evil-collection
@@ -1623,7 +1607,7 @@
   :commands vterm
   :config
   (setq vterm-timer-delay 0.01
-        vterm-shell "fish")
+        vterm-shell "nu")
   )
 
 (defun custo/launch-vterm ()
