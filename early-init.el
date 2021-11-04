@@ -65,3 +65,5 @@
 (when (boundp 'native-comp-speed)
   (setq native-comp-speed 2)
   )
+;; dont report async compile warnings
+(setq native-comp-async-report-warnings-errors nil)

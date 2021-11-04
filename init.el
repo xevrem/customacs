@@ -31,24 +31,6 @@
 ;; (global-display-line-numbers-mode t) ;; display line numbers to the left
 (menu-bar--display-line-numbers-mode-relative) ;; make those line numbers relative
 
-;; turn of line numbers in the following modes
-(dolist (mode '(org-mode-hook
-                term-mode-hook
-                eshell-mode-hook
-                ansi-term-mode-hook
-                ;; treemacs-mode-hook
-                vterm-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0)
-                   )
-            )
-  )
-
-(dolist (mode '(prog-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 1)
-                   )
-            )
-  )
-
 ;; set user caching directory
 (unless (file-directory-p (expand-file-name ".cache/" user-emacs-directory))
   (make-directory (expand-file-name ".cache/" user-emacs-directory))
@@ -71,6 +53,24 @@
 (when (boundp 'native-comp-eln-load-path)
   (setcar native-comp-eln-load-path
           (expand-file-name "eln-cache/" user-emacs-directory)))
+
+;; turn of line numbers in the following modes
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                eshell-mode-hook
+                ansi-term-mode-hook
+                ;; treemacs-mode-hook
+                vterm-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0)
+                   )
+            )
+  )
+
+(dolist (mode '(prog-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 1)
+                   )
+            )
+  )
 
 ;; disable lockfiles
 ;;(setq create-lockfiles nil)
@@ -441,7 +441,7 @@
   :hook (after-init . which-key-mode)
   :diminish which-key-mode
   :config
-  (setq which-key-idle-delay 0.1)
+  (setq which-key-idle-delay 0.0)
   )
 
 
@@ -516,6 +516,7 @@
 
 ;; define default keybinds
 (custo/leader-key
+  "SPC" '(execute-extended-command :wk "M-x") 
   "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
   ":" '(execute-extended-command :wk "M-x")
   "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
@@ -1623,9 +1624,9 @@
   :config
   (prodigy-define-service
     :name "Megalith"
-    :command "npm"
+    :command "yarn"
     :cwd "/Users/erikajonell/repos/megalith"
-    :args '("run" "start")
+    :args '("start")
     )
   (prodigy-define-service
     :name "Nucleo"
