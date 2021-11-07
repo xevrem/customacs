@@ -1608,7 +1608,7 @@
   :commands vterm
   :config
   (setq vterm-timer-delay 0.01
-        vterm-shell "nu")
+        vterm-shell "fish")
   )
 
 (defun custo/launch-vterm ()
