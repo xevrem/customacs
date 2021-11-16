@@ -22,7 +22,7 @@
 ;; adjust the startup size of emacs
 (setq initial-frame-alist
       `((width . 120) ; chars
-        (height . 40) ; lines
+        (height . 45) ; lines
         )
       )
 
@@ -114,7 +114,7 @@
       )
     ;; set current frame to 120x45 characters
     (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 40)
+    (set-frame-height (frame-focus) 45)
     )
   )
 ;; run this hook after we have initialized the first time
@@ -333,7 +333,8 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
-  (consult-theme 'doom-challenger-deep)
+  ;; (consult-theme 'doom-challenger-deep)
+  (consult-theme 'doom-tomorrow-night)
   ;; (consult-theme 'doom-dracula)
   )
 
@@ -1070,12 +1071,22 @@
   (elixir-mode . yas-minor-mode)
   )
 
+(use-package python-black
+  :defer t
+  :after python
+  :commands (python-black-buffer)
+  )
+
 (use-package python
   :defer t
   :after prog-mode
   :mode ("\\.py\\'" . python-mode)
   :hook
   (python-mode . yas-minor-mode)
+  :config
+  (custo/local-leader-key
+    :keymaps '(python-mode-map)
+    "= =" '(python-black-buffer :wk "format with black"))
   )
 
 (use-package pyenv-mode
@@ -1085,7 +1096,9 @@
                    )
   :defer t
   :hook (python-mode . pyenv-mode)
+  
   )
+
 
 (use-package json-mode
   :defer t
