@@ -333,8 +333,8 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
-  ;; (consult-theme 'doom-challenger-deep)
-  (consult-theme 'doom-tomorrow-night)
+  (consult-theme 'doom-challenger-deep)
+  ;; (consult-theme 'doom-tomorrow-night)
   ;; (consult-theme 'doom-dracula)
   )
 
@@ -530,6 +530,7 @@
   "b" '(:ignore t :which-key "buffer")
   "b b" '(switch-to-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
+  "b i" '(ibuffer :wk "ibuffer")
   "c" '(:ignore t :which-key "cursor")
   "c c" '(comment-line :which-key "comment line")
   "f" '(:ignore f :which-key "file")
@@ -1282,11 +1283,11 @@
   )
 
 (use-package lsp-pyright
-  :after (:all lsp-mode python)
-  :hook (python-mode .
-                     (lambda ()
-                       (require 'lsp-pyright)
-                       (lsp-deferred)))
+  :defer t
+  :after python
+  :hook (python-mode .(lambda ()
+                        (require 'lsp-pyright)
+                        (lsp-deferred)))
   )
 
 ;; prettier lsp
