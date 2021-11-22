@@ -22,7 +22,7 @@
 ;; adjust the startup size of emacs
 (setq initial-frame-alist
       `((width . 120) ; chars
-        (height . 45) ; lines
+        (height . 42) ; lines
         )
       )
 
@@ -85,9 +85,9 @@
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
-    (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
+    (set-face-attribute 'default nil :font (font-spec :family "MesloLGL NF" :size 20 :weight 'regular))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL NF" :size 20 :weight 'regular))
     ;; Set the variable pitch face which is the same for mac and linux
     (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
     ;; after org-mode we want to adjust font sizes
@@ -114,7 +114,7 @@
       )
     ;; set current frame to 120x45 characters
     (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 45)
+    (set-frame-height (frame-focus) 42)
     )
   )
 ;; run this hook after we have initialized the first time
@@ -1013,7 +1013,7 @@
   (rustic-mode . yas-minor-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'lsp
+        rustic-lsp-client 'eglot
         rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
         rustic-indent-offset 4
@@ -1168,17 +1168,17 @@
 (use-package eglot
   :defer t
   :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  ;; :hook (
-  ;;        (js2-mode . eglot-ensure)
-  ;;        (rsjx-mode . eglot-ensure)
-  ;;        (typescript-mode . eglot-ensure)
-  ;;        (typescript-tsx-mode . eglot-ensure)
-  ;;        (rustic-mode . eglot-ensure)
-  ;;        (elixir-mode . eglot-ensure)
-  ;;        (yaml-mode . eglot-ensure)
-  ;;        (json-mode . eglot-ensure)
-  ;;        (go-mode . eglot-ensure)
-  ;;        )
+  :hook (
+         (js2-mode . eglot-ensure)
+         (rsjx-mode . eglot-ensure)
+         (typescript-mode . eglot-ensure)
+         (typescript-tsx-mode . eglot-ensure)
+         (rustic-mode . eglot-ensure)
+         ;; (elixir-mode . eglot-ensure)
+         ;; (yaml-mode . eglot-ensure)
+         ;; (json-mode . eglot-ensure)
+         ;; (go-mode . eglot-ensure)
+         )
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
@@ -1191,14 +1191,14 @@
     :keymaps '(
                js2-mode-map
                rjsx-mode-map
-               rustic-mode-map
                typescript-mode-map
                typescript-tsx-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               go-mode-map
-               gdscript-mode-map
+               rustic-mode-map
+               ;; elixir-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
                )
     "a" '(eglot-code-actions :wk "excute code action")
     "g r" '(xref-find-references :wk "goto references")
@@ -1220,11 +1220,11 @@
 (use-package lsp-mode
    :defer t
    :hook (
-          (js2-mode . lsp-deferred)
-          (rsjx-mode . lsp-deferred)
-          (typescript-mode . lsp-deferred)
-          (typescript-tsx-mode . lsp-deferred)
-          (rustic-mode . lsp-deferred)
+          ;; (js2-mode . lsp-deferred)
+          ;; (rsjx-mode . lsp-deferred)
+          ;; (typescript-mode . lsp-deferred)
+          ;; (typescript-tsx-mode . lsp-deferred)
+          ;; (rustic-mode . lsp-deferred)
           (elixir-mode . lsp-deferred)
           (scss-mode . lsp-deferred)
           (yaml-mode . lsp-deferred)
@@ -1251,11 +1251,11 @@
         )
   (custo/local-leader-key
     :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               rustic-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; rustic-mode-map
                elixir-mode-map
                yaml-mode-map
                json-mode-map
@@ -1308,21 +1308,21 @@
                 (append flycheck-disabled-checkers
                         '(javascript-jshint)))
   (setq flycheck-temp-prefix ".flycheck")
-  (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
     )
   (custo/local-leader-key
     :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               rustic-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; rustic-mode-map
                elixir-mode-map
                yaml-mode-map
                json-mode-map
