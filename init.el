@@ -85,9 +85,9 @@
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
-    (set-face-attribute 'default nil :font (font-spec :family "MesloLGL NF" :size 20 :weight 'regular))
+    (set-face-attribute 'default nil :font (font-spec :family "MesloLGL Nerd Font" :size 20 :weight 'regular))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL NF" :size 20 :weight 'regular))
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL Nerd Font" :size 20 :weight 'regular))
     ;; Set the variable pitch face which is the same for mac and linux
     (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
     ;; after org-mode we want to adjust font sizes
@@ -1175,14 +1175,15 @@
          (typescript-tsx-mode . eglot-ensure)
          (rustic-mode . eglot-ensure)
          ;; (elixir-mode . eglot-ensure)
-         ;; (yaml-mode . eglot-ensure)
-         ;; (json-mode . eglot-ensure)
+         (yaml-mode . eglot-ensure)
+         (json-mode . eglot-ensure)
          ;; (go-mode . eglot-ensure)
          )
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
   (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(json-mode . ("vscode-json-languageserver" "--stdio")))
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flymake :wk "list errors")
@@ -1227,8 +1228,8 @@
           ;; (rustic-mode . lsp-deferred)
           (elixir-mode . lsp-deferred)
           (scss-mode . lsp-deferred)
-          (yaml-mode . lsp-deferred)
-          (json-mode . lsp-deferred)
+          ;; (yaml-mode . lsp-deferred)
+          ;; (json-mode . lsp-deferred)
           (go-mode . lsp-deferred)
           (web-mode . lsp-deferred)
           (svelte-mode . lsp-deferred)
@@ -1257,8 +1258,8 @@
                ;; typescript-tsx-mode-map
                ;; rustic-mode-map
                elixir-mode-map
-               yaml-mode-map
-               json-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
                go-mode-map
                gdscript-mode-map
                svelte-mode-map
