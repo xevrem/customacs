@@ -1177,6 +1177,8 @@
          ;; (elixir-mode . eglot-ensure)
          (yaml-mode . eglot-ensure)
          (json-mode . eglot-ensure)
+         (scss-mode . eglot-ensure)
+         ;; (web-mode . eglot-ensure)
          ;; (go-mode . eglot-ensure)
          )
   :bind
@@ -1184,6 +1186,8 @@
   :config
   (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(json-mode . ("vscode-json-languageserver" "--stdio")))
+  (add-to-list 'eglot-server-programs '(scss-mode . ("css-languageserver" "--stdio")))
+  ;; (add-to-list 'eglot-server-programs '(web-mode . ("css-languageserver" "--stdio")))
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flymake :wk "list errors")
@@ -1195,9 +1199,10 @@
                typescript-mode-map
                typescript-tsx-mode-map
                rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               ;; web-mode-map
                ;; go-mode-map
                ;; gdscript-mode-map
                )
@@ -1227,11 +1232,11 @@
           ;; (typescript-tsx-mode . lsp-deferred)
           ;; (rustic-mode . lsp-deferred)
           (elixir-mode . lsp-deferred)
-          (scss-mode . lsp-deferred)
+          ;; (scss-mode . lsp-deferred)
           ;; (yaml-mode . lsp-deferred)
           ;; (json-mode . lsp-deferred)
-          (go-mode . lsp-deferred)
           (web-mode . lsp-deferred)
+          (go-mode . lsp-deferred)
           (svelte-mode . lsp-deferred)
           (csharp-mode . lsp-deferred)
           (gdscript-mode . lsp-deferred)
@@ -1260,11 +1265,11 @@
                elixir-mode-map
                ;; yaml-mode-map
                ;; json-mode-map
+               ;; scss-mode-map
+               web-mode-map
                go-mode-map
                gdscript-mode-map
                svelte-mode-map
-               scss-mode-map
-               web-mode-map
                csharp-mode-map
                python-mode-map
                )
@@ -1325,12 +1330,12 @@
                ;; typescript-tsx-mode-map
                ;; rustic-mode-map
                elixir-mode-map
-               yaml-mode-map
-               json-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               web-mode-map
                go-mode-map
                gdscript-mode-map
-               scss-mode-map
-               web-mode-map
                svelte-mode-map
                csharp-mode-map
                python-mode-map
