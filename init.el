@@ -1169,24 +1169,24 @@
   :defer t
   :after (:all yasnippet jsonrpc flymake project xref eldoc)
   :hook (
-         (js2-mode . eglot-ensure)
-         (rsjx-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (typescript-tsx-mode . eglot-ensure)
-         (rustic-mode . eglot-ensure)
+         ;; (js2-mode . eglot-ensure)
+         ;; (rsjx-mode . eglot-ensure)
+         ;; (typescript-mode . eglot-ensure)
+         ;; (typescript-tsx-mode . eglot-ensure)
+         ;; (rustic-mode . eglot-ensure)
          ;; (elixir-mode . eglot-ensure)
-         (yaml-mode . eglot-ensure)
-         (json-mode . eglot-ensure)
-         (scss-mode . eglot-ensure)
+         ;; (yaml-mode . eglot-ensure)
+         ;; (json-mode . eglot-ensure)
+         ;; (scss-mode . eglot-ensure)
          ;; (web-mode . eglot-ensure)
          ;; (go-mode . eglot-ensure)
          )
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(json-mode . ("vscode-json-languageserver" "--stdio")))
-  (add-to-list 'eglot-server-programs '(scss-mode . ("css-languageserver" "--stdio")))
+  ;; (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
+  ;; (add-to-list 'eglot-server-programs '(json-mode . ("vscode-json-languageserver" "--stdio")))
+  ;; (add-to-list 'eglot-server-programs '(scss-mode . ("css-languageserver" "--stdio")))
   ;; (add-to-list 'eglot-server-programs '(web-mode . ("css-languageserver" "--stdio")))
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
@@ -1194,15 +1194,15 @@
     )
   (custo/local-leader-key
     :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
-               yaml-mode-map
-               json-mode-map
-               scss-mode-map
-               ;; web-mode-map
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; rustic-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               ;; ;; web-mode-map
                ;; go-mode-map
                ;; gdscript-mode-map
                )
@@ -1226,15 +1226,15 @@
 (use-package lsp-mode
    :defer t
    :hook (
-          ;; (js2-mode . lsp-deferred)
-          ;; (rsjx-mode . lsp-deferred)
-          ;; (typescript-mode . lsp-deferred)
-          ;; (typescript-tsx-mode . lsp-deferred)
-          ;; (rustic-mode . lsp-deferred)
+          (js2-mode . lsp-deferred)
+          (rsjx-mode . lsp-deferred)
+          (typescript-mode . lsp-deferred)
+          (typescript-tsx-mode . lsp-deferred)
+          (rustic-mode . lsp-deferred)
           (elixir-mode . lsp-deferred)
-          ;; (scss-mode . lsp-deferred)
-          ;; (yaml-mode . lsp-deferred)
-          ;; (json-mode . lsp-deferred)
+          (scss-mode . lsp-deferred)
+          (yaml-mode . lsp-deferred)
+          (json-mode . lsp-deferred)
           (web-mode . lsp-deferred)
           (go-mode . lsp-deferred)
           (svelte-mode . lsp-deferred)
@@ -1257,15 +1257,15 @@
         )
   (custo/local-leader-key
     :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
+               js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
                elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
                web-mode-map
                go-mode-map
                gdscript-mode-map
@@ -1275,12 +1275,12 @@
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :which-key "goto definition")
-    "g p" '(lsp-ui-peek-find-references :which-key "peek references")
+    ;; "g p" '(lsp-ui-peek-find-references :which-key "peek references")
     "g r" '(lsp-find-references :wk "goto references")
     "l" '(:ignore t :wk "lsp")
-    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+    ;; "l g" '(lsp-ui-doc-glance :wk "glance symbol")
     "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-    "o" '(lsp-ui-imenu :which-key "overview")
+    ;; "o" '(lsp-ui-imenu :which-key "overview")
     "r" '(:ignore t :which-key "refactor")
     "r r" '(lsp-rename :which-key "rename")
     "=" '(:ignore t :which-key "format")
@@ -1297,12 +1297,12 @@
   )
 
 ;; prettier lsp
-(use-package lsp-ui
-  :defer t
-  :after lsp-mode
-  :hook
-  (lsp-mode . lsp-ui-mode)
-  )
+;; (use-package lsp-ui
+;;   :defer t
+;;   :after lsp-mode
+;;   :hook
+;;   (lsp-mode . lsp-ui-mode)
+;;   )
 
 ;; ;; error checking
 (use-package flycheck
@@ -1324,15 +1324,15 @@
     )
   (custo/local-leader-key
     :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
+               js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
                elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
                web-mode-map
                go-mode-map
                gdscript-mode-map
