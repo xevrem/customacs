@@ -605,11 +605,12 @@
 
 
 (use-package yasnippet-snippets)
+(use-package js-react-redux-yasnippets)
 
 ;; yasnippet
 (use-package yasnippet
   :defer t
-  :after yasnippet-snippets
+  :after (:all yasnippet-snippets js-react-redux-yasnippets)
   :commands (yas-reload-all
              yas-minor-mode-on)
   :hook
