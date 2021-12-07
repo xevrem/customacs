@@ -280,6 +280,18 @@
         )
   )
 
+(use-package cape
+  :straight (:type git
+                   :host github
+                   :repo "minad/cape")
+  :after (evil orderless)
+  :config
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (add-to-list 'completion-at-point-functions #'cape-symbol)
+  )
+
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
@@ -1246,7 +1258,7 @@
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (setq lsp-completion-provider :none
+  (setq lsp-completion-provider :capf
         lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
@@ -1647,12 +1659,23 @@
     :command "yarn"
     :cwd "/Users/erikajonell/repos/megalith"
     :args '("start")
+    :stop-signal 'sigterm
+    ;; :kill-process-buffer-on-stop t
+    )
+  (prodigy-define-service
+    :name "Vaerydian"
+    :command "yarn"
+    :cwd "/Users/erikajonell/repos/vaerydian-engine"
+    :args '("start")
+    :stop-signal 'sigterm
+    ;; :kill-process-buffer-on-stop t
     )
   (prodigy-define-service
     :name "Nucleo"
     :command "docker-compose"
     :cwd "/Users/erikajonell/repos/nucleo"
-    :args '("up" "-d")
+    :args '("up")
+    :stop-signal 'sigterm
     )
   )
 
