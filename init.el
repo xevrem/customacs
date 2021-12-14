@@ -1181,19 +1181,19 @@
 (use-package eglot
   :defer t
   :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  :hook (
-         ;; (js2-mode . eglot-ensure)
-         ;; (rsjx-mode . eglot-ensure)
-         ;; (typescript-mode . eglot-ensure)
-         ;; (typescript-tsx-mode . eglot-ensure)
-         ;; (rustic-mode . eglot-ensure)
-         ;; (elixir-mode . eglot-ensure)
-         ;; (yaml-mode . eglot-ensure)
-         ;; (json-mode . eglot-ensure)
-         ;; (scss-mode . eglot-ensure)
-         ;; (web-mode . eglot-ensure)
-         ;; (go-mode . eglot-ensure)
-         )
+  ;; :hook (
+  ;;        (js2-mode . eglot-ensure)
+  ;;        (rsjx-mode . eglot-ensure)
+  ;;        (typescript-mode . eglot-ensure)
+  ;;        (typescript-tsx-mode . eglot-ensure)
+  ;;        (rustic-mode . eglot-ensure)
+  ;;        (elixir-mode . eglot-ensure)
+  ;;        (yaml-mode . eglot-ensure)
+  ;;        (json-mode . eglot-ensure)
+  ;;        (scss-mode . eglot-ensure)
+  ;;        (web-mode . eglot-ensure)
+  ;;        (go-mode . eglot-ensure)
+  ;;        )
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
@@ -1259,7 +1259,7 @@
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (setq lsp-completion-provider :capf
+  (setq lsp-completion-provider :none
         lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
@@ -1676,6 +1676,13 @@
     :command "docker-compose"
     :cwd "/Users/erikajonell/repos/nucleo"
     :args '("up")
+    :stop-signal 'sigterm
+    )
+  (prodigy-define-service
+    :name "screen saver"
+    :command "mpv"
+    :cwd "/Users/erikajonell/Movies/Kaptures"
+    :args '("--window-scale=0.5" "--loop-file" "textured-lines.mp4")
     :stop-signal 'sigterm
     )
   )
