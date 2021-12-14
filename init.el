@@ -280,6 +280,19 @@
         )
   )
 
+(use-package cape
+  :straight (:type git :host github
+                   :repo "minad/cape"
+                   :branch "main"
+                   )
+  :after (evil orderless)
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  )
+
+
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
@@ -586,6 +599,8 @@
           :wk "reset font-faces")
   "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
   "t T" '(consult-theme :wk "choose theme")
+  "t v" '((lambda () (interactive) (visual-fill-column-mode 1)) :wk "visual-fill mode on")
+  "t V" '((lambda () (interactive) (visual-fill-column-mode -1)) :wk "visual-fill mode off")
   ;; "t T" '(load-theme :wk "choose theme")
   "w" '(:ignore t :which-key "window")
   "w w" '(other-window :which-key "other window")
@@ -1174,10 +1189,11 @@
          (typescript-mode . eglot-ensure)
          (typescript-tsx-mode . eglot-ensure)
          (rustic-mode . eglot-ensure)
-         ;; (elixir-mode . eglot-ensure)
+         (elixir-mode . eglot-ensure)
          (yaml-mode . eglot-ensure)
          (json-mode . eglot-ensure)
-         ;; (go-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
+         ;; (gdscript-mode . eglot-ensure)
          )
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1195,10 +1211,10 @@
                typescript-mode-map
                typescript-tsx-mode-map
                rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; go-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               go-mode-map
                ;; gdscript-mode-map
                )
     "a" '(eglot-code-actions :wk "excute code action")
@@ -1226,11 +1242,11 @@
           ;; (typescript-mode . lsp-deferred)
           ;; (typescript-tsx-mode . lsp-deferred)
           ;; (rustic-mode . lsp-deferred)
-          (elixir-mode . lsp-deferred)
+          ;; (elixir-mode . lsp-deferred)
           (scss-mode . lsp-deferred)
           ;; (yaml-mode . lsp-deferred)
           ;; (json-mode . lsp-deferred)
-          (go-mode . lsp-deferred)
+          ;; (go-mode . lsp-deferred)
           (web-mode . lsp-deferred)
           (svelte-mode . lsp-deferred)
           (csharp-mode . lsp-deferred)
@@ -1257,10 +1273,10 @@
                ;; typescript-mode-map
                ;; typescript-tsx-mode-map
                ;; rustic-mode-map
-               elixir-mode-map
+               ;; elixir-mode-map
                ;; yaml-mode-map
                ;; json-mode-map
-               go-mode-map
+               ;; go-mode-map
                gdscript-mode-map
                svelte-mode-map
                scss-mode-map
@@ -1303,16 +1319,16 @@
 (use-package flycheck
   :defer t
   :hook
-  (prog-mode . flycheck-mode)
+  (lsp-mode . flycheck-mode)
   :config
   (setq flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
                         '(javascript-jshint)))
   (setq flycheck-temp-prefix ".flycheck")
-  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
@@ -1324,10 +1340,10 @@
                ;; typescript-mode-map
                ;; typescript-tsx-mode-map
                ;; rustic-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               go-mode-map
+               ;; elixir-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; go-mode-map
                gdscript-mode-map
                scss-mode-map
                web-mode-map
@@ -1519,7 +1535,6 @@
 (use-package org-superstar
   :if (display-graphic-p)
   :defer t
-  :after org
   :hook
   (org-mode . org-superstar-mode)
   :config
@@ -1533,15 +1548,13 @@
 
 (use-package visual-fill-column
   :defer t
-  :hook
-  (org-mode . custo/visual-fill)
-  (markdown-mode . custo/visual-fill)
+  ;; :hook
+  ;; (org-mode . custo/visual-fill)
+  ;; (markdown-mode . custo/visual-fill)
+  :commands visual-fill-column-mode
   :config
   (setq visual-fill-column-width 100
         visual-fill-column-center-text t)
-  (custo/leader-key
-    "t v" '((lambda () (interactive) (visual-fill-column-mode 1)) :wk "visual-fill mode on")
-    "t V" '((lambda () (interactive) (visual-fill-column-mode -1)) :wk "visual-fill mode off"))
   )
 
 
