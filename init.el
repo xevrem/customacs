@@ -329,7 +329,7 @@
   :hook
   (after-init . doom-modeline-mode)
   :config
-  (setq doom-modeline-height 32)
+  (setq doom-modeline-height 24)
   )
 
 ;;
@@ -1561,6 +1561,20 @@
         visual-fill-column-center-text t)
   )
 
+(use-package centaur-tabs
+  :defer t
+  :hook
+  (prog-mode . centaur-tabs-mode)
+  :config
+  (setq centaur-tabs-style "bar"
+        centaur-tabs-height 48
+        centaur-tabs-set-icons t
+        centaur-tabs-icon-v-adjust 0.0
+        centaur-tabs-icon-scale-factor 0.7
+        centaur-tabs-set-bar 'under
+        x-underline-at-descent-line t
+        )
+  )
 
 
 ;; terminal related packages
