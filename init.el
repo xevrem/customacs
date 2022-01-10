@@ -253,44 +253,44 @@
   (setq-local completion-styles '(orderless)
               completion-category-defaults nil))
 
-(use-package corfu
-  :defer t
-  :after (evil orderless)
-  :hook
-  ;; (lsp-mode . corfu-mode)
-  (prog-mode . corfu-mode)
-  (lsp-mode . custo/corfu-lsp-setup)
-  ;; (eglot--managed-mode . corfu-mode)
-  ;; (emacs-lisp-mode . corfu-mode)
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<tab>" . corfu-next)
-              ("S-TAB" . corfu-previous)
-              ("<backtab>" . corfu-previous)
-              )
-  :custom
-  (corfu-cycle t)
-  :config
-  ;; since we use orderless
-  (setq corfu-quit-at-boundary nil
-        ;; corfu-auto t
-        ;; corfu-auto-delay 0.2
-        ;; corfu-auto-prefix 2
-        ;; tab-always-indent 'complete
-        )
-  )
+;; (use-package corfu
+;;   :defer t
+;;   :after (evil orderless)
+;;   :hook
+;;   ;; (lsp-mode . corfu-mode)
+;;   (prog-mode . corfu-mode)
+;;   (lsp-mode . custo/corfu-lsp-setup)
+;;   ;; (eglot--managed-mode . corfu-mode)
+;;   ;; (emacs-lisp-mode . corfu-mode)
+;;   :bind (:map corfu-map
+;;               ("TAB" . corfu-next)
+;;               ("<tab>" . corfu-next)
+;;               ("S-TAB" . corfu-previous)
+;;               ("<backtab>" . corfu-previous)
+;;               )
+;;   :custom
+;;   (corfu-cycle t)
+;;   :config
+;;   ;; since we use orderless
+;;   (setq corfu-quit-at-boundary nil
+;;         ;; corfu-auto t
+;;         ;; corfu-auto-delay 0.2
+;;         ;; corfu-auto-prefix 2
+;;         ;; tab-always-indent 'complete
+;;         )
+;;   )
 
-(use-package cape
-  :straight (:type git
-                   :host github
-                   :repo "minad/cape")
-  :after (evil orderless)
-  :config
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  (add-to-list 'completion-at-point-functions #'cape-symbol)
-  )
+;; (use-package cape
+;;   :straight (:type git
+;;                    :host github
+;;                    :repo "minad/cape")
+;;   :after (evil orderless)
+;;   :config
+;;   (add-to-list 'completion-at-point-functions #'cape-file)
+;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+;;   (add-to-list 'completion-at-point-functions #'cape-keyword)
+;;   (add-to-list 'completion-at-point-functions #'cape-symbol)
+;;   )
 
 (use-package emacs
   :init
@@ -849,63 +849,62 @@
 
 
 ;; completion mini buffers
-;; (use-package company
-;;   :defer t
-;;   :hook
-;;   (lsp-mode . company-mode)
-;;   (emacs-lisp-mode . company-mode)
-;;   :bind (;; only active when trying to complete a selection
-;;          (:map company-active-map
-;;                ;; complete the currently chosen selection
-;;                ("RET" . company-complete-selection)
-;;                ;; goto next selection
-;;                ("<tab>" . company-select-next)
-;;                ("TAB" . company-select-next)
-;;                ;; goto previous selection
-;;                ("<backtab>" . company-select-previous)
-;;                ("S-TAB" . company-select-previous)
-;;                )
-;;          ;;
-;;          (:map prog-mode-map
-;;                ;; start the completion process
-;;                ("<tab>" . company-indent-or-complete-common)
-;;                ("TAB" . company-indent-or-complete-common)
-;;                )
-;;          ;; only make tab start completions if lsp is active
-;;          ;; (:map lsp-mode-map
-;;          ;;       ;; start the completion process
-;;          ;;       ("<tab>" . company-indent-or-complete-common)
-;;          ;;       ("TAB" . company-indent-or-complete-common)
-;;          ;;       )
-;;          )
-;;   :config
-;;   (setq company-idle-delay nil
-;;         ;; tab-always-indent t
-;;   ;; (setq company-idle-delay 0.5
-;;         company-backends '(company-capf)
-;;         company-minimum-prefix-length 2
-;;         company-selection-wrap-around t
-;;         company-tooltip-limit 25
-;;         ;;
-;;         ;; Good Ideas from DOOM:
-;;         ;;
-;;         ;; These auto-complete the current selection when
-;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
-;;         ;; already have the much more explicit RET and TAB.
-;;         company-auto-complete nil
-;;         company-auto-complete-chars nil
+(use-package company
+  :defer t
+  :hook
+  (lsp-mode . company-mode)
+  (emacs-lisp-mode . company-mode)
+  :bind (;; only active when trying to complete a selection
+         (:map company-active-map
+               ;; complete the currently chosen selection
+               ("RET" . company-complete-selection)
+               ;; goto next selection
+               ("<tab>" . company-select-next)
+               ("TAB" . company-select-next)
+               ;; goto previous selection
+               ("<backtab>" . company-select-previous)
+               ("S-TAB" . company-select-previous)
+               )
+         ;;
+         (:map prog-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               )
+         ;; only make tab start completions if lsp is active
+         ;; (:map lsp-mode-map
+         ;;       ;; start the completion process
+         ;;       ("<tab>" . company-indent-or-complete-common)
+         ;;       ("TAB" . company-indent-or-complete-common)
+         ;;       )
+         )
+  :config
+  (setq company-idle-delay nil
+        ;; tab-always-indent t
+        company-backends '(company-capf)
+        company-minimum-prefix-length 2
+        company-selection-wrap-around t
+        company-tooltip-limit 25
+        ;;
+        ;; Good Ideas from DOOM:
+        ;;
+        ;; These auto-complete the current selection when
+        ;; `company-auto-complete-chars' is typed. This is too magical. We
+        ;; already have the much more explicit RET and TAB.
+        company-auto-complete nil
+        company-auto-complete-chars nil
 
-;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
-;;         ;; suggests text your open buffers). This prevents Company from causing
-;;         ;; lag once you have a lot of buffers open.
-;;         company-dabbrev-other-buffers nil
-;;         company-dabbrev-code-other-buffers nil
-;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-;;         ;; domain-specific words with particular casing.
-;;         company-dabbrev-ignore-case nil
-;;         company-dabbrev-downcase nil
-;;         )
-;;   )
+        ;; Only search the current buffer for `company-dabbrev' (a backend that
+        ;; suggests text your open buffers). This prevents Company from causing
+        ;; lag once you have a lot of buffers open.
+        company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers nil
+        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+        ;; domain-specific words with particular casing.
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil
+        )
+  )
 
 ;; (use-package company-box
 ;;   :defer t
@@ -1261,7 +1260,7 @@
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (setq lsp-completion-provider :none
+  (setq lsp-completion-provider :capf
         lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
