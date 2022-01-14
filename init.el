@@ -1268,6 +1268,7 @@
         lsp-ui-doc-enable nil
         lsp-idle-delay 0.500
         lsp-log-io nil
+        lsp-use-plists t
         )
   (custo/local-leader-key
     :keymaps '(
@@ -1685,9 +1686,9 @@
     )
   (prodigy-define-service
     :name "Nucleo"
-    :command "docker-compose"
+    :command "docker"
     :cwd "/Users/erikajonell/repos/nucleo"
-    :args '("up")
+    :args '("compose" "up")
     :stop-signal 'sigterm
     )
   (prodigy-define-service
