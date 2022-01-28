@@ -248,10 +248,22 @@
         )
   )
 
-(defun custo/corfu-lsp-setup ()
-  "Ensure corfu and lsp work better together."
-  (setq-local completion-styles '(orderless)
-              completion-category-defaults nil))
+(use-package embark
+  :defer t
+  :after (evil orderless)
+  :commands embark-act
+  :bind(("C-." . embark-act)
+        )
+  )
+
+(use-package embark-consult
+  :after (embark consult)
+  )
+
+;; (defun custo/corfu-lsp-setup ()
+;;   "Ensure corfu and lsp work better together."
+;;   (setq-local completion-styles '(orderless)
+;;               completion-category-defaults nil))
 
 ;; (use-package corfu
 ;;   :defer t
