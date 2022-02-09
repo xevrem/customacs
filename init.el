@@ -266,49 +266,49 @@
 ;;   (setq-local completion-styles '(orderless)
 ;;               completion-category-defaults nil))
 
-(defun custo/lsp-mode-setup-completion ()
-    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-          '(orderless))) ;;
+;; (defun custo/lsp-mode-setup-completion ()
+;;     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+;;           '(orderless))) ;;
 
-(use-package corfu
-  :defer t
-  :after (evil orderless)
-  :hook
-  ;; (lsp-mode . corfu-mode)
-  (prog-mode . corfu-mode)
-  ;; (lsp-mode . custo/corfu-lsp-setup)
-  (lsp-completion-mode . custo/lsp-mode-setup-completion)
-  ;; (eglot--managed-mode . corfu-mode)
-  ;; (emacs-lisp-mode . corfu-mode)
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<tab>" . corfu-next)
-              ("S-TAB" . corfu-previous)
-              ("<backtab>" . corfu-previous)
-              )
-  :custom
-  (corfu-cycle t)
-  :config
-  ;; since we use orderless
-  (setq corfu-quit-at-boundary nil
-        ;; corfu-auto t
-        ;; corfu-auto-delay 0.2
-        ;; corfu-auto-prefix 2
-        ;; tab-always-indent 'complete
-        )
-  )
+;; (use-package corfu
+;;   :defer t
+;;   :after (evil orderless)
+;;   :hook
+;;   ;; (lsp-mode . corfu-mode)
+;;   (prog-mode . corfu-mode)
+;;   ;; (lsp-mode . custo/corfu-lsp-setup)
+;;   (lsp-completion-mode . custo/lsp-mode-setup-completion)
+;;   ;; (eglot--managed-mode . corfu-mode)
+;;   ;; (emacs-lisp-mode . corfu-mode)
+;;   :bind (:map corfu-map
+;;               ("TAB" . corfu-next)
+;;               ("<tab>" . corfu-next)
+;;               ("S-TAB" . corfu-previous)
+;;               ("<backtab>" . corfu-previous)
+;;               )
+;;   :custom
+;;   (corfu-cycle t)
+;;   :config
+;;   ;; since we use orderless
+;;   (setq corfu-quit-at-boundary nil
+;;         ;; corfu-auto t
+;;         ;; corfu-auto-delay 0.2
+;;         ;; corfu-auto-prefix 2
+;;         ;; tab-always-indent 'complete
+;;         )
+;;   )
 
-(use-package cape
-  :straight (:type git
-                   :host github
-                   :repo "minad/cape")
-  :after (evil orderless)
-  :config
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  (add-to-list 'completion-at-point-functions #'cape-symbol)
-  )
+;; (use-package cape
+;;   :straight (:type git
+;;                    :host github
+;;                    :repo "minad/cape")
+;;   :after (evil orderless)
+;;   :config
+;;   (add-to-list 'completion-at-point-functions #'cape-file)
+;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+;;   (add-to-list 'completion-at-point-functions #'cape-keyword)
+;;   (add-to-list 'completion-at-point-functions #'cape-symbol)
+;;   )
 
 (use-package emacs
   :init
@@ -867,68 +867,68 @@
 
 
 ;; completion mini buffers
-;; (use-package company
-;;   :defer t
-;;   :hook
-;;   (lsp-mode . company-mode)
-;;   (emacs-lisp-mode . company-mode)
-;;   :bind (;; only active when trying to complete a selection
-;;          (:map company-active-map
-;;                ;; complete the currently chosen selection
-;;                ("RET" . company-complete-selection)
-;;                ;; goto next selection
-;;                ("<tab>" . company-select-next)
-;;                ("TAB" . company-select-next)
-;;                ;; goto previous selection
-;;                ("<backtab>" . company-select-previous)
-;;                ("S-TAB" . company-select-previous)
-;;                )
-;;          ;;
-;;          (:map prog-mode-map
-;;                ;; start the completion process
-;;                ("<tab>" . company-indent-or-complete-common)
-;;                ("TAB" . company-indent-or-complete-common)
-;;                )
-;;          ;; only make tab start completions if lsp is active
-;;          ;; (:map lsp-mode-map
-;;          ;;       ;; start the completion process
-;;          ;;       ("<tab>" . company-indent-or-complete-common)
-;;          ;;       ("TAB" . company-indent-or-complete-common)
-;;          ;;       )
-;;          )
-;;   :config
-;;   (setq company-idle-delay nil
-;;         ;; tab-always-indent t
-;;         company-backends '(company-capf)
-;;         company-minimum-prefix-length 2
-;;         company-selection-wrap-around t
-;;         company-tooltip-limit 25
-;;         ;;
-;;         ;; Good Ideas from DOOM:
-;;         ;;
-;;         ;; These auto-complete the current selection when
-;;         ;; `company-auto-complete-chars' is typed. This is too magical. We
-;;         ;; already have the much more explicit RET and TAB.
-;;         company-auto-complete nil
-;;         company-auto-complete-chars nil
+(use-package company
+  :defer t
+  :hook
+  (lsp-mode . company-mode)
+  (emacs-lisp-mode . company-mode)
+  :bind (;; only active when trying to complete a selection
+         (:map company-active-map
+               ;; complete the currently chosen selection
+               ("RET" . company-complete-selection)
+               ;; goto next selection
+               ("<tab>" . company-select-next)
+               ("TAB" . company-select-next)
+               ;; goto previous selection
+               ("<backtab>" . company-select-previous)
+               ("S-TAB" . company-select-previous)
+               )
+         ;;
+         (:map prog-mode-map
+               ;; start the completion process
+               ("<tab>" . company-indent-or-complete-common)
+               ("TAB" . company-indent-or-complete-common)
+               )
+         ;; only make tab start completions if lsp is active
+         ;; (:map lsp-mode-map
+         ;;       ;; start the completion process
+         ;;       ("<tab>" . company-indent-or-complete-common)
+         ;;       ("TAB" . company-indent-or-complete-common)
+         ;;       )
+         )
+  :config
+  (setq company-idle-delay nil
+        ;; tab-always-indent t
+        company-backends '(company-capf)
+        company-minimum-prefix-length 2
+        company-selection-wrap-around t
+        company-tooltip-limit 25
+        ;;
+        ;; Good Ideas from DOOM:
+        ;;
+        ;; These auto-complete the current selection when
+        ;; `company-auto-complete-chars' is typed. This is too magical. We
+        ;; already have the much more explicit RET and TAB.
+        company-auto-complete nil
+        company-auto-complete-chars nil
 
-;;         ;; Only search the current buffer for `company-dabbrev' (a backend that
-;;         ;; suggests text your open buffers). This prevents Company from causing
-;;         ;; lag once you have a lot of buffers open.
-;;         company-dabbrev-other-buffers nil
-;;         company-dabbrev-code-other-buffers nil
-;;         ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-;;         ;; domain-specific words with particular casing.
-;;         company-dabbrev-ignore-case nil
-;;         company-dabbrev-downcase nil
-;;         )
-;;   )
+        ;; Only search the current buffer for `company-dabbrev' (a backend that
+        ;; suggests text your open buffers). This prevents Company from causing
+        ;; lag once you have a lot of buffers open.
+        company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers nil
+        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+        ;; domain-specific words with particular casing.
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil
+        )
+  )
 
-;; (use-package company-box
-;;   :defer t
-;;   :after company
-;;   :hook (company-mode . company-box-mode)
-;;   )
+(use-package company-box
+  :defer t
+  :after company
+  :hook (company-mode . company-box-mode)
+  )
 
 ;; better javascript mode
 (use-package js2-mode
@@ -1073,7 +1073,7 @@
 (use-package omnisharp
   :defer t
   :mode ("\\.cs\\'" . omnisharp-mode)
-  :after corfu
+  :after company
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -1207,19 +1207,19 @@
 (use-package eglot
   :defer t
   :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  :hook (
-         (js2-mode . eglot-ensure)
-         (rsjx-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (typescript-tsx-mode . eglot-ensure)
-         (rustic-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure)
-         (yaml-mode . eglot-ensure)
-         (json-mode . eglot-ensure)
-         (scss-mode . eglot-ensure)
-         (web-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-        )
+  ;; :hook (
+  ;;        (js2-mode . eglot-ensure)
+  ;;        (rsjx-mode . eglot-ensure)
+  ;;        (typescript-mode . eglot-ensure)
+  ;;        (typescript-tsx-mode . eglot-ensure)
+  ;;        (rustic-mode . eglot-ensure)
+  ;;        (elixir-mode . eglot-ensure)
+  ;;        (yaml-mode . eglot-ensure)
+  ;;        (json-mode . eglot-ensure)
+  ;;        (scss-mode . eglot-ensure)
+  ;;        (web-mode . eglot-ensure)
+  ;;        (go-mode . eglot-ensure)
+  ;;       )
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
@@ -1233,17 +1233,17 @@
     )
   (custo/local-leader-key
     :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
-               yaml-mode-map
-               json-mode-map
-               scss-mode-map
-               web-mode-map
-               go-mode-map
-               gdscript-mode-map
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; rustic-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               ;; web-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
                )
     "a" '(eglot-code-actions :wk "excute code action")
     "g r" '(xref-find-references :wk "goto references")
@@ -1264,28 +1264,28 @@
 ;; lsp-mode
 (use-package lsp-mode
    :defer t
-   ;; :hook (
-   ;;        (js2-mode . lsp-deferred)
-   ;;        (rsjx-mode . lsp-deferred)
-   ;;        (typescript-mode . lsp-deferred)
-   ;;        (typescript-tsx-mode . lsp-deferred)
-   ;;        (rustic-mode . lsp-deferred)
-   ;;        (elixir-mode . lsp-deferred)
-   ;;        (scss-mode . lsp-deferred)
-   ;;        (yaml-mode . lsp-deferred)
-   ;;        (json-mode . lsp-deferred)
-   ;;        (web-mode . lsp-deferred)
-   ;;        (go-mode . lsp-deferred)
-   ;;        (svelte-mode . lsp-deferred)
-   ;;        (csharp-mode . lsp-deferred)
-   ;;        (gdscript-mode . lsp-deferred)
-   ;;        (lsp-mode . lsp-enable-which-key-integration)
+   :hook (
+          (js2-mode . lsp-deferred)
+          (rsjx-mode . lsp-deferred)
+          (typescript-mode . lsp-deferred)
+          (typescript-tsx-mode . lsp-deferred)
+          (rustic-mode . lsp-deferred)
+          (elixir-mode . lsp-deferred)
+          (scss-mode . lsp-deferred)
+          (yaml-mode . lsp-deferred)
+          (json-mode . lsp-deferred)
+          (web-mode . lsp-deferred)
+          (go-mode . lsp-deferred)
+          (svelte-mode . lsp-deferred)
+          (csharp-mode . lsp-deferred)
+          (gdscript-mode . lsp-deferred)
+          (lsp-mode . lsp-enable-which-key-integration)
    ;;       )
   :commands (lsp lsp-deferred lsp-mode-map)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (setq lsp-completion-provider :none
+  (setq lsp-completion-provider :capf
         lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
@@ -1297,21 +1297,21 @@
         )
   (custo/local-leader-key
     :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; svelte-mode-map
-               ;; csharp-mode-map
-               ;; python-mode-map
+               js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               web-mode-map
+               go-mode-map
+               gdscript-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :which-key "goto definition")
@@ -1328,13 +1328,13 @@
     )
   )
 
-;; (use-package lsp-pyright
-;;   :defer t
-;;   :after python
-;;   :hook (python-mode .(lambda ()
-;;                         (require 'lsp-pyright)
-;;                         (lsp-deferred)))
-;;   )
+(use-package lsp-pyright
+  :defer t
+  :after python
+  :hook (python-mode .(lambda ()
+                        (require 'lsp-pyright)
+                        (lsp-deferred)))
+  )
 
 ;; prettier lsp
 ;; (use-package lsp-ui
@@ -1345,45 +1345,45 @@
 ;;   )
 
 ;; ;; error checking
-;; (use-package flycheck
-;;   :defer t
-;;   :hook
-;;   (lsp-mode . flycheck-mode)
-;;   :config
-;;   (setq flycheck-disabled-checkers
-;;                 (append flycheck-disabled-checkers
-;;                         '(javascript-jshint)))
-;;   (setq flycheck-temp-prefix ".flycheck")
-;;   (flycheck-add-mode 'javascript-eslint 'js2-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-;;   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
-;;   (custo/leader-key
-;;     "e" '(:ignore t :wk "errors")
-;;     "e l" '(consult-flycheck :wk "list errors")
-;;     )
-;;   (custo/local-leader-key
-;;     :keymaps '(
-;;                js2-mode-map
-;;                rjsx-mode-map
-;;                typescript-mode-map
-;;                typescript-tsx-mode-map
-;;                rustic-mode-map
-;;                elixir-mode-map
-;;                yaml-mode-map
-;;                json-mode-map
-;;                scss-mode-map
-;;                web-mode-map
-;;                go-mode-map
-;;                gdscript-mode-map
-;;                svelte-mode-map
-;;                csharp-mode-map
-;;                python-mode-map
-;;                )
-;;     "e" '(:ignore t :wk "errors")
-;;     "e l" '(consult-flycheck :wk "list errors")
-;;     )
-;;   )
+(use-package flycheck
+  :defer t
+  :hook
+  (lsp-mode . flycheck-mode)
+  :config
+  (setq flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
+  (setq flycheck-temp-prefix ".flycheck")
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (custo/leader-key
+    "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flycheck :wk "list errors")
+    )
+  (custo/local-leader-key
+    :keymaps '(
+               js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               web-mode-map
+               go-mode-map
+               gdscript-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               python-mode-map
+               )
+    "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flycheck :wk "list errors")
+    )
+  )
 
 
 
