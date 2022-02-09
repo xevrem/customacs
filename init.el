@@ -1153,6 +1153,13 @@
   (setq yaml-indent-offset 2)
   )
 
+(use-package markdown-mode
+  :defer t
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  )
+
 (use-package gdscript-mode
   :defer t
   :after prog-mode
