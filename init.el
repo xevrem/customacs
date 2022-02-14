@@ -1280,13 +1280,13 @@
           (csharp-mode . lsp-deferred)
           (gdscript-mode . lsp-deferred)
           (lsp-mode . lsp-enable-which-key-integration)
-   ;;       )
+         )
   :commands (lsp lsp-deferred lsp-mode-map)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
   (setq lsp-completion-provider :capf
-        lsp-file-watch-threshold 100
+        ;; lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
