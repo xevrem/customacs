@@ -22,7 +22,7 @@
 ;; adjust the startup size of emacs
 (setq initial-frame-alist
       `((width . 120) ; chars
-        (height . 42) ; lines
+        (height . 30) ; lines
         )
       )
 
@@ -114,7 +114,7 @@
       )
     ;; set current frame to 120x45 characters
     (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 42)
+    (set-frame-height (frame-focus) 30)
     )
   )
 ;; run this hook after we have initialized the first time
@@ -1344,9 +1344,9 @@
 (use-package lsp-pyright
   :defer t
   :after python
-  :hook (python-mode .(lambda ()
-                        (require 'lsp-pyright)
-                        (lsp-deferred)))
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp-deferred)))
   )
 
 ;; prettier lsp
@@ -1698,7 +1698,7 @@
   :commands vterm
   :config
   (setq vterm-timer-delay 0.01
-        vterm-shell "zsh")
+        vterm-shell "nu")
   )
 
 (defun custo/launch-vterm ()
@@ -1740,6 +1740,13 @@
     :command "mpv"
     :cwd "/Users/erikajonell/Movies/Kaptures"
     :args '("--window-scale=0.5" "--loop-file" "textured-lines.mp4")
+    :stop-signal 'sigterm
+    )
+  (prodigy-define-service
+    :name "redshift"
+    :command "redshift"
+    ;; :cwd "/Users/erikajonell/Movies/Kaptures"
+    :args '("-P" "-O" "3100")
     :stop-signal 'sigterm
     )
   )
