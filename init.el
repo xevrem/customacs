@@ -89,7 +89,7 @@
     ;; Set the fixed pitch face
     (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL Nerd Font" :size 20 :weight 'regular))
     ;; Set the variable pitch face which is the same for mac and linux
-    (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
+    (set-face-attribute 'variable-pitch nil :font (font-spec :family "Liberation Mono" :size 20 :weight 'regular))
     ;; after org-mode we want to adjust font sizes
     (with-eval-after-load 'org
       (dolist (face '((org-level-1 . 1.3)
@@ -100,7 +100,7 @@
                       (org-level-6 . 1.05)
                       (org-level-7 . 1.0)
                       (org-level-8 . 1.0)))
-        (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face))
+        (set-face-attribute (car face) nil :font "Liberation Mono" :weight 'regular :height (cdr face))
         )
       
       ;; Ensure that anything that should be fixed-pitch in Org files appears that way
@@ -211,14 +211,15 @@
              consult-recent-file
              consult-flymake
              consult-theme
-             consult-completion-in-region)
+             consult-completion-in-region
+             consult-imenu)
   :config
   (consult-customize
    consult-theme
    :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-file consult--source-project-file consult--source-bookmark
+   consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
    :preview-key (kbd "M-."))
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref
@@ -606,6 +607,7 @@
   "q r" '(restart-emacs :which-key "restart emacs")
   "s" '(:ignore t :which-key "search")
   ;; "s p" '(projectile-ripgrep :wk "search project")
+  "s i" '(consult-imenu :wk "imenu")
   "s p" '(consult-ripgrep :which-key "search project")
   "s s" '(consult-line :wk "search buffer")
   "t" '(:ignore t :which-key "toggles")
@@ -810,10 +812,22 @@
   (dired-mode . diredfl-mode)
   )
 
-(use-package git-gutter-fringe
+(use-package git-gutter
   :defer t
   :hook
   (prog-mode . git-gutter-mode)
+  :config
+  (setq git-gutter:update-interval 0.5)
+  )
+
+(use-package git-gutter-fringe
+  ;; :defer t
+  ;; :hook
+  ;; (prog-mode . git-gutter-mode)
+  :config
+  (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
   )
 
 ;; magit
@@ -1290,7 +1304,6 @@
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-        lsp-ui-doc-enable nil
         lsp-idle-delay 0.500
         lsp-log-io nil
         lsp-use-plists t
@@ -1315,12 +1328,12 @@
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :which-key "goto definition")
-    ;; "g p" '(lsp-ui-peek-find-references :which-key "peek references")
+    "g R" '(lsp-ui-peek-find-references :which-key "peek references")
     "g r" '(lsp-find-references :wk "goto references")
     "l" '(:ignore t :wk "lsp")
-    ;; "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
     "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-    ;; "o" '(lsp-ui-imenu :which-key "overview")
+    "o" '(lsp-ui-imenu :which-key "overview")
     "r" '(:ignore t :which-key "refactor")
     "r r" '(lsp-rename :which-key "rename")
     "=" '(:ignore t :which-key "format")
@@ -1337,12 +1350,18 @@
   )
 
 ;; prettier lsp
-;; (use-package lsp-ui
-;;   :defer t
-;;   :after lsp-mode
-;;   :hook
-;;   (lsp-mode . lsp-ui-mode)
-;;   )
+(use-package lsp-ui
+  :defer t
+  :after lsp-mode
+  :commands (lsp-ui-imenu
+             lsp-ui-doc-glance
+             lsp-ui-peek-find-references)
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-sideline-enable nil)
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  )
 
 ;; ;; error checking
 (use-package flycheck
@@ -1679,7 +1698,7 @@
   :commands vterm
   :config
   (setq vterm-timer-delay 0.01
-        vterm-shell "fish")
+        vterm-shell "zsh")
   )
 
 (defun custo/launch-vterm ()
