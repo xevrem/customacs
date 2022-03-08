@@ -22,7 +22,7 @@
 ;; adjust the startup size of emacs
 (setq initial-frame-alist
       `((width . 120) ; chars
-        (height . 30) ; lines
+        (height . 40) ; lines
         )
       )
 
@@ -85,11 +85,11 @@
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
-    (set-face-attribute 'default nil :font (font-spec :family "MesloLGL Nerd Font" :size 20 :weight 'regular))
+    (set-face-attribute 'default nil :font (font-spec :family "FiraCode NF" :size 20 :weight 'medium))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL Nerd Font" :size 20 :weight 'regular))
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode NF" :size 20 :weight 'medium))
     ;; Set the variable pitch face which is the same for mac and linux
-    (set-face-attribute 'variable-pitch nil :font (font-spec :family "Liberation Mono" :size 20 :weight 'regular))
+    (set-face-attribute 'variable-pitch nil :font (font-spec :family "LiterationSans NF" :size 20 :weight 'regular))
     ;; after org-mode we want to adjust font sizes
     (with-eval-after-load 'org
       (dolist (face '((org-level-1 . 1.3)
@@ -100,7 +100,7 @@
                       (org-level-6 . 1.05)
                       (org-level-7 . 1.0)
                       (org-level-8 . 1.0)))
-        (set-face-attribute (car face) nil :font "Liberation Mono" :weight 'regular :height (cdr face))
+        (set-face-attribute (car face) nil :font "LiterationSans NF" :weight 'regular :height (cdr face))
         )
       
       ;; Ensure that anything that should be fixed-pitch in Org files appears that way
@@ -114,9 +114,9 @@
       )
     ;; set current frame to 120x45 characters
     (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 30)
+    (set-frame-height (frame-focus) 40)
     )
-  )
+ )
 ;; run this hook after we have initialized the first time
 (add-hook 'after-init-hook 'custo/setup-font-faces)
 ;; re-run this hook if we create a new frame from daemonized Emacs
