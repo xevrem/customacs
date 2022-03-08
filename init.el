@@ -22,7 +22,7 @@
 ;; adjust the startup size of emacs
 (setq initial-frame-alist
       `((width . 120) ; chars
-        (height . 42) ; lines
+        (height . 30) ; lines
         )
       )
 
@@ -114,7 +114,7 @@
       )
     ;; set current frame to 120x45 characters
     (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 42)
+    (set-frame-height (frame-focus) 30)
     )
   )
 ;; run this hook after we have initialized the first time
@@ -606,6 +606,7 @@
   "q r" '(restart-emacs :which-key "restart emacs")
   "s" '(:ignore t :which-key "search")
   ;; "s p" '(projectile-ripgrep :wk "search project")
+  "s i" '(consult-imenu :wk "imenu")
   "s p" '(consult-ripgrep :which-key "search project")
   "s s" '(consult-line :wk "search buffer")
   "t" '(:ignore t :which-key "toggles")
@@ -1290,7 +1291,6 @@
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-        lsp-ui-doc-enable nil
         lsp-idle-delay 0.500
         lsp-log-io nil
         lsp-use-plists t
@@ -1315,12 +1315,12 @@
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :which-key "goto definition")
-    ;; "g p" '(lsp-ui-peek-find-references :which-key "peek references")
     "g r" '(lsp-find-references :wk "goto references")
+    "g R" '(lsp-ui-peek-find-references :which-key "peek references")
     "l" '(:ignore t :wk "lsp")
-    ;; "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
     "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-    ;; "o" '(lsp-ui-imenu :which-key "overview")
+    "o" '(lsp-ui-imenu :which-key "overview")
     "r" '(:ignore t :which-key "refactor")
     "r r" '(lsp-rename :which-key "rename")
     "=" '(:ignore t :which-key "format")
@@ -1331,18 +1331,24 @@
 (use-package lsp-pyright
   :defer t
   :after python
-  :hook (python-mode .(lambda ()
-                        (require 'lsp-pyright)
-                        (lsp-deferred)))
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp-deferred)))
   )
 
 ;; prettier lsp
-;; (use-package lsp-ui
-;;   :defer t
-;;   :after lsp-mode
-;;   :hook
-;;   (lsp-mode . lsp-ui-mode)
-;;   )
+(use-package lsp-ui
+  :defer t
+  :after lsp-mode
+  :commands (lsp-ui-peek-find-references
+             lsp-ui-doc-glance
+             lsp-ui-imenu)
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-sideline-enable nil)
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  )
 
 ;; ;; error checking
 (use-package flycheck
@@ -1679,7 +1685,7 @@
   :commands vterm
   :config
   (setq vterm-timer-delay 0.01
-        vterm-shell "fish")
+        vterm-shell "nu")
   )
 
 (defun custo/launch-vterm ()
@@ -1721,6 +1727,13 @@
     :command "mpv"
     :cwd "/Users/erikajonell/Movies/Kaptures"
     :args '("--window-scale=0.5" "--loop-file" "textured-lines.mp4")
+    :stop-signal 'sigterm
+    )
+  (prodigy-define-service
+    :name "redshift"
+    :command "redshift"
+    ;; :cwd "/Users/erikajonell/Movies/Kaptures"
+    :args '("-m" "quartz" "-P" "-O" "3100")
     :stop-signal 'sigterm
     )
   )
