@@ -85,11 +85,11 @@
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
-    (set-face-attribute 'default nil :font (font-spec :family "FiraCode NF" :size 20 :weight 'medium))
+    (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode NF" :size 20 :weight 'medium))
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'regular))
     ;; Set the variable pitch face which is the same for mac and linux
-    (set-face-attribute 'variable-pitch nil :font (font-spec :family "LiterationSans NF" :size 20 :weight 'regular))
+    (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
     ;; after org-mode we want to adjust font sizes
     (with-eval-after-load 'org
       (dolist (face '((org-level-1 . 1.3)
@@ -100,7 +100,7 @@
                       (org-level-6 . 1.05)
                       (org-level-7 . 1.0)
                       (org-level-8 . 1.0)))
-        (set-face-attribute (car face) nil :font "LiterationSans NF" :weight 'regular :height (cdr face))
+        (set-face-attribute (car face) nil :font "Arial" :weight 'regular :height (cdr face))
         )
       
       ;; Ensure that anything that should be fixed-pitch in Org files appears that way
