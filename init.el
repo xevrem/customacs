@@ -383,9 +383,9 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
-  (consult-theme 'doom-material-dark)
+  ;; (consult-theme 'doom-material-dark)
   ;; (consult-theme 'doom-challenger-deep)
-  ;; (consult-theme 'doom-tomorrow-night)
+  (consult-theme 'doom-tomorrow-night)
   ;; (consult-theme 'doom-dracula)
   )
 
