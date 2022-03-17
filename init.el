@@ -386,7 +386,8 @@
         doom-themes-enable-italic t)
   ;; (consult-theme 'doom-material-dark)
   ;; (consult-theme 'doom-challenger-deep)
-  (consult-theme 'doom-tomorrow-night)
+  ;; (consult-theme 'doom-tomorrow-night)
+  (consult-theme 'doom-moonlight)
   ;; (consult-theme 'doom-dracula)
   )
 
@@ -1768,8 +1769,7 @@
   (prodigy-define-service
     :name "redshift"
     :command "redshift"
-    ;; :cwd "/Users/erikajonell/Movies/Kaptures"
-    :args '("-P" "-O" "2700")
+    :args '("-P" "-O" "2700" "-b" "0.7")
     :stop-signal 'sigterm
     )
   )
