@@ -386,8 +386,8 @@
         doom-themes-enable-italic t)
   ;; (consult-theme 'doom-material-dark)
   ;; (consult-theme 'doom-challenger-deep)
-  ;; (consult-theme 'doom-tomorrow-night)
-  (consult-theme 'doom-moonlight)
+  (consult-theme 'doom-tomorrow-night)
+  ;; (consult-theme 'doom-moonlight)
   ;; (consult-theme 'doom-dracula)
   )
 
