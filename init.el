@@ -530,9 +530,10 @@
         evil-want-keybinding nil
         evil-want-C-u-scroll t
         evil-want-C-d-scroll t)
-  :bind (:map evil-insert-state-map
-              ("C-g" . evil-normal-state)
-              )
+  :bind
+  (:map evil-insert-state-map
+        ("C-g" . evil-normal-state)
+        )
  )
 
 
@@ -589,7 +590,8 @@
   "f" '(:ignore f :which-key "file")
   "f d" '(ranger :which-key "file directory")
   "f f" '(find-file :which-key "find file")
-  "f p" '(find-file-in-project :wk "find file in project")
+  "f p" '(ffip :wk "find file in project")
+  "f P" '(find-file-in-project-by-selected :wk "find file in project w/ regex")
   "f r" '(consult-recent-file :wk "recent files")
   "f R" '(recentf-open-files :wk "full recentf files")
   "f s" '(save-buffer :which-key "save file")
@@ -804,7 +806,7 @@
   (setq ffip-use-rust-fd t)
   (custo/leader-key
     :keymaps 'projectile-mode-map
-    "p f" '(find-file-in-project :wk "find file in project")
+    "p f" '(ffip :wk "find file in project")
     )
   )
 
@@ -1324,7 +1326,7 @@
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
   (setq lsp-completion-provider :capf
-        ;; lsp-file-watch-threshold 100
+        lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
@@ -1352,12 +1354,13 @@
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :which-key "goto definition")
-    ;; "g R" '(lsp-ui-peek-find-references :which-key "peek references")
+    "g R" '(lsp-ui-peek-find-references :which-key "peek references")
     "g r" '(lsp-find-references :wk "goto references")
+    "g t" '(lsp-find-type-definition :wk "goto references")
     "l" '(:ignore t :wk "lsp")
-    ;; "l g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
     "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
-    ;; "o" '(lsp-ui-imenu :which-key "overview")
+    "o" '(lsp-ui-imenu :which-key "overview")
     "r" '(:ignore t :which-key "refactor")
     "r r" '(lsp-rename :which-key "rename")
     "=" '(:ignore t :which-key "format")
@@ -1374,18 +1377,18 @@
   )
 
 ;; prettier lsp
-;; (use-package lsp-ui
-;;   :defer t
-;;   :after lsp-mode
-;;   :commands (lsp-ui-imenu
-;;              lsp-ui-doc-glance
-;;              lsp-ui-peek-find-references)
-;;   :config
-;;   (setq lsp-ui-doc-enable t
-;;         lsp-ui-sideline-enable nil)
-;;   :hook
-;;   (lsp-mode . lsp-ui-mode)
-;;   )
+(use-package lsp-ui
+  :defer t
+  :after lsp-mode
+  :commands (lsp-ui-imenu
+             lsp-ui-doc-glance
+             lsp-ui-peek-find-references)
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-sideline-enable nil)
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  )
 
 ;; ;; error checking
 (use-package flycheck
