@@ -1769,7 +1769,7 @@
   (prodigy-define-service
     :name "redshift"
     :command "redshift"
-    :args '("-P" "-O" "2700" "-b" "0.7")
+    :args '("-P" "-O" "2700" "-b" "0.75")
     :stop-signal 'sigterm
     )
   )
