@@ -277,10 +277,10 @@
   :defer t
   :after (evil orderless)
   :hook
-  ;; (lsp-mode . corfu-mode)
+  (lsp-mode . corfu-mode)
   ;; (prog-mode . corfu-mode)
-  ;; (lsp-mode . custo/corfu-lsp-setup)
-  ;; (lsp-completion-mode . custo/lsp-mode-setup-completion)
+  (lsp-mode . custo/corfu-lsp-setup)
+  (lsp-completion-mode . custo/lsp-mode-setup-completion)
   (eglot--managed-mode . corfu-mode)
   (emacs-lisp-mode . corfu-mode)
   :bind (:map corfu-map
@@ -1116,7 +1116,7 @@
 (use-package omnisharp
   :defer t
   :mode ("\\.cs\\'" . omnisharp-mode)
-  :after company
+  :after (corfu csharp-mode)
   :commands omnisharp-install-server
   :hook
   (csharp-mode . omnisharp-mode)
@@ -1262,7 +1262,7 @@
          (scss-mode . eglot-ensure)
          (web-mode . eglot-ensure)
          (go-mode . eglot-ensure)
-         (python-mode . eglot-ensure)
+         ;; (python-mode . eglot-ensure)
         )
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1288,7 +1288,7 @@
                web-mode-map
                go-mode-map
                gdscript-mode-map
-               python-mode-map
+               ;; python-mode-map
                )
     "a" '(eglot-code-actions :wk "excute code action")
     "g r" '(xref-find-references :wk "goto references")
@@ -1309,7 +1309,7 @@
 ;; lsp-mode
 (use-package lsp-mode
    :defer t
-   ;; :hook (
+   :hook (
    ;;        (js2-mode . lsp-deferred)
    ;;        (rsjx-mode . lsp-deferred)
    ;;        (typescript-mode . lsp-deferred)
@@ -1322,10 +1322,10 @@
    ;;        (web-mode . lsp-deferred)
    ;;        (go-mode . lsp-deferred)
    ;;        (svelte-mode . lsp-deferred)
-   ;;        (csharp-mode . lsp-deferred)
+          (csharp-mode . lsp-deferred)
    ;;        (gdscript-mode . lsp-deferred)
    ;;        (lsp-mode . lsp-enable-which-key-integration)
-   ;;       )
+         )
   :commands (lsp lsp-deferred lsp-mode-map)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1354,8 +1354,8 @@
                ;; go-mode-map
                ;; gdscript-mode-map
                ;; svelte-mode-map
-               ;; csharp-mode-map
-               ;; python-mode-map
+               csharp-mode-map
+               python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :which-key "goto definition")
@@ -1373,27 +1373,27 @@
     )
   )
 
-;; (use-package lsp-pyright
-;;   :defer t
-;;   :after python
-;;   :hook (python-mode . (lambda ()
-;;                          (require 'lsp-pyright)
-;;                          (lsp-deferred)))
-;;   )
+(use-package lsp-pyright
+  :defer t
+  :after python
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp-deferred)))
+  )
 
 ;; ;; prettier lsp
-;; (use-package lsp-ui
-;;   :defer t
-;;   :after lsp-mode
-;;   :commands (lsp-ui-imenu
-;;              lsp-ui-doc-glance
-;;              lsp-ui-peek-find-references)
-;;   :config
-;;   (setq lsp-ui-doc-enable t
-;;         lsp-ui-sideline-enable nil)
-;;   :hook
-;;   (lsp-mode . lsp-ui-mode)
-;;   )
+(use-package lsp-ui
+  :defer t
+  :after lsp-mode
+  :commands (lsp-ui-imenu
+             lsp-ui-doc-glance
+             lsp-ui-peek-find-references)
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-sideline-enable nil)
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  )
 
 ;; ;; ;; error checking
 ;; (use-package flycheck
