@@ -385,9 +385,9 @@
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
   ;; (consult-theme 'doom-material-dark)
-  (consult-theme 'challenger-deep)
+  ;; (consult-theme 'challenger-deep)
   ;; (consult-theme 'doom-tomorrow-night)
-  ;; (consult-theme 'doom-moonlight)
+  (consult-theme 'doom-moonlight)
   ;; (consult-theme 'doom-dracula)
   )
 
@@ -847,9 +847,6 @@
   )
 
 (use-package git-gutter-fringe
-  ;; :defer t
-  ;; :hook
-  ;; (prog-mode . git-gutter-mode)
   :config
   (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
   (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
