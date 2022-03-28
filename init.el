@@ -747,6 +747,10 @@
   (custo/leader-key
     "u" '(hydra-undo-tree/body :which-key "undo/redo")
     )
+  :bind (:map evil-normal-state-map
+              ("u" . undo-tree-undo)
+              ("U" . undo-tree-redo)
+              )
   )
 
 ;; (use-package symbol-overlay
