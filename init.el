@@ -22,7 +22,7 @@
 ;; adjust the startup size of emacs
 (setq initial-frame-alist
       `((width . 120) ; chars
-        (height . 40) ; lines
+        (height . 36) ; lines
         )
       )
 
@@ -114,7 +114,7 @@
       )
     ;; set current frame to 120x45 characters
     (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 40)
+    (set-frame-height (frame-focus) 36)
     )
  )
 ;; run this hook after we have initialized the first time
@@ -397,8 +397,9 @@
         doom-themes-enable-italic t)
   ;; (consult-theme 'doom-material-dark)
   ;; (consult-theme 'challenger-deep)
+  (consult-theme 'doom-challenger-deep)
   ;; (consult-theme 'doom-tomorrow-night)
-  (consult-theme 'doom-moonlight)
+  ;; (consult-theme 'doom-moonlight)
   ;; (consult-theme 'doom-dracula)
   )
 
@@ -1338,7 +1339,7 @@
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (setq lsp-completion-provider :capf
+  (setq lsp-completion-provider :none
         lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
