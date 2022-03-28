@@ -340,6 +340,10 @@
   :after corfu
   :hook
   (corfu-mode . corfu-doc-mode)
+  :bind (:map corfu-map
+              ("S-<prior>" . corfu-doc-scroll-down)
+              ("S-<next>" . corfu-doc-scroll-up)
+              )
   )
 
 (use-package emacs
