@@ -1059,8 +1059,8 @@
     "= =" '((lambda ()
               (interactive)
               (prettier-prettify)
-              ;; (lsp-eslint-apply-all-fixes)
-              (eslint-fix)
+              (lsp-eslint-apply-all-fixes)
+              ;; (eslint-fix)
               ) :wk "format with prettier"))
   )
 
@@ -1379,9 +1379,10 @@
     "g R" '(lsp-ui-peek-find-references :which-key "peek references")
     "g r" '(lsp-find-references :wk "find references")
     "g t" '(lsp-find-type-definition :wk "goto type definition")
-    "l" '(:ignore t :wk "lsp")
-    "l g" '(lsp-ui-doc-glance :wk "glance symbol")
-    "l d" '(lsp-describe-thing-at-point :wk "describe symbol")
+    "h" '(:ignore t :wk "help")
+    "h g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "h d" '(lsp-describe-thing-at-point :wk "describe symbol")
+    "h s" '(lsp-signature-activate :wk "show signature")
     "o" '(lsp-ui-imenu :which-key "overview")
     "r" '(:ignore t :which-key "refactor")
     "r r" '(lsp-rename :which-key "rename")
@@ -1407,7 +1408,9 @@
              lsp-ui-peek-find-references)
   :config
   (setq lsp-ui-doc-enable t
-        lsp-ui-sideline-enable nil)
+        lsp-ui-sideline-enable nil
+        lsp-ui-doc-position 'at-point
+        )
   :hook
   (lsp-mode . lsp-ui-mode)
   )
