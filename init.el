@@ -375,7 +375,7 @@
   (unless (find-font (font-spec :name "all-the-icons"))
     (all-the-icons-install-fonts t)
     )
-  )
+   )
 
 ;; add a better modeline
 (use-package doom-modeline
@@ -1267,20 +1267,19 @@
 (use-package eglot
   :defer t
   :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  ;; :hook (
-  ;;        (js2-mode . eglot-ensure)
-  ;;        (rsjx-mode . eglot-ensure)
-  ;;        (typescript-mode . eglot-ensure)
-  ;;        (typescript-tsx-mode . eglot-ensure)
-  ;;        (rustic-mode . eglot-ensure)
-  ;;        (elixir-mode . eglot-ensure)
-  ;;        (yaml-mode . eglot-ensure)
-  ;;        (json-mode . eglot-ensure)
-  ;;        (scss-mode . eglot-ensure)
-  ;;        (web-mode . eglot-ensure)
-  ;;        (go-mode . eglot-ensure)
-  ;;        ;; (python-mode . eglot-ensure)
-  ;;       )
+  :hook 
+         (js2-mode . eglot-ensure)
+         (rsjx-mode . eglot-ensure)
+         (typescript-mode . eglot-ensure)
+         (typescript-tsx-mode . eglot-ensure)
+         (rustic-mode . eglot-ensure)
+         (elixir-mode . eglot-ensure)
+         (yaml-mode . eglot-ensure)
+         (json-mode . eglot-ensure)
+         (scss-mode . eglot-ensure)
+         (web-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
+         ;; (python-mode . eglot-ensure)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
@@ -1294,17 +1293,17 @@
     )
   (custo/local-leader-key
     :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
+               js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               web-mode-map
+               go-mode-map
+               gdscript-mode-map
                ;; python-mode-map
                )
     "a" '(eglot-code-actions :wk "excute code action")
@@ -1326,23 +1325,23 @@
 ;; lsp-mode
 (use-package lsp-mode
    :defer t
-   :hook (
-          (js2-mode . lsp-deferred)
-          (rsjx-mode . lsp-deferred)
-          (typescript-mode . lsp-deferred)
-          (typescript-tsx-mode . lsp-deferred)
-          (rustic-mode . lsp-deferred)
-          (elixir-mode . lsp-deferred)
-          (scss-mode . lsp-deferred)
-          (yaml-mode . lsp-deferred)
-          (json-mode . lsp-deferred)
-          (web-mode . lsp-deferred)
-          (go-mode . lsp-deferred)
-          (svelte-mode . lsp-deferred)
+   :hook 
+          ;; (js2-mode . lsp-deferred)
+          ;; (rsjx-mode . lsp-deferred)
+          ;; (typescript-mode . lsp-deferred)
+          ;; (typescript-tsx-mode . lsp-deferred)
+          ;; (rustic-mode . lsp-deferred)
+          ;; (elixir-mode . lsp-deferred)
+          ;; (scss-mode . lsp-deferred)
+          ;; (yaml-mode . lsp-deferred)
+          ;; (json-mode . lsp-deferred)
+          ;; (web-mode . lsp-deferred)
+          ;; (go-mode . lsp-deferred)
+          ;; (svelte-mode . lsp-deferred)
           (csharp-mode . lsp-deferred)
-          (gdscript-mode . lsp-deferred)
+          ;; (gdscript-mode . lsp-deferred)
           (lsp-mode . lsp-enable-which-key-integration)
-         )
+         
   :commands (lsp lsp-deferred lsp-mode-map)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1358,19 +1357,19 @@
         )
   (custo/local-leader-key
     :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               scss-mode-map
-               web-mode-map
-               go-mode-map
-               gdscript-mode-map
-               svelte-mode-map
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; rustic-mode-map
+               ;; elixir-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               ;; web-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
+               ;; svelte-mode-map
                csharp-mode-map
                python-mode-map
                )
@@ -1435,19 +1434,19 @@
     )
   (custo/local-leader-key
     :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               ;; rustic-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               scss-mode-map
-               web-mode-map
-               go-mode-map
-               gdscript-mode-map
-               svelte-mode-map
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; ;; rustic-mode-map
+               ;; elixir-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               ;; web-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
+               ;; svelte-mode-map
                csharp-mode-map
                python-mode-map
                )
