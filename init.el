@@ -601,6 +601,7 @@
   "b b" '(consult-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
   "b i" '(ibuffer :wk "ibuffer")
+  "b r" '(revert-buffer-quick :wk "revert buffer")
   "c" '(:ignore t :which-key "cursor")
   "c c" '(comment-line :which-key "comment line")
   "f" '(:ignore f :which-key "file")
