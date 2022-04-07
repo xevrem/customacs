@@ -22,7 +22,7 @@
 ;; adjust the startup size of emacs
 (setq initial-frame-alist
       `((width . 120) ; chars
-        (height . 36) ; lines
+        (height . 39) ; lines
         )
       )
 
@@ -85,9 +85,9 @@
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
-    (set-face-attribute 'default nil :font (font-spec :family "MesloLGM Nerd Font" :size 20 :weight 'regular))
+    (set-face-attribute 'default nil :font (font-spec :family "MesloLGS Nerd Font" :size 20 :weight 'regular))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGM Nerd Font" :size 20 :weight 'regular))
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGS Nerd Font" :size 20 :weight 'regular))
     ;; Set the variable pitch face which is the same for mac and linux
     (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
     ;; after org-mode we want to adjust font sizes
@@ -114,7 +114,7 @@
       )
     ;; set current frame to 120x45 characters
     (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 36)
+    (set-frame-height (frame-focus) 39)
     )
  )
 ;; run this hook after we have initialized the first time
