@@ -26,16 +26,18 @@
         )
       )
 
+
+
 ;; better line info
 (column-number-mode) ;; show column info
 ;; (global-display-line-numbers-mode t) ;; display line numbers to the left
 (menu-bar--display-line-numbers-mode-relative) ;; make those line numbers relative
 
 ;; set user caching directory
-(unless (file-directory-p (expand-file-name ".cache/" user-emacs-directory))
-  (make-directory (expand-file-name ".cache/" user-emacs-directory))
-  )
-(setq user-emacs-directory (expand-file-name ".cache/" user-emacs-directory))
+;; (unless (file-directory-p (expand-file-name ".cache/" user-emacs-directory))
+;;   (make-directory (expand-file-name ".cache/" user-emacs-directory))
+;;   )
+;; (setq user-emacs-directory (expand-file-name ".cache/" user-emacs-directory))
 
 ;; set global backup directory
 (setq backup-directory-alist `(("." . ,(expand-file-name "backups/" user-emacs-directory))))
@@ -116,17 +118,25 @@
     (set-frame-width (frame-focus) 120)
     (set-frame-height (frame-focus) 39)
     )
- )
+  )
 ;; run this hook after we have initialized the first time
 (add-hook 'after-init-hook 'custo/setup-font-faces)
 ;; re-run this hook if we create a new frame from daemonized Emacs
 (add-hook 'server-after-make-frame-hook 'custo/setup-font-faces)
 
+;;(defvar check-on-save)
 
 ;; setup straight for package management, its much better than use-package
 (setq straight-use-package-by-default t
       straight-repository-branch "develop"
-      straight-check-for-modifications nil)
+      ;; single file for caching autoloads
+      straight-cache-autoloads t
+      ;; NOTE: requires python3 and watchexec
+      straight-check-for-modifications '(watch-files find-when-checking)
+      ;; NOTE: requires no watchexec
+      ;; straight-find-executable "fd"
+      ;; straight-check-for-modifications '(check-on-save find-when-checking)
+      )
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -193,8 +203,8 @@
 ;; minad' and oantolin's awesome packages:
 (use-package vertico
   :straight '(:type git :host github
-              :repo "minad/vertico"
-              :branch "main")
+                    :repo "minad/vertico"
+                    :branch "main")
   :defer t
   :hook
   (after-init . vertico-mode)
@@ -270,8 +280,8 @@
               completion-category-defaults nil))
 
 (defun custo/lsp-mode-setup-completion ()
-    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-          '(orderless))) ;;
+  (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+        '(orderless))) ;;
 
 (defun corfu-move-to-minibuffer ()
   "Allows corfu to be moved into the minibuffer for better orderless completions."
@@ -334,8 +344,8 @@
 
 (use-package corfu-doc
   :straight '(:type git :host github
-              :repo "galeo/corfu-doc"
-              :branch "main")
+                    :repo "galeo/corfu-doc"
+                    :branch "main")
   :defer t
   :after corfu
   :hook
@@ -375,7 +385,7 @@
   (unless (find-font (font-spec :name "all-the-icons"))
     (all-the-icons-install-fonts t)
     )
-   )
+  )
 
 ;; add a better modeline
 (use-package doom-modeline
@@ -451,8 +461,8 @@
   )
 
 (defun custo/smart-parens ()
-                 (require 'smartparens-config)
-                 (smartparens-mode))
+  (require 'smartparens-config)
+  (smartparens-mode))
 
 (use-package smartparens
   :defer t
@@ -550,7 +560,7 @@
   (:map evil-insert-state-map
         ("C-g" . evil-normal-state)
         )
- )
+  )
 
 
 ;; better evil stuff
@@ -582,7 +592,7 @@
     :states '(normal insert visual emacs)
     :prefix "SPC m"
     :global-prefix "C-SPC m")
-   )
+  )
 
 
 ;; define default keybinds
@@ -634,10 +644,13 @@
   "h h k" '(helpful-key :wk "helpful key")
   "h h s" '(helpful-symbol :wk "helpful symbol")
   "h s" '(:ignore t :which-key "straight")
-  "h s p" '(straight-pull-all :which-key "straight pull packages")
-  "h s P" '(straight-pull-package-and-deps :which-key "straight pull package")
-  "h s b" '(straight-rebuild-all :which-key "straight build packages")
-  "h s B" '(straight-rebuild-package :which-key "straight build package")
+  "h s p" '(straight-pull-all :which-key "pull packages")
+  "h s P" '(straight-pull-package-and-deps :which-key "pull package")
+  "h s b" '(straight-rebuild-all :which-key "build packages")
+  "h s B" '(straight-rebuild-package :which-key "build package")
+  "h s c" '(:ingorre t :wk "cleaning")
+  "h s c p" '(straight-prune-build :which-key "prune builds")
+  "h s c c" '(straight-prune-build-cache :which-key "prune build cache only")
   "m" '(:ignore t :which-key "local-leader")
   "o" '(:ignore t :which-key "org")
   "p" '(projectile-command-map :wk "projectile")
@@ -736,26 +749,34 @@
     )
   )
 
-(use-package undo-tree
-  :defer t
-  :after hydra
-  :hook
-  (prog-mode . undo-tree-mode)
-  (org-mode . undo-tree-mode)
-  :config
-  (defhydra hydra-undo-tree (:timeout 4)
-    "undo / redo"
-    ("u" undo-tree-undo "undo")
-    ("r" undo-tree-redo "redo")
-    ("t" undo-tree-visualize "undo-tree visualize" :exit t)
-    )
-  (custo/leader-key
-    "u" '(hydra-undo-tree/body :which-key "undo/redo")
-    )
-  :bind (:map evil-normal-state-map
-              ("u" . undo-tree-undo)
-              ("U" . undo-tree-redo)
-              )
+;; (use-package undo-tree
+;;   :defer t
+;;   :after hydra
+;;   :hook
+;;   (prog-mode . undo-tree-mode)
+;;   (org-mode . undo-tree-mode)
+;;   :config
+;;   (defhydra hydra-undo-tree (:timeout 4)
+;;     "undo / redo"
+;;     ("u" undo-tree-undo "undo")
+;;     ("r" undo-tree-redo "redo")
+;;     ("t" undo-tree-visualize "undo-tree visualize" :exit t)
+;;     )
+;;   (custo/leader-key
+;;     "u" '(hydra-undo-tree/body :which-key "undo/redo")
+;;     )
+;;   :bind (:map evil-normal-state-map
+;;               ("u" . undo-tree-undo)
+;;               ("U" . undo-tree-redo)
+;;               )
+;;   )
+
+(use-package vundo
+  :straight (:type git :host github
+                   :repo "casouri/vundo"
+                   :branch "master"
+                   :file "vundo.el"
+                   )
   )
 
 ;; (use-package symbol-overlay
@@ -895,15 +916,15 @@
   :after tree-sitter-langs
   :hook
   (eglot--managed-mode . (lambda ()
-                 (tree-sitter-mode)
-                 (tree-sitter-hl-mode)
-                 )
-             )
+                           (tree-sitter-mode)
+                           (tree-sitter-hl-mode)
+                           )
+                       )
   (lsp-mode . (lambda ()
-                 (tree-sitter-mode)
-                 (tree-sitter-hl-mode)
-                 )
-             )
+                (tree-sitter-mode)
+                (tree-sitter-hl-mode)
+                )
+            )
   )
 
 (use-package tree-sitter-langs
@@ -1157,10 +1178,10 @@
   :defer t
   :after prog-mode
   :mode ("\\.ex\\'"
-          "\\.eex\\'"
-          "\\.exs\\'"
-          "\\.heex\\'"
-          "\\.leex\\'")
+         "\\.eex\\'"
+         "\\.exs\\'"
+         "\\.heex\\'"
+         "\\.leex\\'")
   :hook
   (elixir-mode . yas-minor-mode)
   )
@@ -1234,8 +1255,8 @@
 
 (use-package plantuml-mode
   :straight '(:type git :host github
-              :repo "skuro/plantuml-mode"
-              :branch "develop")
+                    :repo "skuro/plantuml-mode"
+                    :branch "develop")
   :defer t
   :after prog-mode
   :mode ("\\.puml\\'" "\\.pml\\'")
@@ -1421,8 +1442,8 @@
   (lsp-mode . flycheck-mode)
   :config
   (setq flycheck-disabled-checkers
-                (append flycheck-disabled-checkers
-                        '(javascript-jshint)))
+        (append flycheck-disabled-checkers
+                '(javascript-jshint)))
   (setq flycheck-temp-prefix ".flycheck")
   ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
   ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
@@ -1584,8 +1605,8 @@
     "i" '(:ignore t :wk "insert")
     "i RET" '(org-insert-structure-template :wk "insert template")
     "i s" '((lambda ()
-                (interactive)
-                (org-insert-structure-template "src")) :wk "insert source block")
+              (interactive)
+              (org-insert-structure-template "src")) :wk "insert source block")
     "s" '(:ignore t :wk "subtree")
     "s r" '(org-refile :wk "refile")
     "s c" '(org-copy-subtree :wk "copy")
@@ -1618,7 +1639,7 @@
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
   (add-to-list 'org-structure-template-alist '("js" . "src js"))
-)
+  )
 ;; we'll setup this directory so that ox-gfm doesnt freak out when
 ;; it doesnt see an actual `org` directory
 (unless (file-directory-p (expand-file-name "straight/repos/org/" user-emacs-directory))
@@ -1673,9 +1694,9 @@
 ;; terminal related packages
 (use-package term-cursor
   :straight '(:type git :host github
-              :repo "h0d/term-cursor.el"
-              :branch "master"
-              :file "term-cursor.el")
+                    :repo "h0d/term-cursor.el"
+                    :branch "master"
+                    :file "term-cursor.el")
   :defer t
   :commands (term-cursor-mode)
   )

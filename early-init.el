@@ -32,6 +32,11 @@
 ;; set user emacs directory
 ;;(make-directory "~/.cache/emacs")
 ;;(setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
+;; set user caching directory
+(unless (file-directory-p (expand-file-name ".cache/" user-emacs-directory))
+  (make-directory (expand-file-name ".cache/" user-emacs-directory))
+  )
+(setq user-emacs-directory (expand-file-name ".cache/" user-emacs-directory))
 
 ;;Another tip from doom.
 (setq default-file-name-handler-alist file-name-handler-alist
@@ -50,20 +55,23 @@
             )
           )
 
-(setq frame-inhibit-implied-resize t)
+;; (setq frame-inhibit-implied-resize t)
 
 ;;prevent package.el loading stuff too early
 (setq package-enable-at-startup nil)
 
 ;; prevent bug with straight.el
-(defvar comp-deferred-compilation-deny-list ())
+;; OBE: (defvar comp-deferred-compilation-deny-list ())
+
 ;; use whatever is available, then replace it with native comp one
 (when (boundp 'native-comp-deferred-compilation)
   (setq native-comp-deferred-compilation t)
   )
+
 ;; use level 2 optimizations
 (when (boundp 'native-comp-speed)
   (setq native-comp-speed 2)
   )
+
 ;; dont report async compile warnings
 (setq native-comp-async-report-warnings-errors nil)
