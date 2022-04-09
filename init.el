@@ -1060,8 +1060,8 @@
     "= =" '((lambda ()
               (interactive)
               (prettier-prettify)
-              (lsp-eslint-apply-all-fixes)
-              ;; (eslint-fix)
+              ;; (lsp-eslint-apply-all-fixes)
+              (eslint-fix)
               ) :wk "format with prettier"))
   )
 
@@ -1104,7 +1104,7 @@
   (rustic-mode . yas-minor-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'lsp
+        rustic-lsp-client 'eglot
         rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
         lsp-rust-analyzer-display-parameter-hints nil
@@ -1269,18 +1269,18 @@
   :defer t
   :after (:all yasnippet jsonrpc flymake project xref eldoc)
   :hook 
-         (js2-mode . eglot-ensure)
-         (rsjx-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (typescript-tsx-mode . eglot-ensure)
-         (rustic-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure)
-         (yaml-mode . eglot-ensure)
-         (json-mode . eglot-ensure)
-         (scss-mode . eglot-ensure)
-         (web-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         ;; (python-mode . eglot-ensure)
+  (js2-mode . eglot-ensure)
+  (rsjx-mode . eglot-ensure)
+  (typescript-mode . eglot-ensure)
+  (typescript-tsx-mode . eglot-ensure)
+  (rustic-mode . eglot-ensure)
+  (elixir-mode . eglot-ensure)
+  (yaml-mode . eglot-ensure)
+  (json-mode . eglot-ensure)
+  (scss-mode . eglot-ensure)
+  (web-mode . eglot-ensure)
+  (go-mode . eglot-ensure)
+  (python-mode . eglot-ensure)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
@@ -1305,7 +1305,7 @@
                web-mode-map
                go-mode-map
                gdscript-mode-map
-               ;; python-mode-map
+               python-mode-map
                )
     "a" '(eglot-code-actions :wk "excute code action")
     "g r" '(xref-find-references :wk "goto references")
@@ -1325,24 +1325,23 @@
 
 ;; lsp-mode
 (use-package lsp-mode
-   :defer t
-   :hook 
-          ;; (js2-mode . lsp-deferred)
-          ;; (rsjx-mode . lsp-deferred)
-          ;; (typescript-mode . lsp-deferred)
-          ;; (typescript-tsx-mode . lsp-deferred)
-          ;; (rustic-mode . lsp-deferred)
-          ;; (elixir-mode . lsp-deferred)
-          ;; (scss-mode . lsp-deferred)
-          ;; (yaml-mode . lsp-deferred)
-          ;; (json-mode . lsp-deferred)
-          ;; (web-mode . lsp-deferred)
-          ;; (go-mode . lsp-deferred)
-          ;; (svelte-mode . lsp-deferred)
-          (csharp-mode . lsp-deferred)
-          ;; (gdscript-mode . lsp-deferred)
-          (lsp-mode . lsp-enable-which-key-integration)
-         
+  :defer t
+  ;; :hook 
+  ;; (js2-mode . lsp-deferred)
+  ;; (rsjx-mode . lsp-deferred)
+  ;; (typescript-mode . lsp-deferred)
+  ;; (typescript-tsx-mode . lsp-deferred)
+  ;; (rustic-mode . lsp-deferred)
+  ;; (elixir-mode . lsp-deferred)
+  ;; (scss-mode . lsp-deferred)
+  ;; (yaml-mode . lsp-deferred)
+  ;; (json-mode . lsp-deferred)
+  ;; (web-mode . lsp-deferred)
+  ;; (go-mode . lsp-deferred)
+  ;; (svelte-mode . lsp-deferred)
+  ;; (csharp-mode . lsp-deferred)
+  ;; (gdscript-mode . lsp-deferred)
+  ;; (lsp-mode . lsp-enable-which-key-integration)
   :commands (lsp lsp-deferred lsp-mode-map)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1371,8 +1370,8 @@
                ;; go-mode-map
                ;; gdscript-mode-map
                ;; svelte-mode-map
-               csharp-mode-map
-               python-mode-map
+               ;; csharp-mode-map
+               ;; python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :which-key "goto definition")
@@ -1391,13 +1390,13 @@
     )
   )
 
-(use-package lsp-pyright
-  :defer t
-  :after python
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp-deferred)))
-  )
+;; (use-package lsp-pyright
+;;   :defer t
+;;   :after python
+;;   :hook (python-mode . (lambda ()
+;;                          (require 'lsp-pyright)
+;;                          (lsp-deferred)))
+;;   )
 
 ;; ;; prettier lsp
 (use-package lsp-ui
@@ -1425,10 +1424,10 @@
                 (append flycheck-disabled-checkers
                         '(javascript-jshint)))
   (setq flycheck-temp-prefix ".flycheck")
-  (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
@@ -1439,7 +1438,7 @@
                ;; rjsx-mode-map
                ;; typescript-mode-map
                ;; typescript-tsx-mode-map
-               ;; ;; rustic-mode-map
+               ;; rustic-mode-map
                ;; elixir-mode-map
                ;; yaml-mode-map
                ;; json-mode-map
@@ -1448,15 +1447,13 @@
                ;; go-mode-map
                ;; gdscript-mode-map
                ;; svelte-mode-map
-               csharp-mode-map
-               python-mode-map
+               ;; csharp-mode-map
+               ;; python-mode-map
                )
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
     )
   )
-
-
 
 
 (use-package hl-todo
@@ -1750,7 +1747,7 @@
   :commands vterm
   :config
   (setq vterm-timer-delay 0.01
-        vterm-shell "nu")
+        vterm-shell "zsh")
   )
 
 (defun custo/launch-vterm ()
