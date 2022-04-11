@@ -315,7 +315,7 @@
   :config
   ;; since we use orderless
   (setq corfu-quit-at-boundary nil
-        ;; corfu-auto t
+        corfu-auto nil
         ;; corfu-auto-delay 0.2
         ;; corfu-auto-prefix 2
         ;; tab-always-indent 'complete
@@ -334,13 +334,13 @@
   (add-to-list 'completion-at-point-functions #'cape-symbol)
   )
 
-(use-package kind-icon
-  :after corfu
-  :custom
-  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
-  )
+;; (use-package kind-icon
+;;   :after corfu
+;;   :custom
+;;   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+;;   :config
+;;   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
+;;   )
 
 (use-package corfu-doc
   :straight '(:type git :host github
@@ -777,6 +777,9 @@
                    :branch "master"
                    :file "vundo.el"
                    )
+  :bind (:map evil-normal-state-map
+              ("u" . vundo)
+              )
   )
 
 ;; (use-package symbol-overlay
