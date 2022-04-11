@@ -780,6 +780,10 @@
   :bind (:map evil-normal-state-map
               ("u" . vundo)
               )
+  :config
+  (custo/leader-key
+    "u" '(vundo :wk "undo/redo")
+    )
   )
 
 ;; (use-package symbol-overlay
