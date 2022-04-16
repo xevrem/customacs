@@ -411,9 +411,9 @@
         doom-themes-enable-italic t)
   ;; (consult-theme 'doom-material-dark)
   ;; (consult-theme 'challenger-deep)
-  (consult-theme 'doom-challenger-deep)
+  ;; (consult-theme 'doom-challenger-deep)
   ;; (consult-theme 'doom-tomorrow-night)
-  ;; (consult-theme 'doom-moonlight)
+  (consult-theme 'doom-moonlight)
   ;; (consult-theme 'doom-dracula)
   )
 
@@ -749,42 +749,47 @@
     )
   )
 
-;; (use-package undo-tree
-;;   :defer t
-;;   :after hydra
-;;   :hook
-;;   (prog-mode . undo-tree-mode)
-;;   (org-mode . undo-tree-mode)
-;;   :config
-;;   (defhydra hydra-undo-tree (:timeout 4)
-;;     "undo / redo"
-;;     ("u" undo-tree-undo "undo")
-;;     ("r" undo-tree-redo "redo")
-;;     ("t" undo-tree-visualize "undo-tree visualize" :exit t)
-;;     )
-;;   (custo/leader-key
-;;     "u" '(hydra-undo-tree/body :which-key "undo/redo")
-;;     )
-;;   :bind (:map evil-normal-state-map
-;;               ("u" . undo-tree-undo)
-;;               ("U" . undo-tree-redo)
-;;               )
-;;   )
-
-(use-package vundo
-  :straight (:type git :host github
-                   :repo "casouri/vundo"
-                   :branch "master"
-                   :file "vundo.el"
-                   )
-  :bind (:map evil-normal-state-map
-              ("u" . vundo)
-              )
+(use-package undo-tree
+  :defer t
+  :after (:all hydra evil)
+  :hook
+  (prog-mode . undo-tree-mode)
+  (org-mode . undo-tree-mode)
   :config
-  (custo/leader-key
-    "u" '(vundo :wk "undo/redo")
+  (defhydra hydra-undo-tree (:timeout 4)
+    "undo / redo"
+    ("u" undo-tree-undo "undo")
+    ("r" undo-tree-redo "redo")
+    ("t" undo-tree-visualize "undo-tree visualize" :exit t)
     )
+  (custo/leader-key
+    :keymaps '(prog-mode-map org-mode-map)
+    "u" '(hydra-undo-tree/body :which-key "undo/redo")
+    )
+  :bind (:map evil-normal-state-map
+              ("u" . undo-tree-undo)
+              ("U" . undo-tree-redo)
+              )
   )
+
+;; (use-package vundo
+;;   :straight (:type git :host github
+;;                    :repo "casouri/vundo"
+;;                    :branch "master"
+;;                    :file "vundo.el"
+;;                    )
+;;   :after evil
+;;   :commands vundo
+;;   :bind (:map evil-normal-state-map
+;;               ("u" . vundo)
+;;               )
+;;   :config
+;;   (setq vundo-glyph-alist vundo-unicode-symbols)
+;;   (custo/leader-key
+;;     :keymaps 'prog-mode-map
+;;     "u" '(vundo :wk "undo/redo")
+;;     )
+;;   )
 
 ;; (use-package symbol-overlay
 ;;   :defer t
@@ -1088,8 +1093,8 @@
     "= =" '((lambda ()
               (interactive)
               (prettier-prettify)
-              ;; (lsp-eslint-apply-all-fixes)
-              (eslint-fix)
+              (lsp-eslint-apply-all-fixes)
+              ;; (eslint-fix)
               ) :wk "format with prettier"))
   )
 
@@ -1132,7 +1137,7 @@
   (rustic-mode . yas-minor-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
+        rustic-lsp-client 'lsp
         rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
         lsp-rust-analyzer-display-parameter-hints nil
@@ -1296,19 +1301,19 @@
 (use-package eglot
   :defer t
   :after (:all yasnippet jsonrpc flymake project xref eldoc)
-  :hook 
-  (js2-mode . eglot-ensure)
-  (rsjx-mode . eglot-ensure)
-  (typescript-mode . eglot-ensure)
-  (typescript-tsx-mode . eglot-ensure)
-  (rustic-mode . eglot-ensure)
-  (elixir-mode . eglot-ensure)
-  (yaml-mode . eglot-ensure)
-  (json-mode . eglot-ensure)
-  (scss-mode . eglot-ensure)
-  (web-mode . eglot-ensure)
-  (go-mode . eglot-ensure)
-  (python-mode . eglot-ensure)
+  ;; :hook 
+  ;; (js2-mode . eglot-ensure)
+  ;; (rsjx-mode . eglot-ensure)
+  ;; (typescript-mode . eglot-ensure)
+  ;; (typescript-tsx-mode . eglot-ensure)
+  ;; (rustic-mode . eglot-ensure)
+  ;; (elixir-mode . eglot-ensure)
+  ;; (yaml-mode . eglot-ensure)
+  ;; (json-mode . eglot-ensure)
+  ;; (scss-mode . eglot-ensure)
+  ;; (web-mode . eglot-ensure)
+  ;; (go-mode . eglot-ensure)
+  ;; (python-mode . eglot-ensure)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
@@ -1322,18 +1327,18 @@
     )
   (custo/local-leader-key
     :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
-               yaml-mode-map
-               json-mode-map
-               scss-mode-map
-               web-mode-map
-               go-mode-map
-               gdscript-mode-map
-               python-mode-map
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; rustic-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               ;; web-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
+               ;; python-mode-map
                )
     "a" '(eglot-code-actions :wk "excute code action")
     "g r" '(xref-find-references :wk "goto references")
@@ -1354,22 +1359,22 @@
 ;; lsp-mode
 (use-package lsp-mode
   :defer t
-  ;; :hook 
-  ;; (js2-mode . lsp-deferred)
-  ;; (rsjx-mode . lsp-deferred)
-  ;; (typescript-mode . lsp-deferred)
-  ;; (typescript-tsx-mode . lsp-deferred)
-  ;; (rustic-mode . lsp-deferred)
-  ;; (elixir-mode . lsp-deferred)
-  ;; (scss-mode . lsp-deferred)
-  ;; (yaml-mode . lsp-deferred)
-  ;; (json-mode . lsp-deferred)
-  ;; (web-mode . lsp-deferred)
-  ;; (go-mode . lsp-deferred)
-  ;; (svelte-mode . lsp-deferred)
-  ;; (csharp-mode . lsp-deferred)
-  ;; (gdscript-mode . lsp-deferred)
-  ;; (lsp-mode . lsp-enable-which-key-integration)
+  :hook 
+  (js2-mode . lsp-deferred)
+  (rsjx-mode . lsp-deferred)
+  (typescript-mode . lsp-deferred)
+  (typescript-tsx-mode . lsp-deferred)
+  (rustic-mode . lsp-deferred)
+  (elixir-mode . lsp-deferred)
+  (scss-mode . lsp-deferred)
+  (yaml-mode . lsp-deferred)
+  (json-mode . lsp-deferred)
+  (web-mode . lsp-deferred)
+  (go-mode . lsp-deferred)
+  (svelte-mode . lsp-deferred)
+  (csharp-mode . lsp-deferred)
+  (gdscript-mode . lsp-deferred)
+  (lsp-mode . lsp-enable-which-key-integration)
   :commands (lsp lsp-deferred lsp-mode-map)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1385,21 +1390,21 @@
         )
   (custo/local-leader-key
     :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; svelte-mode-map
-               ;; csharp-mode-map
-               ;; python-mode-map
+               js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               web-mode-map
+               go-mode-map
+               gdscript-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :which-key "goto definition")
@@ -1418,13 +1423,13 @@
     )
   )
 
-;; (use-package lsp-pyright
-;;   :defer t
-;;   :after python
-;;   :hook (python-mode . (lambda ()
-;;                          (require 'lsp-pyright)
-;;                          (lsp-deferred)))
-;;   )
+(use-package lsp-pyright
+  :defer t
+  :after python
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp-deferred)))
+  )
 
 ;; ;; prettier lsp
 (use-package lsp-ui
@@ -1452,31 +1457,31 @@
         (append flycheck-disabled-checkers
                 '(javascript-jshint)))
   (setq flycheck-temp-prefix ".flycheck")
-  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
     )
   (custo/local-leader-key
     :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; svelte-mode-map
-               ;; csharp-mode-map
-               ;; python-mode-map
+               js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               web-mode-map
+               go-mode-map
+               gdscript-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               python-mode-map
                )
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
@@ -1775,7 +1780,7 @@
   :commands vterm
   :config
   (setq vterm-timer-delay 0.01
-        vterm-shell "zsh")
+        vterm-shell "nu")
   )
 
 (defun custo/launch-vterm ()
