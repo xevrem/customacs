@@ -1689,8 +1689,8 @@
 
 (use-package centaur-tabs
   :defer t
-  ;; :hook
-  ;; (prog-mode . centaur-tabs-mode)
+  :hook
+  (prog-mode . centaur-tabs-mode)
   :config
   (setq centaur-tabs-style "bar"
         centaur-tabs-height 48
