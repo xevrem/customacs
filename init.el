@@ -51,7 +51,9 @@
             )
   )
 
-(dolist (mode '(prog-mode-hook))
+(dolist (mode '(prog-mode-hook
+                conf-mode-hook
+                text-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 1)
                    )
             )
@@ -160,23 +162,6 @@
   (after-init . savehist-mode)
   )
 
-(use-package dashboard
-  :defer t
-  :hook
-  (after-init . dashboard-setup-startup-hook)
-  :config
-  (setq dashboard-center-content t
-        dashboard-items '((recents  . 5)
-                          (projects . 5)
-                          (agenda . 5)
-                          )
-        dashboard-startup-banner 'logo
-        dashboard-banner-logo-title "Welcome to Customacs!"
-        dashboard-set-heading-icons t
-        dashboard-set-file-icons t
-        )
-  )
-
 
 ;; minad' and oantolin's awesome packages:
 (use-package vertico
@@ -275,12 +260,12 @@
   :defer t
   :after (evil orderless)
   :hook
-  (lsp-mode . corfu-mode)
-  ;; (prog-mode . corfu-mode)
+  (prog-mode . corfu-mode)
   (lsp-mode . custo/corfu-lsp-setup)
   (lsp-completion-mode . custo/lsp-mode-setup-completion)
-  (eglot--managed-mode . corfu-mode)
-  (emacs-lisp-mode . corfu-mode)
+  ;; (lsp-mode . corfu-mode)
+  ;; (eglot--managed-mode . corfu-mode)
+  ;; (emacs-lisp-mode . corfu-mode)
   :bind (:map corfu-map
               ("TAB" . corfu-next)
               ("<tab>" . corfu-next)
@@ -350,7 +335,6 @@
 (setq recentf-auto-cleanup 'never)
 ;; show recently used files
 (use-package recentf
-  :defer t
   :commands recentf-open-files
   )
 
@@ -412,6 +396,33 @@
             )
           )
 
+
+(defun custo/setup-dashboard ()
+  "Setup dashboard to be default initial buffer."
+  (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+  )
+
+;; nice dashboard
+(use-package dashboard
+  :defer t
+  :hook
+  (after-init . dashboard-setup-startup-hook)
+  (server-after-make-frame . dashboard-setup-startup-hook)
+  (dashboard-after-initialize . custo/setup-dashboard)
+  :config
+  (setq dashboard-center-content t
+        dashboard-items '((recents  . 5)
+                          (projects . 5)
+                          (agenda . 5)
+                          )
+        dashboard-startup-banner 'logo
+        dashboard-banner-logo-title "Welcome to Customacs!"
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        )
+  )
+
+
 (use-package rainbow-identifiers
   :defer t
   :after (:any eglot
@@ -420,9 +431,6 @@
                emacs-lisp-mode)
   :hook
   (prog-mode . rainbow-identifiers-mode)
-  ;; (eglot--managed-mode . rainbow-identifiers-mode)
-  ;; (lsp-mode . rainbow-identifiers-mode)
-  ;; (emacs-lisp-mode . rainbow-identifiers-mode)
   :config
   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
         rainbow-identifiers-cie-l*a*b*-lightness 75
@@ -438,9 +446,6 @@
                emacs-lisp-mode)
   :hook
   (prog-mode . rainbow-delimiters-mode)
-  ;; (eglot--managed-mode . rainbow-delimiters-mode)
-  ;; (lsp-mode . rainbow-delimiters-mode)
-  ;; (emacs-lisp-mode . rainbow-delimiters-mode)
   )
 
 (defun custo/smart-parens ()
@@ -455,9 +460,6 @@
                emacs-lisp-mode)
   :hook
   (prog-mode . custo/smart-parens)
-  ;; (eglot--managed-mode . custo/smart-parens)
-  ;; (lsp-mode . custo/smart-parens)
-  ;; (emacs-lisp-mode . custo/smart-parens)
   :config
   ;; don't interfere with yasnippets
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
@@ -473,9 +475,6 @@
                emacs-lisp-mode)
   :hook
   (prog-mode . show-paren-mode)
-  ;; (eglot--managed-mode . show-paren-mode)
-  ;; (lsp-mode . show-paren-mode)
-  ;; (emacs-lisp-mode . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
         show-paren-highlight-openparen t
@@ -495,9 +494,15 @@
   :commands xclip-mode
   )
 
+;; ensure that these are added to all the appropriat modes
 (unless (display-graphic-p)
-  (add-hook 'prog-mode-hook 'xclip-mode)
-  (add-hook 'prog-mode-hook 'clipetty-mode)
+  (dolist (mode '(prog-mode-hook
+                  conf-mode-hook
+                  text-mode-hook
+                  ))
+    (add-hook mode 'xclip-mode)
+    (add-hook mode 'clipetty-mode)
+    )
   )
 
 
@@ -543,6 +548,8 @@
         evil-want-keybinding nil
         evil-want-C-u-scroll t
         evil-want-C-d-scroll t)
+  :custom
+  (evil-undo-system 'undo-redo)
   :bind
   (:map evil-insert-state-map
         ("C-g" . evil-normal-state)
@@ -663,6 +670,7 @@
   "t v" '((lambda () (interactive) (visual-fill-column-mode 1)) :wk "visual-fill mode on")
   "t V" '((lambda () (interactive) (visual-fill-column-mode -1)) :wk "visual-fill mode off")
   ;; "t T" '(load-theme :wk "choose theme")
+  "u" '(vundo :wk "visualize undo / redo")
   "w" '(:ignore t :which-key "window")
   "w w" '(other-window :which-key "other window")
   "w d" '(delete-window :which-key "delete window")
@@ -737,48 +745,50 @@
     )
   )
 
-(use-package undo-tree
-  :defer t
-  :after (:all hydra evil)
-  :hook
-  (prog-mode . undo-tree-mode)
-  (conf-mode . undo-tree-mode)
-  (org-mode . undo-tree-mode)
-  :config
-  (defhydra hydra-undo-tree (:timeout 4)
-    "undo / redo"
-    ("u" undo-tree-undo "undo")
-    ("r" undo-tree-redo "redo")
-    ("t" undo-tree-visualize "undo-tree visualize" :exit t)
-    )
-  (custo/leader-key
-    :keymaps '(prog-mode-map org-mode-map)
-    "u" '(hydra-undo-tree/body :which-key "undo/redo")
-    )
-  :bind (:map evil-normal-state-map
-              ("u" . undo-tree-undo)
-              ("U" . undo-tree-redo)
-              )
-  )
-
-;; (use-package vundo
-;;   :straight (:type git :host github
-;;                    :repo "casouri/vundo"
-;;                    :branch "master"
-;;                    :file "vundo.el"
-;;                    )
-;;   :after evil
-;;   :commands vundo
-;;   :bind (:map evil-normal-state-map
-;;               ("u" . vundo)
-;;               )
+;; (use-package undo-tree
+;;   :defer t
+;;   :after (:all hydra evil)
+;;   :hook
+;;   (prog-mode . undo-tree-mode)
+;;   (conf-mode . undo-tree-mode)
+;;   (org-mode . undo-tree-mode)
 ;;   :config
-;;   (setq vundo-glyph-alist vundo-unicode-symbols)
-;;   (custo/leader-key
-;;     :keymaps 'prog-mode-map
-;;     "u" '(vundo :wk "undo/redo")
+;;   (defhydra hydra-undo-tree (:timeout 4)
+;;     "undo / redo"
+;;     ("u" undo-tree-undo "undo")
+;;     ("r" undo-tree-redo "redo")
+;;     ("t" undo-tree-visualize "undo-tree visualize" :exit t)
 ;;     )
+;;   (custo/leader-key
+;;     :keymaps '(prog-mode-map org-mode-map)
+;;     "u" '(hydra-undo-tree/body :which-key "undo/redo")
+;;     )
+;;   :bind (:map evil-normal-state-map
+;;               ("u" . undo-tree-undo)
+;;               ("U" . undo-tree-redo)
+;;               )
 ;;   )
+
+(use-package vundo
+  :defer t
+  :straight (:type git :host github
+                   :repo "casouri/vundo"
+                   :branch "master"
+                   :file "vundo.el"
+                   )
+  :after evil
+  :commands vundo
+  ;; :bind (:map evil-normal-state-map
+  ;;             ("u" . vundo)
+  ;;             )
+  :config
+  (setq vundo-glyph-alist vundo-unicode-symbols)
+  ;; (custo/leader-key
+  ;;   :keymaps 'prog-mode-map
+  ;;   "u" '(vundo :wk "undo/redo")
+
+  ;;   )
+  )
 
 ;; (use-package symbol-overlay
 ;;   :defer t
@@ -1525,13 +1535,13 @@
         org-hide-emphasis-markers t
         org-startup-indented nil
         )
-  (setq org-agenda-files
-        `(
-          "~/org/tasks.org"
-          "~/org/ideas.org"
-          "~/org/journal.org"
-          )
-        )
+  ;; (setq org-agenda-files
+  ;;       `(
+  ;;         "~/org/tasks.org"
+  ;;         "~/org/ideas.org"
+  ;;         "~/org/journal.org"
+  ;;         )
+  ;;       )
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
