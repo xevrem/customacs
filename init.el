@@ -18,10 +18,13 @@
       indent-tabs-mode nil ;; uses spaces and not tabs
       create-lockfiles nil ;; do not create lockfiles
       truncate-lines 1 ;; do not truncate lines by default
-      initial-frame-alist ;; adjust the startup size of emacs
-      `((width . 120) ;; chars
-        (height . 39) ;; lines
-        )
+      ;; adjust the startup size of emacs
+      default-frame-alist `((width . 120) ;; chars
+                            (height . 39) ;; lines
+                            )
+      initial-frame-alist `((width . 120) ;; chars
+                            (height . 39) ;; lines
+                            )
       )
 (set-fringe-mode 10) ;; 'breathing' room
 ;; better line info
