@@ -13,48 +13,31 @@
            gcs-done))
 (add-hook 'emacs-startup-hook #'custo/display-startup-time)
 
-(setq inhibit-startup-message t)
-(set-fringe-mode 10)    ;; 'breathing' room
-(setq ring-bell-function 'ignore) ;; disable all visual and audible bells
-(setq-default indent-tabs-mode nil) ;; uses spaces and not tabs
-(setq create-lockfiles nil)
-
-;; adjust the startup size of emacs
-(setq initial-frame-alist
-      `((width . 120) ; chars
-        (height . 39) ; lines
+(setq-default inhibit-startup-message t ;; dont show startup message
+      ring-bell-function 'ignore ;; disable all visual and audible bells
+      indent-tabs-mode nil ;; uses spaces and not tabs
+      create-lockfiles nil ;; do not create lockfiles
+      truncate-lines 1 ;; do not truncate lines by default
+      initial-frame-alist ;; adjust the startup size of emacs
+      `((width . 120) ;; chars
+        (height . 39) ;; lines
         )
       )
-
-
-
+(set-fringe-mode 10) ;; 'breathing' room
 ;; better line info
 (column-number-mode) ;; show column info
 ;; (global-display-line-numbers-mode t) ;; display line numbers to the left
 (menu-bar--display-line-numbers-mode-relative) ;; make those line numbers relative
 
-;; set user caching directory
-;; (unless (file-directory-p (expand-file-name ".cache/" user-emacs-directory))
-;;   (make-directory (expand-file-name ".cache/" user-emacs-directory))
-;;   )
-;; (setq user-emacs-directory (expand-file-name ".cache/" user-emacs-directory))
-
 ;; set global backup directory
-(setq backup-directory-alist `(("." . ,(expand-file-name "backups/" user-emacs-directory))))
+(setq-default backup-directory-alist `(("." . ,(expand-file-name "backups/" user-emacs-directory))))
 
 ;; setup auto-save
 (unless (file-directory-p (expand-file-name "auto-saves/" user-emacs-directory))
   (make-directory (expand-file-name "auto-saves/" user-emacs-directory))
   )
-
-(setq auto-save-list-file-prefix (expand-file-name "auto-saves/sessions/" user-emacs-directory)
+(setq-default auto-save-list-file-prefix (expand-file-name "auto-saves/sessions/" user-emacs-directory)
       auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
-
-;; native comp insanity
-;; if native comp is used, cache compiled code
-(when (boundp 'native-comp-eln-load-path)
-  (setcar native-comp-eln-load-path
-          (expand-file-name "eln-cache/" user-emacs-directory)))
 
 ;; turn of line numbers in the following modes
 (dolist (mode '(org-mode-hook
@@ -73,9 +56,6 @@
                    )
             )
   )
-
-;; disable lockfiles
-;;(setq create-lockfiles nil)
 
 ;; if in macOS, set size appropriately
 ;; otherwise assume linux
@@ -124,18 +104,16 @@
 ;; re-run this hook if we create a new frame from daemonized Emacs
 (add-hook 'server-after-make-frame-hook 'custo/setup-font-faces)
 
-;;(defvar check-on-save)
-
 ;; setup straight for package management, its much better than use-package
 (setq straight-use-package-by-default t
       straight-repository-branch "develop"
       ;; single file for caching autoloads
       straight-cache-autoloads t
       ;; NOTE: requires python3 and watchexec
-      straight-check-for-modifications '(watch-files find-when-checking)
+      ;; straight-check-for-modifications '(watch-files find-when-checking)
       ;; NOTE: requires no watchexec
-      ;; straight-find-executable "fd"
-      ;; straight-check-for-modifications '(check-on-save find-when-checking)
+      straight-find-executable "fd"
+      straight-check-for-modifications '(check-on-save find-when-checking)
       )
 
 (defvar bootstrap-version)
@@ -230,8 +208,8 @@
    :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
-   consult-buffer consult-project-buffer
+   consult--source-recent-file consult--source-project-recent-file
+   consult--source-bookmark consult-buffer consult-project-buffer
    :preview-key (kbd "M-."))
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref
@@ -253,12 +231,13 @@
 
 (use-package orderless
   :config
-  (setq completion-styles '(orderless)
+  (setq completion-styles '(orderless partial-completion basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles . (partial-completion)))
-                                        (command (styles orderless))
-                                        (symbol (styles orderless))
-                                        (variable (styles orderless)))
+        completion-category-overrides '((file
+                                         (styles basic partial-completion)))
+                                        ;; (command (styles orderless))
+                                        ;; (symbol (styles orderless))
+                                        ;; (variable (styles orderless)))
         )
   )
 
@@ -367,6 +346,8 @@
         )
   )
 
+;; disable until we actually call it
+(setq recentf-auto-cleanup 'never)
 ;; show recently used files
 (use-package recentf
   :defer t
@@ -397,12 +378,12 @@
   )
 
 ;;
-(use-package nano-theme
-  :straight (:type git
-                   :host github
-                   :repo "rougier/nano-theme"))
-(use-package challenger-deep-theme)
-(use-package one-themes)
+;; (use-package nano-theme
+;;   :straight (:type git
+;;                    :host github
+;;                    :repo "rougier/nano-theme"))
+;; (use-package challenger-deep-theme)
+;; (use-package one-themes)
 
 (use-package doom-themes
   :after (doom-modeline)
@@ -411,9 +392,9 @@
         doom-themes-enable-italic t)
   ;; (consult-theme 'doom-material-dark)
   ;; (consult-theme 'challenger-deep)
-  ;; (consult-theme 'doom-challenger-deep)
+  (consult-theme 'doom-challenger-deep)
   ;; (consult-theme 'doom-tomorrow-night)
-  (consult-theme 'doom-moonlight)
+  ;; (consult-theme 'doom-moonlight)
   ;; (consult-theme 'doom-dracula)
   )
 
@@ -438,9 +419,10 @@
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . rainbow-identifiers-mode)
-  (lsp-mode . rainbow-identifiers-mode)
-  (emacs-lisp-mode . rainbow-identifiers-mode)
+  (prog-mode . rainbow-identifiers-mode)
+  ;; (eglot--managed-mode . rainbow-identifiers-mode)
+  ;; (lsp-mode . rainbow-identifiers-mode)
+  ;; (emacs-lisp-mode . rainbow-identifiers-mode)
   :config
   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
         rainbow-identifiers-cie-l*a*b*-lightness 75
@@ -455,9 +437,10 @@
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . rainbow-delimiters-mode)
-  (lsp-mode . rainbow-delimiters-mode)
-  (emacs-lisp-mode . rainbow-delimiters-mode)
+  (prog-mode . rainbow-delimiters-mode)
+  ;; (eglot--managed-mode . rainbow-delimiters-mode)
+  ;; (lsp-mode . rainbow-delimiters-mode)
+  ;; (emacs-lisp-mode . rainbow-delimiters-mode)
   )
 
 (defun custo/smart-parens ()
@@ -471,9 +454,10 @@
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . custo/smart-parens)
-  (lsp-mode . custo/smart-parens)
-  (emacs-lisp-mode . custo/smart-parens)
+  (prog-mode . custo/smart-parens)
+  ;; (eglot--managed-mode . custo/smart-parens)
+  ;; (lsp-mode . custo/smart-parens)
+  ;; (emacs-lisp-mode . custo/smart-parens)
   :config
   ;; don't interfere with yasnippets
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
@@ -488,9 +472,10 @@
                prog-mode
                emacs-lisp-mode)
   :hook
-  (eglot--managed-mode . show-paren-mode)
-  (lsp-mode . show-paren-mode)
-  (emacs-lisp-mode . show-paren-mode)
+  (prog-mode . show-paren-mode)
+  ;; (eglot--managed-mode . show-paren-mode)
+  ;; (lsp-mode . show-paren-mode)
+  ;; (emacs-lisp-mode . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
         show-paren-highlight-openparen t
@@ -502,10 +487,12 @@
 
 (use-package clipetty
   :defer t
+  :commands clipetty-mode
   )
 
 (use-package xclip
   :defer t
+  :commands xclip-mode
   )
 
 (unless (display-graphic-p)
@@ -665,6 +652,7 @@
   "s p" '(consult-ripgrep :which-key "search project")
   "s s" '(consult-line :wk "search buffer")
   "t" '(:ignore t :which-key "toggles")
+  "t c" '(centaur-tabs-mode :wk "toggle centaur tabs")
   "t l" '(display-line-numbers-mode :wk "toggle line numbers")
   "t r" '((lambda ()
             (interactive)
@@ -754,6 +742,7 @@
   :after (:all hydra evil)
   :hook
   (prog-mode . undo-tree-mode)
+  (conf-mode . undo-tree-mode)
   (org-mode . undo-tree-mode)
   :config
   (defhydra hydra-undo-tree (:timeout 4)
@@ -1689,8 +1678,9 @@
 
 (use-package centaur-tabs
   :defer t
-  :hook
-  (prog-mode . centaur-tabs-mode)
+  :commands centaur-tabs-mode
+  ;; :hook
+  ;; (prog-mode . centaur-tabs-mode)
   :config
   (setq centaur-tabs-style "bar"
         centaur-tabs-height 48
@@ -1700,7 +1690,10 @@
         centaur-tabs-set-bar 'under
         x-underline-at-descent-line t
         )
+  (centaur-tabs-group-by-projectile-project)
   )
+
+
 
 
 ;; terminal related packages

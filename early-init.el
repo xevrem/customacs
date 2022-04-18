@@ -18,10 +18,10 @@
 ;; (setq debug-on-error t)    ; now you should get a backtrace
 
 ;; make garbage collector less invasive
-(setq gc-cons-threshold  most-positive-fixnum
+(setq-default gc-cons-threshold  most-positive-fixnum
       gc-cons-percentage 0.6)
 
-(setq read-process-output-max (* 1024 1024)) ;; 1mb
+(setq-default read-process-output-max (* 1024 1024)) ;; 1mb
 
 ;;Disabling some annoying GUI stuff emacs has enabled by default.
 ;; Prevent the glimpse of un-styled Emacs by disabling these UI elements early.
@@ -36,17 +36,23 @@
 (unless (file-directory-p (expand-file-name ".cache/" user-emacs-directory))
   (make-directory (expand-file-name ".cache/" user-emacs-directory))
   )
-(setq user-emacs-directory (expand-file-name ".cache/" user-emacs-directory))
+(setq-default user-emacs-directory (expand-file-name ".cache/" user-emacs-directory))
+
+;; native comp insanity
+;; if native comp is used, cache compiled code
+(when (boundp 'native-comp-eln-load-path)
+  (setcar native-comp-eln-load-path
+          (expand-file-name "eln-cache/" user-emacs-directory)))
 
 ;;Another tip from doom.
-(setq default-file-name-handler-alist file-name-handler-alist
+(setq-default default-file-name-handler-alist file-name-handler-alist
       file-name-handler-alist nil)
 
 ;; And then finally a hook to reset everything.
 (add-hook 'emacs-startup-hook
           (lambda (&rest _)
             ;; (message "startup hook was fired")
-            (setq gc-cons-threshold default-gc-cons-threshold
+            (setq-default gc-cons-threshold default-gc-cons-threshold
                   gc-cons-percentage default-gc-cons-percentage
                   file-name-handler-alist default-file-name-handler-alist)
 
@@ -58,20 +64,20 @@
 ;; (setq frame-inhibit-implied-resize t)
 
 ;;prevent package.el loading stuff too early
-(setq package-enable-at-startup nil)
+(setq-default package-enable-at-startup nil)
 
 ;; prevent bug with straight.el
 ;; OBE: (defvar comp-deferred-compilation-deny-list ())
 
 ;; use whatever is available, then replace it with native comp one
 (when (boundp 'native-comp-deferred-compilation)
-  (setq native-comp-deferred-compilation t)
+  (setq-default native-comp-deferred-compilation t)
   )
 
 ;; use level 2 optimizations
 (when (boundp 'native-comp-speed)
-  (setq native-comp-speed 2)
+  (setq-default native-comp-speed 2)
   )
 
 ;; dont report async compile warnings
-(setq native-comp-async-report-warnings-errors nil)
+(setq-default native-comp-async-report-warnings-errors nil)
