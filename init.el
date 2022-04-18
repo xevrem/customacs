@@ -99,6 +99,7 @@
     ;; set current frame to 120x45 characters
     (set-frame-width (frame-focus) 120)
     (set-frame-height (frame-focus) 39)
+    (doom-modeline-refresh-font-width-cache)
     )
   )
 ;; run this hook after we have initialized the first time
@@ -357,8 +358,11 @@
   :defer t
   :hook
   (after-init . doom-modeline-mode)
+  (server-after-make-frame . doom-modeline-refresh-font-width-cache)
   :config
-  (setq doom-modeline-height 24)
+  (setq doom-modeline-height 26
+        ;; doom-modeline-icon (display-graphic-p)
+        )
   )
 
 ;;
@@ -1693,7 +1697,7 @@
   ;; (prog-mode . centaur-tabs-mode)
   :config
   (setq centaur-tabs-style "bar"
-        centaur-tabs-height 48
+        centaur-tabs-height 28
         centaur-tabs-set-icons t
         centaur-tabs-icon-v-adjust 0.0
         centaur-tabs-icon-scale-factor 0.7
