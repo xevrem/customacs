@@ -360,7 +360,7 @@
   (after-init . doom-modeline-mode)
   (server-after-make-frame . doom-modeline-refresh-font-width-cache)
   :config
-  (setq doom-modeline-height 26
+  (setq doom-modeline-height 28
         ;; doom-modeline-icon (display-graphic-p)
         )
   )
