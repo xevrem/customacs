@@ -302,13 +302,13 @@
   (add-to-list 'completion-at-point-functions #'cape-symbol)
   )
 
-;; (use-package kind-icon
-;;   :after corfu
-;;   :custom
-;;   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
-;;   :config
-;;   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
-;;   )
+(use-package kind-icon
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
+  )
 
 (use-package corfu-doc
   :straight '(:type git :host github
