@@ -47,7 +47,6 @@
                 term-mode-hook
                 eshell-mode-hook
                 ansi-term-mode-hook
-                ;; treemacs-mode-hook
                 vterm-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0)
                    )
@@ -468,9 +467,13 @@
   :after (:any eglot
                lsp-mode
                prog-mode
-               emacs-lisp-mode)
+               emacs-lisp-mode
+               markdown-mode
+               org-mode)
   :hook
   (prog-mode . custo/smart-parens)
+  (markdown-mode . custo/smart-parens)
+  (org-mode . custo/smart-parens)
   :config
   ;; don't interfere with yasnippets
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
@@ -831,9 +834,12 @@
   :after evil
   :hook
   (prog-mode . evil-mc-mode)
+  (markdown-mode . evil-mc-mode)
+  (org-mode . evil-mc-mode)
   :config
   (custo/leader-key
-    :keymaps 'prog-mode-map
+    :keymaps '(prog-mode-map markdown-mode-map org-mode-map)
+    "c a" '(evil-mc-make-all-cursors :wk "mc-mark and make all")
     "c n" '(evil-mc-make-and-goto-next-match :which-key "mc-mark and next")
     "c p" '(evil-mc-make-and-goto-prev-match :which-key "mc-mark and prev")
     "c u" '(evil-mc-undo-all-cursors :which-key "mc-mark undo all")
