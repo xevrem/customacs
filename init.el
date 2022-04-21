@@ -202,7 +202,8 @@
    :preview-key (kbd "M-."))
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref
-        consult-project-root-function #'projectile-project-root)
+        consult-project-root-function #'projectile-project-root
+        consult-async-refresh-delay 0.5)
   )
 
 (use-package consult-flycheck
@@ -220,13 +221,13 @@
 
 (use-package orderless
   :config
-  (setq completion-styles '(orderless partial-completion basic)
+  (setq completion-styles '(orderless basic)
         completion-category-defaults nil
-        completion-category-overrides '((file
-                                         (styles basic partial-completion)))
-                                        ;; (command (styles orderless))
-                                        ;; (symbol (styles orderless))
-                                        ;; (variable (styles orderless)))
+        completion-category-overrides '((file (styles orderless partial-completion))
+                                        (command (styles orderless))
+                                        (symbol (styles orderless))
+                                        (variable (styles orderless)))
+        orderless-component-separator #'orderless-escapable-split-on-space ;; allow escaping space with backslash!
         )
   )
 
@@ -242,14 +243,14 @@
   :after (embark consult)
   )
 
-(defun custo/corfu-lsp-setup ()
-  "Ensure corfu and lsp work better together."
-  (setq-local completion-styles '(orderless)
-              completion-category-defaults nil))
+;; (defun custo/corfu-lsp-setup ()
+;;   "Ensure corfu and lsp work better together."
+;;   (setq-local completion-styles '(orderless)
+;;               completion-category-defaults nil))
 
-(defun custo/lsp-mode-setup-completion ()
-  (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-        '(orderless))) ;;
+;; (defun custo/lsp-mode-setup-completion ()
+;;   (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+;;         '(orderless))) ;;
 
 (defun corfu-move-to-minibuffer ()
   "Allows corfu to be moved into the minibuffer for better orderless completions."
@@ -265,8 +266,8 @@
   :after (evil orderless)
   :hook
   (prog-mode . corfu-mode)
-  (lsp-mode . custo/corfu-lsp-setup)
-  (lsp-completion-mode . custo/lsp-mode-setup-completion)
+  ;; (lsp-mode . custo/corfu-lsp-setup)
+  ;; (lsp-completion-mode . custo/lsp-mode-setup-completion)
   ;; (lsp-mode . corfu-mode)
   ;; (eglot--managed-mode . corfu-mode)
   ;; (emacs-lisp-mode . corfu-mode)
@@ -284,7 +285,7 @@
   ;; since we use orderless
   (setq corfu-quit-at-boundary nil
         corfu-auto nil
-        ;; corfu-auto-delay 0.2
+        ;; corfu-auto-delay 0.5
         ;; corfu-auto-prefix 2
         ;; tab-always-indent 'complete
         )
@@ -322,6 +323,9 @@
               ("S-<prior>" . corfu-doc-scroll-down)
               ("S-<next>" . corfu-doc-scroll-up)
               )
+  :config
+  (setq corfu-doc-auto nil
+        corfu-doc-delay 1.0)
   )
 
 (use-package emacs
@@ -520,7 +524,7 @@
   :hook (after-init . which-key-mode)
   :diminish which-key-mode
   :config
-  (setq which-key-idle-delay 0.0)
+  (setq which-key-idle-delay 0.1)
   )
 
 
@@ -607,7 +611,9 @@
   "a e" '(eww :wk "eww")
   "a p" '(prodigy :wk "prodigy")
   "a t" '(eshell :wk "eshell")
-  "a T" '(vterm :wk "vterm")
+  "a T" '((lambda ()
+            (interactive)
+            (vterm t)) :wk "vterm")
   "b" '(:ignore t :which-key "buffer")
   "b b" '(consult-buffer :which-key "switch buffers")
   "b d" '(kill-current-buffer :which-key "destroy buffer")
@@ -1386,11 +1392,11 @@
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
   (setq lsp-completion-provider :none
-        lsp-file-watch-threshold 100
+        ;; lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-        lsp-idle-delay 0.500
+        lsp-idle-delay 1.0
         lsp-log-io nil
         lsp-use-plists t
         )
@@ -1448,6 +1454,7 @@
   (setq lsp-ui-doc-enable t
         lsp-ui-sideline-enable nil
         lsp-ui-doc-position 'at-point
+        lsp-ui-doc-delay 1.0
         )
   :hook
   (lsp-mode . lsp-ui-mode)
@@ -1789,7 +1796,7 @@
   :defer t
   :commands vterm
   :config
-  (setq vterm-timer-delay 0.01
+  (setq vterm-timer-delay 0.1
         vterm-shell "nu")
   )
 
