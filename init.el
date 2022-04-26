@@ -25,6 +25,20 @@
       initial-frame-alist `((width . 120) ;; chars
                             (height . 39) ;; lines
                             )
+      ;; Resizing the Emacs frame can be a terribly expensive part of changing the
+      ;; font. By inhibiting this, we halve startup times, particularly when we use
+      ;; fonts that are larger than the system default (which would resize the frame).
+      frame-inhibit-implied-resize t
+      ;; Emacs "updates" its ui more often than it needs to, so slow it down slightly
+      idle-update-delay 1.0
+      ;; Font compacting can be terribly expensive, especially for rendering icon
+      ;; fonts on Windows. Whether disabling it has a notable affect on Linux and Mac
+      ;; hasn't been determined, but do it there anyway, just in case. This increases
+      ;; memory usage, however!
+      inhibit-compacting-font-caches t
+      ;; Introduced in Emacs HEAD (b2f8c9f), this inhibits fontification while
+      ;; receiving input, which should help a little with scrolling performance.
+      redisplay-skip-fontification-on-input t
       )
 (set-fringe-mode 10) ;; 'breathing' room
 ;; better line info
@@ -41,6 +55,18 @@
   )
 (setq-default auto-save-list-file-prefix (expand-file-name "auto-saves/sessions/" user-emacs-directory)
       auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+
+
+;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some
+;;      reason; inexplicably doubling startup time for terminal Emacs. Keeping
+;;      it disabled will have nasty side-effects, so we simply delay it instead,
+;;      and invoke it later, at which point it runs quickly; how mysterious!
+(unless (daemonp)
+  (advice-add #'tty-run-terminal-initialization :override #'ignore)
+  (add-hook 'window-setup-hook
+    (defun doom-init-tty-h ()
+      (advice-remove #'tty-run-terminal-initialization #'ignore)
+      (tty-run-terminal-initialization (selected-frame) nil t))))
 
 ;; turn of line numbers in the following modes
 (dolist (mode '(org-mode-hook
@@ -202,7 +228,12 @@
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref
         consult-project-root-function #'projectile-project-root
-        consult-async-refresh-delay 0.5)
+        consult-line-numbers-widen t
+        consult-async-min-input 2
+        consult-async-refresh-delay 0.5
+        consult-async-input-throttle 0.5
+        consult-async-input-debounce 0.5
+        )
   )
 
 (use-package consult-flycheck
@@ -223,7 +254,7 @@
   :config
   (setq completion-styles '(orderless partial-completion basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion orderless))
+        completion-category-overrides '((file (styles orderless partial-completion))
                                         (command (styles orderless))
                                         (symbol (styles orderless))
                                         (variable (styles orderless)))
@@ -1112,8 +1143,8 @@
     "= =" '((lambda ()
               (interactive)
               (prettier-prettify)
-              ;; (lsp-eslint-apply-all-fixes)
-              (eslint-fix)
+              (lsp-eslint-apply-all-fixes)
+              ;; (eslint-fix)
               ) :wk "format with prettier"))
   )
 
@@ -1426,10 +1457,11 @@
                python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
-    "g g" '(lsp-find-definition :which-key "goto definition")
+    ;; "g g" '(lsp-find-definition :which-key "goto definition")
+    "g g" '(lsp-goto-implementation :which-key "goto definition")
     ;; "g R" '(lsp-ui-peek-find-references :which-key "peek references")
     "g r" '(lsp-find-references :wk "find references")
-    "g t" '(lsp-find-type-definition :wk "goto type definition")
+    "g t" '(lsp-goto-type-definition :wk "goto type definition")
     "h" '(:ignore t :wk "help")
     ;; "h g" '(lsp-ui-doc-glance :wk "glance symbol")
     "h d" '(lsp-describe-thing-at-point :wk "describe symbol")
@@ -1866,9 +1898,11 @@
   :defer t
   :hook (after-init . gcmh-mode)
   :config
-  (setq gcmh-high-cons-threashold (* 1024 1024 100)
-        gcmh-idle-delay 60
-        gcmh-verbose t)
+  (setq-default gcmh-idle-delay 'auto  ; default is 15s
+                gcmh-auto-idle-delay-factor 10
+                gcmh-high-cons-threshold (* 16 1024 1024)  ; 16mb
+                ;; gcmh-verbose t
+                )
   )
 
 (provide 'init)

@@ -62,6 +62,7 @@
           )
 
 ;; (setq frame-inhibit-implied-resize t)
+(set-language-environment "UTF-8")
 
 ;;prevent package.el loading stuff too early
 (setq-default package-enable-at-startup nil)
