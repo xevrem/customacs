@@ -595,7 +595,7 @@
         evil-want-C-u-scroll t
         evil-want-C-d-scroll t)
   :custom
-  (evil-undo-system 'undo-redo)
+  (evil-undo-system 'undo-fu)
   :bind
   (:map evil-insert-state-map
         ("C-g" . evil-normal-state)
@@ -816,6 +816,13 @@
 ;;               ("U" . undo-tree-redo)
 ;;               )
 ;;   )
+
+(use-package undo-fu
+  :defer t
+  :commands (undo-fu-only-undo
+             undo-fu-only-redo
+             undo-fu-only-redo-all)
+  )
 
 (use-package vundo
   :defer t
