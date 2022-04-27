@@ -1150,9 +1150,9 @@
     "= =" '((lambda ()
               (interactive)
               (prettier-prettify)
-              (lsp-eslint-apply-all-fixes)
-              ;; (eslint-fix)
-              ) :wk "format with prettier"))
+              (eslint-fix)
+              ) :wk "format with prettier and eslint")
+    )
   )
 
 (use-package scss-mode
