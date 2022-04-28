@@ -39,6 +39,17 @@
       ;; Introduced in Emacs HEAD (b2f8c9f), this inhibits fontification while
       ;; receiving input, which should help a little with scrolling performance.
       redisplay-skip-fontification-on-input t
+      ;; Reduce *Message* noise at startup. An empty scratch buffer (or the dashboard)
+      ;; is more than enough.
+      inhibit-startup-screen t
+      inhibit-startup-echo-area-message user-login-name
+      inhibit-default-init t
+      ;; Shave seconds off startup time by starting the scratch buffer in
+      ;; `fundamental-mode', rather than, say, `org-mode' or `text-mode', which
+      ;; pull in a ton of packages. `doom/open-scratch-buffer' provides a better
+      ;; scratch buffer anyway.
+      initial-major-mode 'fundamental-mode
+      initial-scratch-message nil
       )
 (set-fringe-mode 10) ;; 'breathing' room
 ;; better line info
@@ -134,6 +145,19 @@
 (add-hook 'after-init-hook 'custo/setup-font-faces)
 ;; re-run this hook if we create a new frame from daemonized Emacs
 (add-hook 'server-after-make-frame-hook 'custo/setup-font-faces)
+
+;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some
+;;      reason; inexplicably doubling startup time for terminal Emacs. Keeping
+;;      it disabled will have nasty side-effects, so we simply delay it instead,
+;;      and invoke it later, at which point it runs quickly; how mysterious!
+(unless (daemonp)
+  (advice-add #'tty-run-terminal-initialization :override #'ignore)
+  (add-hook 'window-setup-hook
+    (defun custo-init-tty-h ()
+      (advice-remove #'tty-run-terminal-initialization #'ignore)
+      (tty-run-terminal-initialization (selected-frame) nil t))))
+
+
 
 ;; setup straight for package management, its much better than use-package
 (setq straight-use-package-by-default t
@@ -690,9 +714,12 @@
   "h s P" '(straight-pull-package-and-deps :which-key "pull package")
   "h s b" '(straight-rebuild-all :which-key "build packages")
   "h s B" '(straight-rebuild-package :which-key "build package")
-  "h s c" '(:ingorre t :wk "cleaning")
+  "h s c" '(:ingore t :wk "cleaning")
   "h s c p" '(straight-prune-build :which-key "prune builds")
   "h s c c" '(straight-prune-build-cache :which-key "prune build cache only")
+  "j" '(:ignore t :wk "jump")
+  "j f" '(evil-jump-forward :wk "jump forward")
+  "j b" '(evil-jump-backward :wk "jump forward")
   "m" '(:ignore t :which-key "local-leader")
   "o" '(:ignore t :which-key "org")
   "p" '(projectile-command-map :wk "projectile")
@@ -1437,7 +1464,7 @@
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
   (setq lsp-completion-provider :none
-        lsp-file-watch-threshold 100
+        ;; lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)

@@ -1,4 +1,4 @@
-;; based on this post: 
+;;; based on this post: 
 
 ;; https://www.reddit.com/r/emacs/comments/jw19dy/emacs_271_earlyinit_file/gcno7i8?utm_source=share&utm_medium=web2x&context=3
 
@@ -17,9 +17,9 @@
 ;; (setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
 ;; (setq debug-on-error t)    ; now you should get a backtrace
 
-;; make garbage collector less invasive
+;; make garbage collector less invasive during startup
 (setq-default gc-cons-threshold  most-positive-fixnum
-      gc-cons-percentage 0.6)
+              gc-cons-percentage 0.6)
 
 (setq-default read-process-output-max (* 1024 1024)) ;; 1mb
 
@@ -82,3 +82,28 @@
 
 ;; dont report async compile warnings
 (setq-default native-comp-async-report-warnings-errors nil)
+
+
+;; Premature redisplays can substantially affect startup times and produce
+;; ugly flashes of unstyled Emacs.
+(setq-default inhibit-redisplay t
+              inhibit-message t)
+(add-hook 'window-setup-hook
+          (lambda ()
+            (setq-default inhibit-redisplay nil
+                          inhibit-message nil)
+            (redisplay)
+            )
+          )
+
+;; Site files tend to use `load-file', which emits "Loading X..." messages in
+;; the echo area, which in turn triggers a redisplay. Redisplays can have a
+;; substantial effect on startup times and in this case happens so early that
+;; Emacs may flash white while starting up.
+(define-advice load-file (:override (file) silence)
+  (load file nil 'nomessage))
+
+;; Undo our `load-file' advice above, to limit the scope of any edge cases it
+;; may introduce down the road.
+(define-advice startup--load-user-init-file (:before (&rest _) init-doom)
+  (advice-remove #'load-file #'load-file@silence))
