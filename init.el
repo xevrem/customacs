@@ -13,17 +13,20 @@
            gcs-done))
 (add-hook 'emacs-startup-hook #'custo/display-startup-time)
 
+(defvar custo-width 120)
+(defvar custo-height 42)
+
 (setq-default inhibit-startup-message t ;; dont show startup message
       ring-bell-function 'ignore ;; disable all visual and audible bells
       indent-tabs-mode nil ;; uses spaces and not tabs
       create-lockfiles nil ;; do not create lockfiles
       truncate-lines 1 ;; do not truncate lines by default
       ;; adjust the startup size of emacs
-      default-frame-alist `((width . 120) ;; chars
-                            (height . 39) ;; lines
+      default-frame-alist `((width . custo-width) ;; chars
+                            (height . custo-height) ;; lines
                             )
-      initial-frame-alist `((width . 120) ;; chars
-                            (height . 39) ;; lines
+      initial-frame-alist `((width . custo-width) ;; chars
+                            (height . custo-height) ;; lines
                             )
       ;; Resizing the Emacs frame can be a terribly expensive part of changing the
       ;; font. By inhibiting this, we halve startup times, particularly when we use
@@ -136,8 +139,8 @@
       (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
       )
     ;; set current frame to 120x45 characters
-    (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 39)
+    (set-frame-width (frame-focus) custo-width)
+    (set-frame-height (frame-focus) custo-height)
     (doom-modeline-refresh-font-width-cache)
     )
   )
@@ -1411,18 +1414,18 @@
     )
   (custo/local-leader-key
     :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; python-mode-map
+               js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               web-mode-map
+               go-mode-map
+               gdscript-mode-map
+               python-mode-map
                )
     "a" '(eglot-code-actions :wk "excute code action")
     "g r" '(xref-find-references :wk "goto references")
@@ -1470,7 +1473,7 @@
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
         lsp-idle-delay 1.0
         lsp-log-io nil
-        lsp-use-plists t
+        ;; lsp-use-plists t
         )
   (custo/local-leader-key
     :keymaps '(
@@ -1491,16 +1494,16 @@
                python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
-    ;; "g g" '(lsp-find-definition :which-key "goto definition")
+    "g G" '(lsp-find-definition :which-key "find definition")
     "g g" '(lsp-goto-implementation :which-key "goto definition")
-    ;; "g R" '(lsp-ui-peek-find-references :which-key "peek references")
+    "g R" '(lsp-ui-peek-find-references :which-key "peek references")
     "g r" '(lsp-find-references :wk "find references")
     "g t" '(lsp-goto-type-definition :wk "goto type definition")
     "h" '(:ignore t :wk "help")
-    ;; "h g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "h g" '(lsp-ui-doc-glance :wk "glance symbol")
     "h d" '(lsp-describe-thing-at-point :wk "describe symbol")
     "h s" '(lsp-signature-activate :wk "show signature")
-    ;; "o" '(lsp-ui-imenu :which-key "overview")
+    "o" '(lsp-ui-imenu :which-key "overview")
     "r" '(:ignore t :which-key "refactor")
     "r r" '(lsp-rename :which-key "rename")
     "=" '(:ignore t :which-key "format")
@@ -1517,23 +1520,23 @@
   )
 
 ;; prettier lsp
-;; (use-package lsp-ui
-;;   :defer t
-;;   :after lsp-mode
-;;   :commands (lsp-ui-imenu
-;;              lsp-ui-doc-glance
-;;              lsp-ui-peek-find-references)
-;;   :config
-;;   (setq lsp-ui-doc-enable t
-;;         lsp-ui-sideline-enable nil
-;;         lsp-ui-doc-position 'at-point
-;;         lsp-ui-doc-delay 1.0
-;;         )
-;;   :hook
-;;   (lsp-mode . lsp-ui-mode)
-;;   )
+(use-package lsp-ui
+  :defer t
+  :after lsp-mode
+  :commands (lsp-ui-imenu
+             lsp-ui-doc-glance
+             lsp-ui-peek-find-references)
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-sideline-enable nil
+        lsp-ui-doc-position 'at-point
+        lsp-ui-doc-delay 1.0
+        )
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  )
 
-;; ;; ;; error checking
+;; error checking
 (use-package flycheck
   :defer t
   :hook
