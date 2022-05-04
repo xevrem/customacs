@@ -1473,7 +1473,7 @@
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
         lsp-idle-delay 1.0
         lsp-log-io nil
-        ;; lsp-use-plists t
+        lsp-use-plists t
         )
   (custo/local-leader-key
     :keymaps '(
