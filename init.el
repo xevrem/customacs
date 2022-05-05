@@ -251,7 +251,7 @@
    consult-bookmark consult-recent-file consult-xref
    consult--source-recent-file consult--source-project-recent-file
    consult--source-bookmark consult-buffer consult-project-buffer
-   :preview-key (kbd "M-."))
+   :preview-key (kbd "C-p"))
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref
         consult-project-root-function #'projectile-project-root
@@ -293,7 +293,9 @@
   :defer t
   :after (evil orderless vertico consult)
   :commands embark-act
-  :bind(("C-." . embark-act)
+  :bind(("C-e" . embark-act)
+        :map vertico-map
+        ("C-e" . embark-act)
         )
   )
 
@@ -1229,7 +1231,7 @@
         lsp-rust-analyzer-proc-macro-enable t
         lsp-rust-analyzer-display-parameter-hints nil
         lsp-rust-analyzer-server-display-inlay-hints nil
-        rustic-indent-offset 4
+        rustic-indent-offset 2
         rustic-format-on-save nil)
   (custo/local-leader-key
     :keymaps 'rustic-mode-map
