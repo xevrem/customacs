@@ -13,20 +13,17 @@
            gcs-done))
 (add-hook 'emacs-startup-hook #'custo/display-startup-time)
 
-(defvar custo-width 120)
-(defvar custo-height 42)
-
 (setq-default inhibit-startup-message t ;; dont show startup message
       ring-bell-function 'ignore ;; disable all visual and audible bells
       indent-tabs-mode nil ;; uses spaces and not tabs
       create-lockfiles nil ;; do not create lockfiles
       truncate-lines 1 ;; do not truncate lines by default
       ;; adjust the startup size of emacs
-      default-frame-alist `((width . custo-width) ;; chars
-                            (height . custo-height) ;; lines
+      default-frame-alist `((width . 120) ;; chars
+                            (height . 42) ;; lines
                             )
-      initial-frame-alist `((width . custo-width) ;; chars
-                            (height . custo-height) ;; lines
+      initial-frame-alist `((width . 120) ;; chars
+                            (height . 42) ;; lines
                             )
       ;; Resizing the Emacs frame can be a terribly expensive part of changing the
       ;; font. By inhibiting this, we halve startup times, particularly when we use
@@ -139,8 +136,8 @@
       (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
       )
     ;; set current frame to 120x45 characters
-    (set-frame-width (frame-focus) custo-width)
-    (set-frame-height (frame-focus) custo-height)
+    (set-frame-width (frame-focus) 120)
+    (set-frame-height (frame-focus) 42)
     (doom-modeline-refresh-font-width-cache)
     )
   )
