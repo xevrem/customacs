@@ -1472,6 +1472,10 @@
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
         lsp-idle-delay 1.0
         lsp-log-io nil
+        lsp-enable-snippet nil ;; disable snippet completion as it causes more problems than it helps
+        lsp-modeline-diagnostics-enable nil ;; disable warnings that usually get in the way
+        lsp-lense-debounce-interval 0.5 ;; set it to a more sane value
+        lsp-lense-place-position 'above-line
         lsp-use-plists t
         )
   (custo/local-leader-key
@@ -1527,9 +1531,10 @@
              lsp-ui-peek-find-references)
   :config
   (setq lsp-ui-doc-enable t
-        lsp-ui-sideline-enable nil
         lsp-ui-doc-position 'at-point
         lsp-ui-doc-delay 1.0
+        lsp-ui-sideline-enable t
+        lsp-ui-sideline-delay 1.0
         )
   :hook
   (lsp-mode . lsp-ui-mode)
