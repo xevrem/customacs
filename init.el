@@ -1223,12 +1223,13 @@
   (rustic-mode . yas-minor-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'lsp
+        rustic-lsp-client 'lsp-mode
+        lsp-rust-server 'rust-analyzer
         rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
-        lsp-rust-analyzer-display-parameter-hints nil
-        lsp-rust-analyzer-server-display-inlay-hints nil
-        rustic-indent-offset 2
+        lsp-rust-analyzer-display-parameter-hints t
+        lsp-rust-analyzer-server-display-inlay-hints t
+        rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
     :keymaps 'rustic-mode-map
@@ -1527,7 +1528,8 @@
              lsp-ui-peek-find-references)
   :config
   (setq lsp-ui-doc-enable t
-        lsp-ui-sideline-enable nil
+        lsp-ui-sideline-enable t
+        lsp-ui-sideline-delay 1.0
         lsp-ui-doc-position 'at-point
         lsp-ui-doc-delay 1.0
         )
