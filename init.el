@@ -110,9 +110,9 @@
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
-    (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font Mono" :size 20 :weight 'regular))
+    (set-face-attribute 'default nil :font (font-spec :family "MesloLGS Nerd Font Mono" :size 20 :weight 'regular))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "FiraCode Nerd Font Mono" :size 20 :weight 'regular))
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGS Nerd Font Mono" :size 20 :weight 'regular))
     ;; Set the variable pitch face which is the same for mac and linux
     (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
     ;; after org-mode we want to adjust font sizes
