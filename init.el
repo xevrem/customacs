@@ -14,45 +14,45 @@
 (add-hook 'emacs-startup-hook #'custo/display-startup-time)
 
 (setq-default inhibit-startup-message t ;; dont show startup message
-      ring-bell-function 'ignore ;; disable all visual and audible bells
-      indent-tabs-mode nil ;; uses spaces and not tabs
-      create-lockfiles nil ;; do not create lockfiles
-      truncate-lines 1 ;; do not truncate lines by default
-      ;; disable until we actually call it
-      recentf-auto-cleanup 'never
-      ;; adjust the startup size of emacs
-      default-frame-alist `((width . 120) ;; chars
-                            (height . 42) ;; lines
-                            )
-      initial-frame-alist `((width . 120) ;; chars
-                            (height . 42) ;; lines
-                            )
-      ;; Resizing the Emacs frame can be a terribly expensive part of changing the
-      ;; font. By inhibiting this, we halve startup times, particularly when we use
-      ;; fonts that are larger than the system default (which would resize the frame).
-      frame-inhibit-implied-resize t
-      ;; Emacs "updates" its ui more often than it needs to, so slow it down slightly
-      idle-update-delay 1.0
-      ;; Font compacting can be terribly expensive, especially for rendering icon
-      ;; fonts on Windows. Whether disabling it has a notable affect on Linux and Mac
-      ;; hasn't been determined, but do it there anyway, just in case. This increases
-      ;; memory usage, however!
-      inhibit-compacting-font-caches t
-      ;; Introduced in Emacs HEAD (b2f8c9f), this inhibits fontification while
-      ;; receiving input, which should help a little with scrolling performance.
-      redisplay-skip-fontification-on-input t
-      ;; Reduce *Message* noise at startup. An empty scratch buffer (or the dashboard)
-      ;; is more than enough.
-      inhibit-startup-screen t
-      inhibit-startup-echo-area-message user-login-name
-      inhibit-default-init t
-      ;; Shave seconds off startup time by starting the scratch buffer in
-      ;; `fundamental-mode', rather than, say, `org-mode' or `text-mode', which
-      ;; pull in a ton of packages. `doom/open-scratch-buffer' provides a better
-      ;; scratch buffer anyway.
-      initial-major-mode 'fundamental-mode
-      initial-scratch-message nil
-      )
+              ring-bell-function 'ignore ;; disable all visual and audible bells
+              indent-tabs-mode nil ;; uses spaces and not tabs
+              create-lockfiles nil ;; do not create lockfiles
+              truncate-lines 1 ;; do not truncate lines by default
+              ;; disable until we actually call it
+              recentf-auto-cleanup 'never
+              ;; adjust the startup size of emacs
+              default-frame-alist `((width . 120) ;; chars
+                                    (height . 42) ;; lines
+                                    )
+              initial-frame-alist `((width . 120) ;; chars
+                                    (height . 42) ;; lines
+                                    )
+              ;; Resizing the Emacs frame can be a terribly expensive part of changing the
+              ;; font. By inhibiting this, we halve startup times, particularly when we use
+              ;; fonts that are larger than the system default (which would resize the frame).
+              frame-inhibit-implied-resize t
+              ;; Emacs "updates" its ui more often than it needs to, so slow it down slightly
+              idle-update-delay 1.0
+              ;; Font compacting can be terribly expensive, especially for rendering icon
+              ;; fonts on Windows. Whether disabling it has a notable affect on Linux and Mac
+              ;; hasn't been determined, but do it there anyway, just in case. This increases
+              ;; memory usage, however!
+              inhibit-compacting-font-caches t
+              ;; Introduced in Emacs HEAD (b2f8c9f), this inhibits fontification while
+              ;; receiving input, which should help a little with scrolling performance.
+              redisplay-skip-fontification-on-input t
+              ;; Reduce *Message* noise at startup. An empty scratch buffer (or the dashboard)
+              ;; is more than enough.
+              inhibit-startup-screen t
+              inhibit-startup-echo-area-message user-login-name
+              inhibit-default-init t
+              ;; Shave seconds off startup time by starting the scratch buffer in
+              ;; `fundamental-mode', rather than, say, `org-mode' or `text-mode', which
+              ;; pull in a ton of packages. `doom/open-scratch-buffer' provides a better
+              ;; scratch buffer anyway.
+              initial-major-mode 'fundamental-mode
+              initial-scratch-message nil
+              )
 (set-fringe-mode 10) ;; 'breathing' room
 ;; better line info
 (column-number-mode) ;; show column info
@@ -67,7 +67,7 @@
   (make-directory (expand-file-name "auto-saves/" user-emacs-directory))
   )
 (setq-default auto-save-list-file-prefix (expand-file-name "auto-saves/sessions/" user-emacs-directory)
-      auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+              auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
 
 
 ;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some
@@ -77,9 +77,9 @@
 (unless (daemonp)
   (advice-add #'tty-run-terminal-initialization :override #'ignore)
   (add-hook 'window-setup-hook
-    (defun doom-init-tty-h ()
-      (advice-remove #'tty-run-terminal-initialization #'ignore)
-      (tty-run-terminal-initialization (selected-frame) nil t))))
+            (defun doom-init-tty-h ()
+              (advice-remove #'tty-run-terminal-initialization #'ignore)
+              (tty-run-terminal-initialization (selected-frame) nil t))))
 
 ;; turn of line numbers in the following modes
 (dolist (mode '(org-mode-hook
@@ -155,9 +155,9 @@
 (unless (daemonp)
   (advice-add #'tty-run-terminal-initialization :override #'ignore)
   (add-hook 'window-setup-hook
-    (defun custo-init-tty-h ()
-      (advice-remove #'tty-run-terminal-initialization #'ignore)
-      (tty-run-terminal-initialization (selected-frame) nil t))))
+            (defun custo-init-tty-h ()
+              (advice-remove #'tty-run-terminal-initialization #'ignore)
+              (tty-run-terminal-initialization (selected-frame) nil t))))
 
 
 
@@ -234,7 +234,7 @@
   :hook
   (custo/after-wk-load . (lambda ()
                            (custo/leader-key
-                             "q r" '(restart-emacs :which-key "restart emacs")
+                             "q r" '(restart-emacs :wk "restart emacs")
                              )
                            )
                        )
@@ -684,65 +684,65 @@
                   ;; define default keybinds
                   (custo/leader-key
                     "SPC" '(execute-extended-command :wk "M-x") 
-                    "TAB" '(evil-switch-to-windows-last-buffer :which-key "switch to previous buffer")
+                    "TAB" '(evil-switch-to-windows-last-buffer :wk "switch to previous buffer")
                     ":" '(execute-extended-command :wk "M-x")
                     "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
                     "a" '(:ignore t :wk "apps")
                     "a c" '(circe :wk "circe")
                     "a e" '(eww :wk "eww")
                     "a t" '(eshell :wk "eshell")
-                    "b" '(:ignore t :which-key "buffer")
-                    "b d" '(kill-current-buffer :which-key "destroy buffer")
+                    "b" '(:ignore t :wk "buffer")
+                    "b d" '(kill-current-buffer :wk "destroy buffer")
                     "b i" '(ibuffer :wk "ibuffer")
                     "b r" '(revert-buffer-quick :wk "revert buffer")
-                    "c" '(:ignore t :which-key "cursor")
-                    "c c" '(comment-line :which-key "comment line")
-                    "f" '(:ignore f :which-key "file")
-                    "f f" '(find-file :which-key "find file")
+                    "c" '(:ignore t :wk "cursor")
+                    "c c" '(comment-line :wk "comment line")
+                    "f" '(:ignore f :wk "file")
+                    "f f" '(find-file :wk "find file")
                     "f P" '(find-file-in-project-by-selected :wk "find file in project w/ regex")
                     "f R" '(recentf-open-files :wk "full recentf files")
-                    "f s" '(save-buffer :which-key "save file")
-                    "h" '(:ignore t :which-key "custo help")
-                    "h s" '(:ignore t :which-key "straight")
-                    "h s p" '(straight-pull-all :which-key "pull packages")
-                    "h s P" '(straight-pull-package-and-deps :which-key "pull package")
-                    "h s b" '(straight-rebuild-all :which-key "build packages")
-                    "h s B" '(straight-rebuild-package :which-key "build package")
+                    "f s" '(save-buffer :wk "save file")
+                    "h" '(:ignore t :wk "custo help")
+                    "h s" '(:ignore t :wk "straight")
+                    "h s p" '(straight-pull-all :wk "pull packages")
+                    "h s P" '(straight-pull-package-and-deps :wk "pull package")
+                    "h s b" '(straight-rebuild-all :wk "build packages")
+                    "h s B" '(straight-rebuild-package :wk "build package")
                     "h s c" '(:ingore t :wk "cleaning")
-                    "h s c p" '(straight-prune-build :which-key "prune builds")
-                    "h s c c" '(straight-prune-build-cache :which-key "prune build cache only")
+                    "h s c p" '(straight-prune-build :wk "prune builds")
+                    "h s c c" '(straight-prune-build-cache :wk "prune build cache only")
                     "j" '(:ignore t :wk "jump")
                     "j f" '(evil-jump-forward :wk "jump forward")
                     "j b" '(evil-jump-backward :wk "jump forward")
-                    "m" '(:ignore t :which-key "local-leader")
-                    "o" '(:ignore t :which-key "org")
+                    "m" '(:ignore t :wk "local-leader")
+                    "o" '(:ignore t :wk "org")
                     "p" '(projectile-command-map :wk "projectile")
-                    "q" '(:ignore t :which-key "quit")
+                    "q" '(:ignore t :wk "quit")
                     "q f" '(delete-frame :wk "delete frame")
-                    "q q" '(save-buffers-kill-emacs :which-key "save and quit")
-                    "q Q" '(kill-emacs :which-key "quit no-save")
-                    "s" '(:ignore t :which-key "search")
-                    "t" '(:ignore t :which-key "toggles")
+                    "q q" '(save-buffers-kill-emacs :wk "save and quit")
+                    "q Q" '(kill-emacs :wk "quit no-save")
+                    "s" '(:ignore t :wk "search")
+                    "t" '(:ignore t :wk "toggles")
                     "t l" '(display-line-numbers-mode :wk "toggle line numbers")
                     "t r" '((lambda ()
                               (interactive)
                               (custo/setup-font-faces))
                             :wk "reset font-faces")
-                    "t t" '(toggle-truncate-lines :which-key "toggle truncate lines")
-                    "w" '(:ignore t :which-key "window")
-                    "w w" '(other-window :which-key "other window")
-                    "w d" '(delete-window :which-key "delete window")
-                    "w o" '(delete-other-windows :which-key "delete other windows")
-                    "w h" '(evil-window-vsplit :which-key "add window horizontally")
-                    "w v" '(evil-window-split :which-key "add window vertically")
+                    "t t" '(toggle-truncate-lines :wk "toggle truncate lines")
+                    "w" '(:ignore t :wk "window")
+                    "w w" '(other-window :wk "other window")
+                    "w d" '(delete-window :wk "delete window")
+                    "w o" '(delete-other-windows :wk "delete other windows")
+                    "w h" '(evil-window-vsplit :wk "add window horizontally")
+                    "w v" '(evil-window-split :wk "add window vertically")
                     )
 
                   (custo/local-leader-key
                     :keymaps 'prog-mode-map
-                    "=" '(:ignore t :which-key "format")
-                    "d" '(:ignore t :which-key "documentation")
-                    "g" '(:ignore t :which-key "goto")
-                    "i" '(:ingore t :which-key "insert")
+                    "=" '(:ignore t :wk "format")
+                    "d" '(:ignore t :wk "documentation")
+                    "g" '(:ignore t :wk "goto")
+                    "i" '(:ingore t :wk "insert")
                     )
 
                   (run-hooks 'custo/after-general-load-hook)
@@ -769,7 +769,7 @@
                                 (js-react-redux-yasnippets-initialize)
                                 (yas-reload-all)
                                 (custo/local-leader-key
-                                  "i s" '(yas-insert-snippet :which-key "insert snippet"))
+                                  "i s" '(yas-insert-snippet :wk "insert snippet"))
                                 )
                             )
   (text-mode . yas-minor-mode-on)
@@ -845,10 +845,22 @@
   (custo/leader-key
     :keymaps '(prog-mode-map markdown-mode-map org-mode-map)
     "c a" '(evil-mc-make-all-cursors :wk "mc-mark and make all")
-    "c n" '(evil-mc-make-and-goto-next-match :which-key "mc-mark and next")
-    "c p" '(evil-mc-make-and-goto-prev-match :which-key "mc-mark and prev")
-    "c u" '(evil-mc-undo-all-cursors :which-key "mc-mark undo all")
+    "c n" '(evil-mc-make-and-goto-next-match :wk "mc-mark and next")
+    "c p" '(evil-mc-make-and-goto-prev-match :wk "mc-mark and prev")
+    "c u" '(evil-mc-undo-all-cursors :wk "mc-mark undo all")
     )
+  )
+
+(use-package iedit
+  :defer t
+  :commands (iedit-mode)
+  :hook
+  (custo/after-wk-load . (lambda ()
+                           (custo/leader-key
+                             "c i" '(iedit-mode :wk "iedit")
+                             )
+                           )
+                       )
   )
 
 ;; setup project management
@@ -868,7 +880,7 @@
   (custo/leader-key
     "p" '(projectile-command-map :wk "projectile")
     :keymaps 'projectile-mode-map
-    "p a" '(projectile-add-known-project :which-key "add project")
+    "p a" '(projectile-add-known-project :wk "add project")
     )
   )
 
@@ -901,7 +913,7 @@
   :hook
   (custo/after-wk-load . (lambda ()
                            (custo/leader-key
-                             "f d" '(ranger :which-key "file directory")
+                             "f d" '(ranger :wk "file directory")
                              )
                            )
                        )
@@ -955,10 +967,10 @@
                              ("b" smerge-keep-all "keep both")
                              )
                            (custo/leader-key
-                             "g" '(:ignore t :which-key "magit")
-                             "g g" '(magit-status :which-key "magit status")
-                             "g b" '(magit-branch :which-key "magit branch")
-                             "g B" '(magit-blame :which-key "magit blame")
+                             "g" '(:ignore t :wk "magit")
+                             "g g" '(magit-status :wk "magit status")
+                             "g b" '(magit-branch :wk "magit branch")
+                             "g B" '(magit-blame :wk "magit blame")
                              "g s" '(hydra-smerge/body :wk "smerge")
                              )
                            )
@@ -1048,8 +1060,8 @@
                                 typescript-tsx-mode-map
                                 svelte-mode-map
                                 )
-                     "d" '(:ignore t :which-key "jsdoc")
-                     "d f" '(js-doc-insert-function-doc :which-key "jsdoc function")
+                     "d" '(:ignore t :wk "jsdoc")
+                     "d f" '(js-doc-insert-function-doc :wk "jsdoc function")
                      )
                    )
             )
@@ -1159,9 +1171,9 @@
         evil-shift-width 2)
   (custo/local-leader-key
     :keymaps '(csharp-mode-map omnisharp-mode-map)
-    "o" '(:ignore t :which-key "omnisharp")
-    "o r" '(omnisharp-run-code-action-refactoring :which-key "omnisharp refactor")
-    "o b" '(recompile :which-key "omnisharp build/recompile")
+    "o" '(:ignore t :wk "omnisharp")
+    "o r" '(omnisharp-run-code-action-refactoring :wk "omnisharp refactor")
+    "o b" '(recompile :wk "omnisharp build/recompile")
     )
   )
 
@@ -1310,20 +1322,20 @@
                python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
-    "g G" '(lsp-find-definition :which-key "find definition")
-    "g g" '(lsp-goto-implementation :which-key "goto definition")
-    "g R" '(lsp-ui-peek-find-references :which-key "peek references")
+    "g G" '(lsp-find-definition :wk "find definition")
+    "g g" '(lsp-goto-implementation :wk "goto definition")
+    "g R" '(lsp-ui-peek-find-references :wk "peek references")
     "g r" '(lsp-find-references :wk "find references")
     "g t" '(lsp-goto-type-definition :wk "goto type definition")
     "h" '(:ignore t :wk "help")
     "h g" '(lsp-ui-doc-glance :wk "glance symbol")
     "h d" '(lsp-describe-thing-at-point :wk "describe symbol")
     "h s" '(lsp-signature-activate :wk "show signature")
-    "o" '(lsp-ui-imenu :which-key "overview")
-    "r" '(:ignore t :which-key "refactor")
-    "r r" '(lsp-rename :which-key "rename")
-    "=" '(:ignore t :which-key "format")
-    "= l" '(lsp-format-buffer :which-key "format with lsp")
+    "o" '(lsp-ui-imenu :wk "overview")
+    "r" '(:ignore t :wk "refactor")
+    "r r" '(lsp-rename :wk "rename")
+    "=" '(:ignore t :wk "format")
+    "= l" '(lsp-format-buffer :wk "format with lsp")
     )
   )
 
@@ -1690,13 +1702,13 @@
   :commands vterm
   :hook
   (custo/after-wk-load . (lambda ()
-                  (custo/leader-key
-                    "a T" '((lambda ()
-                              (interactive)
-                              (call-interactively 'vterm)) :wk "vterm")
-                    )
-                  )
-              )
+                           (custo/leader-key
+                             "a T" '((lambda ()
+                                       (interactive)
+                                       (call-interactively 'vterm)) :wk "vterm")
+                             )
+                           )
+                       )
   :config
   (setq vterm-timer-delay 0.1
         vterm-shell "nu")
