@@ -1438,14 +1438,73 @@
     )
   :defer t
   :mode ("\\.org\\'" . org-mode)
-  :commands (org-capture org-agenda)
+  :commands (org-capture
+             org-agenda
+             org-todo-list
+             org-time-stamp
+             org-schedule
+             org-deadline
+             org-set-property
+             org-set-tags-command
+             org-export-dispatch
+             org-md-export-as-markdown
+             org-refile
+             org-copy-subtree
+             org-cut-subtree
+             org-paste-subtree
+             org-demote-subtree
+             org-promote-subtree
+             org-move-subtree-up
+             org-move-subtree-down
+             org-babel-tangleorg-toggle-narrow-to-subtree
+             )
   :hook
+  (after-init . (lambda ()
+                  (require 'ob-js)
+                  (require 'ox-gfm)
+                  (require 'org-tempo)
+                  )
+              )
+  (custo/after-wk-load . (lambda ()
+                           ;; global key bindings
+                           (custo/leader-key
+                             "o a" '(org-agenda :wk "agenda")
+                             "o c" '(org-capture :wk "capture")
+                             "o t" '(org-todo-list :wk "list todos"))
+                           ;; org mode specific bindings
+                           (custo/local-leader-key
+                             :keymaps 'org-mode-map
+                             "a" '(:ignore t :wk "add")
+                             "a t" '(org-time-stamp :wk "timetamp")
+                             "a s" '(org-schedule :wk "schedule")
+                             "a d" '(org-deadline :wk "deadline")
+                             "a p" '(org-set-property :wk "property")
+                             "a T" '(org-set-tags-command :wk "tag")
+                             "e" '(:ignore t :wk "export")
+                             "e d" '(org-export-dispatch :wk "export dispatch")
+                             "e m" '(org-md-export-as-markdown :wk "export as markdown")
+                             "i" '(:ignore t :wk "insert")
+                             "i RET" '(org-insert-structure-template :wk "insert template")
+                             "i s" '((lambda ()
+                                       (interactive)
+                                       (org-insert-structure-template "src")) :wk "insert source block")
+                             "s" '(:ignore t :wk "subtree")
+                             "s r" '(org-refile :wk "refile")
+                             "s c" '(org-copy-subtree :wk "copy")
+                             "s x" '(org-cut-subtree :wk "cut")
+                             "s p" '(org-paste-subtree :wk "paste")
+                             "s n" '(org-toggle-narrow-to-subtree :wk "toggle narrow")
+                             "s <right>" '(org-demote-subtree :wk "demote")
+                             "s <left>" '(org-promote-subtree :wk "promote")
+                             "s <up>" '(org-move-subtree-up :wk "move up")
+                             "s <down>" '(org-move-subtree-down :wk "move down")
+                             "t" '(org-babel-tangle :wk "tangle file")
+                             )
+
+                           )
+                       )
   (org-mode . (lambda ()
                 (custo/org-mode-setup)
-
-                (require ob-js)
-                (require ox-gfm)
-
                 (org-babel-do-load-languages
                  'org-babel-load-languages
                  '((emacs-lisp . t)
@@ -1454,9 +1513,6 @@
                    (plantuml . t)
                    )
                  )
-
-                (require 'org-tempo)
-
                 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
                 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
                 (add-to-list 'org-structure-template-alist '("py" . "src python"))
@@ -1467,102 +1523,57 @@
   (setq org-ellipsis " ▼"
         org-hide-emphasis-markers t
         org-startup-indented nil
+        ;; org-agenda-files `("~/org/tasks.org"
+        ;;                    "~/org/ideas.org"
+        ;;                    "~/org/journal.org"
+        ;;                    )
+        org-agenda-start-with-log-mode t
+        org-log-done 'time
+        org-log-into-drawer t
+        org-todo-keywords '((sequence
+                             "TODO"
+                             "DOING"
+                             "DELAYED"
+                             "|"
+                             "PARTIAL"
+                             "COMPLETE"
+                             "IN REVIEW"
+                             "DONE"
+                             "CANCELLED"
+                             "OBE"
+                             "MOVED"))
+        org-todo-keyword-faces `(("TODO" . "#88ff88")
+                                 ("DOING" . "#ffff88")
+                                 ("DELAYED" . "#ffbb88")
+                                 ("PARTIAL" . "#8855ff")
+                                 ("COMPLETE" . "#ff55bb")
+                                 ("IN REVIEW" . "#bb55ff")
+                                 ("DONE" . "#8888ff")
+                                 ("CANCELLED" . "#ff8888")
+                                 ("OBE" . "#ffbb88")
+                                 ("MOVED" . "#88ffbb"))
+        org-tag-alist '((:startgroup)
+                        ;; mutually exclusive tags here
+                        (:endgroup)
+                        ("errand" . ?e)
+                        ("chore" . ?c)
+                        ("appointment" . ?a)
+                        ("note" . ?n)
+                        ("idea" . ?i)
+                        ("followup" . ?f)
+                        )
+        org-refile-targets '(("~/org/archive.org" :maxlevel . 1)
+                             ("~/org/tasks.org" :maxlevel . 1)
+                             ("~/org/ideas.org" :maxlevel . 1)
+                             )
+        ;; capture templates
+        org-capture-templates '(("t" "Tasks")
+                                ("tt" "Task" entry (file+olp "~/org/tasks.org" "Inbox")
+                                 "* TODO %?\n %U\n %a\n %i" :empty-lines 1)
+                                )
         )
-  ;; (setq org-agenda-files
-  ;;       `(
-  ;;         "~/org/tasks.org"
-  ;;         "~/org/ideas.org"
-  ;;         "~/org/journal.org"
-  ;;         )
-  ;;       )
-  (setq org-agenda-start-with-log-mode t)
-  (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
-  (setq org-todo-keywords
-        '((sequence
-           "TODO"
-           "DOING"
-           "DELAYED"
-           "|"
-           "PARTIAL"
-           "COMPLETE"
-           "IN REVIEW"
-           "DONE"
-           "CANCELLED"
-           "OBE"
-           "MOVED")))
-  (setq org-todo-keyword-faces
-        `(("TODO" . "#88ff88")
-          ("DOING" . "#ffff88")
-          ("DELAYED" . "#ffbb88")
-          ("PARTIAL" . "#8855ff")
-          ("COMPLETE" . "#ff55bb")
-          ("IN REVIEW" . "#bb55ff")
-          ("DONE" . "#8888ff")
-          ("CANCELLED" . "#ff8888")
-          ("OBE" . "#ffbb88")
-          ("MOVED" . "#88ffbb")))
-  (setq org-tag-alist
-        '((:startgroup)
-          ;; mutually exclusive tags here
-          (:endgroup)
-          ("errand" . ?e)
-          ("chore" . ?c)
-          ("appointment" . ?a)
-          ("note" . ?n)
-          ("idea" . ?i)
-          ("followup" . ?f)
-          )
-        )
-  (setq org-refile-targets
-        '(("~/org/archive.org" :maxlevel . 1)
-          ("~/org/tasks.org" :maxlevel . 1)
-          ("~/org/ideas.org" :maxlevel . 1)
-          ))
   ;; safety save all org buffers after refiling
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
-  ;; capture templates
-  (setq org-capture-templates
-        '(("t" "Tasks")
-          ("tt" "Task" entry (file+olp "~/org/tasks.org" "Inbox")
-           "* TODO %?\n %U\n %a\n %i" :empty-lines 1)
-          
-          )
-        )
-  ;; global key bindings
-  (custo/leader-key
-    "o a" '(org-agenda :wk "agenda")
-    "o c" '(org-capture :wk "capture")
-    "o t" '(org-todo-list :wk "list todos"))
-  ;; org mode specific bindings
-  (custo/local-leader-key
-    :keymaps 'org-mode-map
-    "a" '(:ignore t :wk "add")
-    "a t" '(org-time-stamp :wk "timetamp")
-    "a s" '(org-schedule :wk "schedule")
-    "a d" '(org-deadline :wk "deadline")
-    "a p" '(org-set-property :wk "property")
-    "a T" '(org-set-tags-command :wk "tag")
-    "e" '(:ignore t :wk "export")
-    "e d" '(org-export-dispatch :wk "export dispatch")
-    "e m" '(org-md-export-as-markdown :wk "export as markdown")
-    "i" '(:ignore t :wk "insert")
-    "i RET" '(org-insert-structure-template :wk "insert template")
-    "i s" '((lambda ()
-              (interactive)
-              (org-insert-structure-template "src")) :wk "insert source block")
-    "s" '(:ignore t :wk "subtree")
-    "s r" '(org-refile :wk "refile")
-    "s c" '(org-copy-subtree :wk "copy")
-    "s x" '(org-cut-subtree :wk "cut")
-    "s p" '(org-paste-subtree :wk "paste")
-    "s n" '(org-toggle-narrow-to-subtree :wk "toggle narrow")
-    "s <right>" '(org-demote-subtree :wk "demote")
-    "s <left>" '(org-promote-subtree :wk "promote")
-    "s <up>" '(org-move-subtree-up :wk "move up")
-    "s <down>" '(org-move-subtree-down :wk "move down")
-    "t" '(org-babel-tangle :wk "tangle file")
-    )
   )
 
 ;; we'll setup this directory so that ox-gfm doesnt freak out when
@@ -1570,6 +1581,7 @@
 (unless (file-directory-p (expand-file-name "straight/repos/org/" user-emacs-directory))
   (make-directory (expand-file-name "straight/repos/org/" user-emacs-directory))
   )
+
 
 (use-package ox-gfm
   :defer t
