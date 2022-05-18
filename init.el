@@ -270,61 +270,69 @@
 
 (use-package consult
   :defer t
-  :commands (consult-customize
-             consult-xref
-             consult-line
-             consult-recent-file
-             consult-project-buffer
-             consult-theme
+  :commands (consult-buffer
              consult-completion-in-region
-             consult-imenu)
+             consult-customize
+             consult-imenu
+             consult-line
+             consult-project-buffer
+             consult-recent-file
+             consult-ripgrep
+             consult-theme
+             consult-xref
+             )
   :hook
-  (projectile-mode . (lambda ()
-                       (consult-customize
-                        consult-theme
-                        :preview-key '(:debounce 0.5 any)
-                        consult-ripgrep consult-git-grep consult-grep
-                        consult-bookmark consult-recent-file consult-xref
-                        consult--source-recent-file consult--source-project-recent-file
-                        consult--source-bookmark consult-buffer consult-project-buffer
-                        :preview-key (kbd "C-p")
-                        )
-                       (setq xref-show-xrefs-function #'consult-xref
-                             xref-show-definitions-function #'consult-xref
-                             consult-project-root-function #'projectile-project-root
-                             consult-line-numbers-widen t
-                             consult-async-min-input 2
-                             consult-async-refresh-delay 0.5
-                             consult-async-input-throttle 0.5
-                             consult-async-input-debounce 0.5
+  (custo/after-wk-load . (lambda ()
+                           (custo/leader-key
+                             "b b" '(consult-buffer :wk "switch buffers")
+                             "f r" '(consult-recent-file :wk "recent files")
+                             "s i" '(consult-imenu :wk "imenu")
+                             "s p" '(consult-ripgrep :wk "search project")
+                             "s s" '(consult-line :wk "search buffer")
+                             "t T" '(consult-theme :wk "choose theme")
+                             "p b" '(consult-project-buffer :wk "project buffers")
                              )
-                       (custo/leader-key
-                         "b b" '(consult-buffer :wk "switch buffers")
-                         "f r" '(consult-recent-file :wk "recent files")
-                         "s i" '(consult-imenu :wk "imenu")
-                         "s p" '(consult-ripgrep :wk "search project")
-                         "s s" '(consult-line :wk "search buffer")
-                         "t T" '(consult-theme :wk "choose theme")
-                         "p b" '(consult-project-buffer :wk "project buffers")
-                         )
-                       (run-hooks 'custo/after-consult-load-hook)
+                           )
+                       )
+  (projectile-mode . (lambda ()
+                       (setq consult-project-root-function #'projectile-project-root)
                        )
                    )
+  :config
+  (consult-customize
+   consult-theme
+   :preview-key '(:debounce 0.5 any)
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-recent-file consult--source-project-recent-file
+   consult--source-bookmark consult-buffer consult-project-buffer
+   :preview-key (kbd "C-p")
+   )
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref
+        consult-line-numbers-widen t
+        consult-async-min-input 2
+        consult-async-refresh-delay 0.5
+        consult-async-input-throttle 0.5
+        consult-async-input-debounce 0.5
+        )
+  (run-hooks 'custo/after-consult-load-hook)
   )
 
 (use-package consult-flycheck
   :defer t
   :commands consult-flycheck
   :hook
-  (flycheck-mode . (lambda ()
-                     (custo/leader-key
-                       "e l" '(consult-flycheck :wk "list errors")
-                       )
-                     (custo/local-leader-key
-                       "e l" '(consult-flycheck :wk "list errors")
-                       )
-                     )
-                 )
+  (custo/after-consult-load . (lambda ()
+                                (custo/leader-key
+                                  "e l" '(consult-flycheck :wk "list errors")
+                                  )
+                                )
+                            )
+  :config
+  (custo/local-leader-key
+    "e l" '(consult-flycheck :wk "list errors")
+    )
   )
 
 
@@ -353,17 +361,15 @@
 
 (use-package embark
   :defer t
-  :after (evil orderless vertico consult)
   :commands embark-act
   :bind(("C-e" . embark-act)
         :map vertico-map
         ("C-e" . embark-act)
         )
+  :config
+  (use-package embark-consult)
   )
 
-(use-package embark-consult
-  :after embark
-  )
 
 (defun custo/lsp-mode-setup-completion ()
   (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
@@ -380,7 +386,6 @@
 
 (use-package corfu
   :defer t
-  :after (evil orderless)
   :hook
   (prog-mode . corfu-mode)
   (lsp-completion-mode . custo/lsp-mode-setup-completion)
@@ -399,19 +404,18 @@
   (setq corfu-quit-at-boundary nil
         corfu-auto nil
         )
+  (use-package cape
+    :straight (:type git
+                     :host github
+                     :repo "minad/cape")
+    :config
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'cape-keyword)
+    (add-to-list 'completion-at-point-functions #'cape-symbol)
+    )
   )
 
-(use-package cape
-  :straight (:type git
-                   :host github
-                   :repo "minad/cape")
-  :after corfu
-  :config
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  (add-to-list 'completion-at-point-functions #'cape-symbol)
-  )
 
 
 (use-package emacs
@@ -428,11 +432,17 @@
 
 ;; show recently used files
 (use-package recentf
+  :defer t
   :commands recentf-open-files
+  :hook
+  (custo/after-wk-load . (lambda ()
+                           (custo/leader-key
+                             "f R" '(recentf-open-files :wk "full recentf files")
+                             )
+                           )
+                       )
   )
 
-;; used by projectile-ripgrep
-(use-package ripgrep)
 
 ;; load all-the-icons only if in GUI mode
 ;; and install them if not present
@@ -585,12 +595,12 @@
   :defer t
   :hook (custo/after-general-load . (lambda ()
                                       (which-key-mode)
-                                      (run-hooks 'custo/after-wk-load-hook)
                                       )
                                   )
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.1)
+  (run-hooks 'custo/after-wk-load-hook)
   )
 
 
@@ -682,7 +692,6 @@
                     ":" '(execute-extended-command :wk "M-x")
                     "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
                     "a" '(:ignore t :wk "apps")
-                    "a c" '(circe :wk "circe")
                     "a e" '(eww :wk "eww")
                     "a t" '(eshell :wk "eshell")
                     "b" '(:ignore t :wk "buffer")
@@ -694,7 +703,6 @@
                     "f" '(:ignore f :wk "file")
                     "f f" '(find-file :wk "find file")
                     "f P" '(find-file-in-project-by-selected :wk "find file in project w/ regex")
-                    "f R" '(recentf-open-files :wk "full recentf files")
                     "f s" '(save-buffer :wk "save file")
                     "h" '(:ignore t :wk "custo help")
                     "h s" '(:ignore t :wk "straight")
@@ -867,21 +875,28 @@
              projectile-project-root)
   :hook
   (vertico-mode . projectile-mode)
+  (custo/after-wk-load . (lambda ()
+                           (custo/leader-key
+                             "p" '(projectile-command-map :wk "projectile")
+                             :keymaps 'projectile-mode-map
+                             "p a" '(projectile-add-known-project :wk "add project")
+                             )
+                           )
+                       )
   :custom
   ;; this allows projectile to use orderless
   (projectile-completion-system 'default)
   :config
-  (custo/leader-key
-    "p" '(projectile-command-map :wk "projectile")
-    :keymaps 'projectile-mode-map
-    "p a" '(projectile-add-known-project :wk "add project")
-    )
+  ;; used by projectile-ripgrep
+  (use-package ripgrep)
   )
 
 (use-package find-file-in-project
   :defer t
+  :commands (find-file-in-project
+             ffip)
   :hook
-  (projectile-mode . (lambda ()
+  (custo/after-wk-load . (lambda ()
                        (custo/leader-key
                          "f p" '(ffip :wk "find file in project")
                          :keymaps 'projectile-mode-map
@@ -889,7 +904,6 @@
                          )
                        )
                    )
-  :commands find-file-in-project
   :config
   (setq ffip-use-rust-fd t)
   )
@@ -991,9 +1005,6 @@
         )
   )
 
-;; (use-package forge
-;;   :after magit)
-
 ;;enable super syntax highlighting
 (use-package tree-sitter
   :straight (:type git :host github
@@ -1059,24 +1070,20 @@
 (use-package js-doc
   :defer t
   :commands (js-doc-insert-function-doc)
-  )
-(dolist (mode '(js2-mode-hook
-                rjsx-mode-hook
-                typescript-mode-hook))
-
-  (add-hook mode (lambda ()
-                   (custo/local-leader-key
-                     :keymaps '(js2-mode-map
-                                rjsx-mode-map
-                                typescript-mode-map
-                                typescript-tsx-mode-map
-                                svelte-mode-map
-                                )
-                     "d" '(:ignore t :wk "jsdoc")
-                     "d f" '(js-doc-insert-function-doc :wk "jsdoc function")
-                     )
-                   )
-            )
+  :hook
+  (custo/after-wk-load . (lambda ()
+                           (custo/local-leader-key
+                             :keymaps '(js2-mode-map
+                                        rjsx-mode-map
+                                        typescript-mode-map
+                                        typescript-tsx-mode-map
+                                        svelte-mode-map
+                                        )
+                             "d" '(:ignore t :wk "jsdoc")
+                             "d f" '(js-doc-insert-function-doc :wk "jsdoc function")
+                             )
+                           )
+                       )
   )
 
 (use-package eslint-fix
@@ -1449,7 +1456,13 @@
     :local-repo nil
     )
   :defer t
-  :mode ("\\.org\\'" . org-mode)
+  :mode ("\\.org\\'" . (lambda ()
+                         (require 'ob-js)
+                         (require 'ox-gfm)
+                         (require 'org-tempo)
+                         (org-mode)
+                         )
+         )
   :commands (org-capture
              org-agenda
              org-todo-list
@@ -1471,48 +1484,13 @@
              org-babel-tangleorg-toggle-narrow-to-subtree
              )
   :hook
-  (after-init . (lambda ()
-                  (require 'ob-js)
-                  (require 'ox-gfm)
-                  (require 'org-tempo)
-                  )
-              )
   (custo/after-wk-load . (lambda ()
                            ;; global key bindings
                            (custo/leader-key
                              "o a" '(org-agenda :wk "agenda")
                              "o c" '(org-capture :wk "capture")
-                             "o t" '(org-todo-list :wk "list todos"))
-                           ;; org mode specific bindings
-                           (custo/local-leader-key
-                             :keymaps 'org-mode-map
-                             "a" '(:ignore t :wk "add")
-                             "a t" '(org-time-stamp :wk "timetamp")
-                             "a s" '(org-schedule :wk "schedule")
-                             "a d" '(org-deadline :wk "deadline")
-                             "a p" '(org-set-property :wk "property")
-                             "a T" '(org-set-tags-command :wk "tag")
-                             "e" '(:ignore t :wk "export")
-                             "e d" '(org-export-dispatch :wk "export dispatch")
-                             "e m" '(org-md-export-as-markdown :wk "export as markdown")
-                             "i" '(:ignore t :wk "insert")
-                             "i RET" '(org-insert-structure-template :wk "insert template")
-                             "i s" '((lambda ()
-                                       (interactive)
-                                       (org-insert-structure-template "src")) :wk "insert source block")
-                             "s" '(:ignore t :wk "subtree")
-                             "s r" '(org-refile :wk "refile")
-                             "s c" '(org-copy-subtree :wk "copy")
-                             "s x" '(org-cut-subtree :wk "cut")
-                             "s p" '(org-paste-subtree :wk "paste")
-                             "s n" '(org-toggle-narrow-to-subtree :wk "toggle narrow")
-                             "s <right>" '(org-demote-subtree :wk "demote")
-                             "s <left>" '(org-promote-subtree :wk "promote")
-                             "s <up>" '(org-move-subtree-up :wk "move up")
-                             "s <down>" '(org-move-subtree-down :wk "move down")
-                             "t" '(org-babel-tangle :wk "tangle file")
+                             "o t" '(org-todo-list :wk "list todos")
                              )
-
                            )
                        )
   (org-mode . (lambda ()
@@ -1584,6 +1562,35 @@
                                  "* TODO %?\n %U\n %a\n %i" :empty-lines 1)
                                 )
         )
+  ;; org mode specific bindings
+  (custo/local-leader-key
+    :keymaps 'org-mode-map
+    "a" '(:ignore t :wk "add")
+    "a t" '(org-time-stamp :wk "timetamp")
+    "a s" '(org-schedule :wk "schedule")
+    "a d" '(org-deadline :wk "deadline")
+    "a p" '(org-set-property :wk "property")
+    "a T" '(org-set-tags-command :wk "tag")
+    "e" '(:ignore t :wk "export")
+    "e d" '(org-export-dispatch :wk "export dispatch")
+    "e m" '(org-md-export-as-markdown :wk "export as markdown")
+    "i" '(:ignore t :wk "insert")
+    "i RET" '(org-insert-structure-template :wk "insert template")
+    "i s" '((lambda ()
+              (interactive)
+              (org-insert-structure-template "src")) :wk "insert source block")
+    "s" '(:ignore t :wk "subtree")
+    "s r" '(org-refile :wk "refile")
+    "s c" '(org-copy-subtree :wk "copy")
+    "s x" '(org-cut-subtree :wk "cut")
+    "s p" '(org-paste-subtree :wk "paste")
+    "s n" '(org-toggle-narrow-to-subtree :wk "toggle narrow")
+    "s <right>" '(org-demote-subtree :wk "demote")
+    "s <left>" '(org-promote-subtree :wk "promote")
+    "s <up>" '(org-move-subtree-up :wk "move up")
+    "s <down>" '(org-move-subtree-down :wk "move down")
+    "t" '(org-babel-tangle :wk "tangle file")
+    )
   ;; safety save all org buffers after refiling
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
   )
@@ -1618,7 +1625,6 @@
                              "t v" '((lambda () (interactive) (call-interactively 'visual-fill-column-mode)) :wk "toggle visual-fill")
                              )
                            ))
-  :commands visual-fill-column-mode
   :config
   (setq visual-fill-column-width 100
         visual-fill-column-center-text t)
@@ -1651,54 +1657,44 @@
 
 ;; terminal related packages
 (use-package term-cursor
+  :if (not (display-graphic-p))
   :straight '(:type git :host github
                     :repo "h0d/term-cursor.el"
                     :branch "master"
                     :file "term-cursor.el")
   :defer t
   :commands (term-cursor-mode)
-  )
-;; if not in a graphical environment, add term cursor to prog mode hook
-(unless (display-graphic-p)
-  (add-hook 'prog-mode-hook 'term-cursor-mode)
+  :hook
+  (prog-mode . term-cursor-mode)
   )
 
 
-;; (use-package evil-terminal-cursor-changer
-;;   :defer t
-;;   :hook
-;;   (tty-setup . evil-terminal-cursor-changer-activate)
-;;   :config
-;;   (setq evil-motion-state-cursor 'box  ; █
-;;         evil-visual-state-cursor 'box  ; █
-;;         evil-normal-state-cursor 'box  ; █
-;;         evil-insert-state-cursor 'bar  ; ⎸
-;;         evil-emacs-state-cursor  'hbar) ; _
+;; (defconst private-file (expand-file-name "~/.private.el"))
+;; (unless (file-exists-p private-file)
+;;   (with-temp-buffer (write-file private-file))
 ;;   )
 
-;; ;; ensure we only set these hooks if we're not in a graphical environment
-;; (unless (display-graphic-p)
-;;   ;; run this hook after we have initialized the first time
-;;   (add-hook 'after-init-hook 'evil-terminal-cursor-changer-activate)
-;;   ;; re-run this hook if we create a new frame from daemonized Emacs
-;;   (add-hook 'server-after-make-frame-hook 'evil-terminal-cursor-changer-activate)
+;; ;; IRC
+;; (with-eval-after-load 'circe
+;;   (load private-file)
 ;;   )
-
-
-(defconst private-file (expand-file-name "~/.private.el"))
-(unless (file-exists-p private-file)
-  (with-temp-buffer (write-file private-file))
-  )
-
-;; IRC
-(with-eval-after-load 'circe
-  (load private-file)
-  )
 
 (use-package circe
   :defer t
   :commands circe
+  :hook
+  (custo/after-wk-load . (lambda ()
+                           (custo/leader-key
+                             "a c" '(circe :wk "circe")
+                             )
+                           )
+                       )
   :config
+  (defconst private-file (expand-file-name "~/.private.el"))
+  (unless (file-exists-p private-file)
+    (with-temp-buffer (write-file private-file))
+    )
+  (load private-file)
   (setq circe-network-options
         `(("irc.chat.twitch.tv"
            :tls t
