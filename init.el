@@ -947,7 +947,12 @@
   :defer t
   :commands (magit-status
              magit-branch
-             magit-blame)
+             magit-blame
+             magit-fetch
+             magit-pull
+             magit-push
+             magit-stash
+             )
   :hook
   (custo/after-wk-load . (lambda ()
                            (defhydra hydra-smerge (:timeout 4)
@@ -974,6 +979,16 @@
                        )
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  :config
+  (setq magit-diff-refine-hunk t ; show granular diffs in selected hunk
+        ;; Don't autosave repo buffers. This is too magical, and saving can
+        ;; trigger a bunch of unwanted side-effects, like save hooks and
+        ;; formatters. Trust the user to know what they're doing.
+        magit-save-repository-buffers nil
+        ;; Don't display parent/related refs in commit buffers; they are rarely
+        ;; helpful and only add to runtime costs.
+        magit-revision-insert-related-refs nil
+        )
   )
 
 ;; (use-package forge
