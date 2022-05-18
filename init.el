@@ -195,14 +195,14 @@
 ;; CUSTOM HOOKS
 ;;
 
-(defvar custo/after-wk-load-hook nil
-  "Hook called after which-key is loaded.")
+(defvar custo/after-general-load-hook nil
+  "Hook called after general is loaded.")
 
 (defvar custo/after-consult-load-hook nil
   "Hook called after consult is loaded.")
 
-(defvar custo/after-general-load-hook nil
-  "Hook called after general is loaded.")
+(defvar custo/after-wk-load-hook nil
+  "Hook called after which key is loaded.")
 
 ;;
 ;; PACKAGE CONFIGURATION
@@ -232,12 +232,12 @@
   :defer t
   :commands restart-emacs
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "q r" '(restart-emacs :wk "restart emacs")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "q r" '(restart-emacs :wk "restart emacs")
+                                  )
+                                )
+                            )
   )
 
 
@@ -250,6 +250,103 @@
               )
   )
 
+;; setup a special menu that tells us what keys are available
+;; based on the current mode, set pop-up delay to 0.1s
+(use-package which-key
+  :defer t
+  :hook (after-init . (lambda ()
+                        (which-key-mode)
+                        )
+                    )
+  :config
+  (setq which-key-idle-delay 0.1)
+  (message "wk hook")
+  (run-hooks 'custo/after-wk-load-hook)
+  )
+
+;; better key binding
+(use-package general
+  :defer t
+  :commands (general-auto-unbind-keys
+             general-create-definer)
+  :hook
+  (custo/after-wk-load . (lambda ()
+                           (general-auto-unbind-keys)
+                           (general-create-definer custo/leader-key
+                             :states '(normal insert visual emacs)
+                             :prefix "SPC"
+                             :global-prefix "C-SPC")
+                           (general-create-definer custo/local-leader-key
+                             :states '(normal insert visual emacs)
+                             :prefix "SPC m"
+                             :global-prefix "C-SPC m")
+                           ;; define default keybinds
+                           (custo/leader-key
+                             "SPC" '(execute-extended-command :wk "M-x") 
+                             "TAB" '(evil-switch-to-windows-last-buffer :wk "switch to previous buffer")
+                             ":" '(execute-extended-command :wk "M-x")
+                             "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
+                             "a" '(:ignore t :wk "apps")
+                             "a e" '(eww :wk "eww")
+                             "a t" '(eshell :wk "eshell")
+                             "b" '(:ignore t :wk "buffer")
+                             "b d" '(kill-current-buffer :wk "destroy buffer")
+                             "b i" '(ibuffer :wk "ibuffer")
+                             "b r" '(revert-buffer-quick :wk "revert buffer")
+                             "c" '(:ignore t :wk "cursor")
+                             "c c" '(comment-line :wk "comment line")
+                             "f" '(:ignore f :wk "file")
+                             "f f" '(find-file :wk "find file")
+                             "f P" '(find-file-in-project-by-selected :wk "find file in project w/ regex")
+                             "f s" '(save-buffer :wk "save file")
+                             "h" '(:ignore t :wk "custo help")
+                             "h s" '(:ignore t :wk "straight")
+                             "h s p" '(straight-pull-all :wk "pull packages")
+                             "h s P" '(straight-pull-package-and-deps :wk "pull package")
+                             "h s b" '(straight-rebuild-all :wk "build packages")
+                             "h s B" '(straight-rebuild-package :wk "build package")
+                             "h s c" '(:ingore t :wk "cleaning")
+                             "h s c p" '(straight-prune-build :wk "prune builds")
+                             "h s c c" '(straight-prune-build-cache :wk "prune build cache only")
+                             "j" '(:ignore t :wk "jump")
+                             "j f" '(evil-jump-forward :wk "jump forward")
+                             "j b" '(evil-jump-backward :wk "jump forward")
+                             "m" '(:ignore t :wk "local-leader")
+                             "o" '(:ignore t :wk "org")
+                             "p" '(projectile-command-map :wk "projectile")
+                             "q" '(:ignore t :wk "quit")
+                             "q f" '(delete-frame :wk "delete frame")
+                             "q q" '(save-buffers-kill-emacs :wk "save and quit")
+                             "q Q" '(kill-emacs :wk "quit no-save")
+                             "s" '(:ignore t :wk "search")
+                             "t" '(:ignore t :wk "toggles")
+                             "t l" '(display-line-numbers-mode :wk "toggle line numbers")
+                             "t r" '((lambda ()
+                                       (interactive)
+                                       (custo/setup-font-faces))
+                                     :wk "reset font-faces")
+                             "t t" '(toggle-truncate-lines :wk "toggle truncate lines")
+                             "w" '(:ignore t :wk "window")
+                             "w w" '(other-window :wk "other window")
+                             "w d" '(delete-window :wk "delete window")
+                             "w o" '(delete-other-windows :wk "delete other windows")
+                             "w h" '(evil-window-vsplit :wk "add window horizontally")
+                             "w v" '(evil-window-split :wk "add window vertically")
+                             )
+
+                           (custo/local-leader-key
+                             :keymaps 'prog-mode-map
+                             "=" '(:ignore t :wk "format")
+                             "d" '(:ignore t :wk "documentation")
+                             "g" '(:ignore t :wk "goto")
+                             "i" '(:ingore t :wk "insert")
+                             )
+                           (message "general hook")
+                           (run-hooks 'custo/after-general-load-hook)
+                           )
+                       )
+  )
+
 
 ;; minad' and oantolin's awesome packages:
 (use-package vertico
@@ -258,10 +355,10 @@
                     :branch "main")
   :defer t
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (vertico-mode 1)
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (vertico-mode 1)
+                                )
+                            )
   :config
   (setq vertico-cycle t
         completion-in-region-function #'consult-completion-in-region)
@@ -282,23 +379,24 @@
              consult-xref
              )
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "b b" '(consult-buffer :wk "switch buffers")
-                             "f r" '(consult-recent-file :wk "recent files")
-                             "s i" '(consult-imenu :wk "imenu")
-                             "s p" '(consult-ripgrep :wk "search project")
-                             "s s" '(consult-line :wk "search buffer")
-                             "t T" '(consult-theme :wk "choose theme")
-                             "p b" '(consult-project-buffer :wk "project buffers")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "b b" '(consult-buffer :wk "switch buffers")
+                                  "f r" '(consult-recent-file :wk "recent files")
+                                  "s i" '(consult-imenu :wk "imenu")
+                                  "s p" '(consult-ripgrep :wk "search project")
+                                  "s s" '(consult-line :wk "search buffer")
+                                  "t T" '(consult-theme :wk "choose theme")
+                                  "p b" '(consult-project-buffer :wk "project buffers")
+                                  )
+                                )
+                            )
   (projectile-mode . (lambda ()
                        (setq consult-project-root-function #'projectile-project-root)
                        )
                    )
   :config
+  (message "consult config")
   (consult-customize
    consult-theme
    :preview-key '(:debounce 0.5 any)
@@ -316,6 +414,7 @@
         consult-async-input-throttle 0.5
         consult-async-input-debounce 0.5
         )
+  (message "consult hook")
   (run-hooks 'custo/after-consult-load-hook)
   )
 
@@ -435,12 +534,12 @@
   :defer t
   :commands recentf-open-files
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "f R" '(recentf-open-files :wk "full recentf files")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "f R" '(recentf-open-files :wk "full recentf files")
+                                  )
+                                )
+                            )
   )
 
 
@@ -459,21 +558,23 @@
 (use-package doom-modeline
   :defer t
   :hook
-  (after-init . doom-modeline-mode)
+  (custo/after-general-load . doom-modeline-mode)
   (server-after-make-frame . doom-modeline-refresh-font-width-cache)
   :config
-  (setq doom-modeline-height 28
-        )
+  (setq doom-modeline-height 28)
   )
-
 
 (use-package doom-themes
-  :after doom-modeline
-  :config
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
-  (consult-theme 'doom-challenger-deep)
+  :defer t
+  :hook
+  (doom-modeline-mode . (lambda ()
+                          (setq doom-themes-enable-bold t
+                                doom-themes-enable-italic t)
+                          (consult-theme 'doom-challenger-deep)
+                          )
+                      )
   )
+
 
 ;; for certian versions of emacs, we need to change the backgroun
 (add-hook 'tty-setup-hook
@@ -589,36 +690,23 @@
                              ))
 
 
-;; setup a special menu that tells us what keys are available
-;; based on the current mode, set pop-up delay to 0.1s
-(use-package which-key
-  :defer t
-  :hook (custo/after-general-load . (lambda ()
-                                      (which-key-mode)
-                                      )
-                                  )
-  :diminish which-key-mode
-  :config
-  (setq which-key-idle-delay 0.1)
-  (run-hooks 'custo/after-wk-load-hook)
-  )
 
 
 ;; better help menus
 (use-package helpful
   :defer t
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "h h" '(:ignore h :wk "helpful docs")
-                             "h h c" '(helpful-callable :wk "helpful callable")
-                             "h h f" '(helpful-function :wk "helpful function")
-                             "h h v" '(helpful-variable :wk "helpful variable")
-                             "h h k" '(helpful-key :wk "helpful key")
-                             "h h s" '(helpful-symbol :wk "helpful symbol")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "h h" '(:ignore h :wk "helpful docs")
+                                  "h h c" '(helpful-callable :wk "helpful callable")
+                                  "h h f" '(helpful-function :wk "helpful function")
+                                  "h h v" '(helpful-variable :wk "helpful variable")
+                                  "h h k" '(helpful-key :wk "helpful key")
+                                  "h h s" '(helpful-symbol :wk "helpful symbol")
+                                  )
+                                )
+                            )
   :commands (helpful-callable
              helpful-command
              helpful-function
@@ -669,89 +757,6 @@
   )
 
 
-;; better key binding
-(use-package general
-  :defer t
-  :commands (general-auto-unbind-keys
-             general-create-definer)
-  :hook
-  (after-init . (lambda ()
-                  (general-auto-unbind-keys)
-                  (general-create-definer custo/leader-key
-                    :states '(normal insert visual emacs)
-                    :prefix "SPC"
-                    :global-prefix "C-SPC")
-                  (general-create-definer custo/local-leader-key
-                    :states '(normal insert visual emacs)
-                    :prefix "SPC m"
-                    :global-prefix "C-SPC m")
-                  ;; define default keybinds
-                  (custo/leader-key
-                    "SPC" '(execute-extended-command :wk "M-x") 
-                    "TAB" '(evil-switch-to-windows-last-buffer :wk "switch to previous buffer")
-                    ":" '(execute-extended-command :wk "M-x")
-                    "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
-                    "a" '(:ignore t :wk "apps")
-                    "a e" '(eww :wk "eww")
-                    "a t" '(eshell :wk "eshell")
-                    "b" '(:ignore t :wk "buffer")
-                    "b d" '(kill-current-buffer :wk "destroy buffer")
-                    "b i" '(ibuffer :wk "ibuffer")
-                    "b r" '(revert-buffer-quick :wk "revert buffer")
-                    "c" '(:ignore t :wk "cursor")
-                    "c c" '(comment-line :wk "comment line")
-                    "f" '(:ignore f :wk "file")
-                    "f f" '(find-file :wk "find file")
-                    "f P" '(find-file-in-project-by-selected :wk "find file in project w/ regex")
-                    "f s" '(save-buffer :wk "save file")
-                    "h" '(:ignore t :wk "custo help")
-                    "h s" '(:ignore t :wk "straight")
-                    "h s p" '(straight-pull-all :wk "pull packages")
-                    "h s P" '(straight-pull-package-and-deps :wk "pull package")
-                    "h s b" '(straight-rebuild-all :wk "build packages")
-                    "h s B" '(straight-rebuild-package :wk "build package")
-                    "h s c" '(:ingore t :wk "cleaning")
-                    "h s c p" '(straight-prune-build :wk "prune builds")
-                    "h s c c" '(straight-prune-build-cache :wk "prune build cache only")
-                    "j" '(:ignore t :wk "jump")
-                    "j f" '(evil-jump-forward :wk "jump forward")
-                    "j b" '(evil-jump-backward :wk "jump forward")
-                    "m" '(:ignore t :wk "local-leader")
-                    "o" '(:ignore t :wk "org")
-                    "p" '(projectile-command-map :wk "projectile")
-                    "q" '(:ignore t :wk "quit")
-                    "q f" '(delete-frame :wk "delete frame")
-                    "q q" '(save-buffers-kill-emacs :wk "save and quit")
-                    "q Q" '(kill-emacs :wk "quit no-save")
-                    "s" '(:ignore t :wk "search")
-                    "t" '(:ignore t :wk "toggles")
-                    "t l" '(display-line-numbers-mode :wk "toggle line numbers")
-                    "t r" '((lambda ()
-                              (interactive)
-                              (custo/setup-font-faces))
-                            :wk "reset font-faces")
-                    "t t" '(toggle-truncate-lines :wk "toggle truncate lines")
-                    "w" '(:ignore t :wk "window")
-                    "w w" '(other-window :wk "other window")
-                    "w d" '(delete-window :wk "delete window")
-                    "w o" '(delete-other-windows :wk "delete other windows")
-                    "w h" '(evil-window-vsplit :wk "add window horizontally")
-                    "w v" '(evil-window-split :wk "add window vertically")
-                    )
-
-                  (custo/local-leader-key
-                    :keymaps 'prog-mode-map
-                    "=" '(:ignore t :wk "format")
-                    "d" '(:ignore t :wk "documentation")
-                    "g" '(:ignore t :wk "goto")
-                    "i" '(:ingore t :wk "insert")
-                    )
-
-                  (run-hooks 'custo/after-general-load-hook)
-                  )
-              )
-  )
-
 (use-package yasnippet-snippets
   :defer t
   :commands yasnippet-snippets-initialize
@@ -766,18 +771,18 @@
   :defer t
   :commands (yas-reload-all)
   :hook
-  (custo/after-general-load . (lambda ()
-                                (yasnippet-snippets-initialize)
-                                (js-react-redux-yasnippets-initialize)
-                                (yas-reload-all)
-                                )
-                            )
   (custo/after-wk-load . (lambda ()
-                           (custo/local-leader-key
-                             "i s" '(yas-insert-snippet :wk "insert snippet")
-                             )
+                           (yasnippet-snippets-initialize)
+                           (js-react-redux-yasnippets-initialize)
+                           (yas-reload-all)
                            )
                        )
+  (custo/after-general-load . (lambda ()
+                                (custo/local-leader-key
+                                  "i s" '(yas-insert-snippet :wk "insert snippet")
+                                  )
+                                )
+                            )
   (text-mode . yas-minor-mode-on)
   (prog-mode . yas-minor-mode-on)
   (conf-mode . yas-minor-mode-on)
@@ -790,26 +795,26 @@
   :defer t
   :commands (defhydra)
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (defhydra hydra-text-scale (:timeout 4)
-                             "scale text"
-                             ("j" (text-scale-adjust 0.1) "in")
-                             ("k" (text-scale-adjust -0.1) "out")
-                             ("f" nil "finished" :exit t)
-                             )
-                           (defhydra hydra-window-resize (:timeout 4)
-                             "resize window"
-                             ("l" enlarge-window "enlarge window")
-                             ("h" shrink-window "shrink window")
-                             ("q" nil "done" :exit t)
-                             )
-                           
-                           ;; since custo leader keys are defined, we can bind to them now :D
-                           (custo/leader-key
-                             "t s" '(hydra-text-scale/body :wk "scale text")
-                             "w r" '(hydra-window-resize/body :wk "resize window")
-                             )
-                           ))
+  (custo/after-general-load . (lambda ()
+                                (defhydra hydra-text-scale (:timeout 4)
+                                  "scale text"
+                                  ("j" (text-scale-adjust 0.1) "in")
+                                  ("k" (text-scale-adjust -0.1) "out")
+                                  ("f" nil "finished" :exit t)
+                                  )
+                                (defhydra hydra-window-resize (:timeout 4)
+                                  "resize window"
+                                  ("l" enlarge-window "enlarge window")
+                                  ("h" shrink-window "shrink window")
+                                  ("q" nil "done" :exit t)
+                                  )
+                                ;; since custo leader keys are defined, we can bind to them now :D
+                                (custo/leader-key
+                                  "t s" '(hydra-text-scale/body :wk "scale text")
+                                  "w r" '(hydra-window-resize/body :wk "resize window")
+                                  )
+                                )
+                            )
   )
 
 
@@ -829,12 +834,12 @@
                    )
   :commands (vundo)
   :hook
-  (evil-mode . (lambda ()
-                 (custo/leader-key
-                   "u" '(vundo :wk "visualize undo / redo")
-                   )
-                 )
-             )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "u" '(vundo :wk "visualize undo / redo")
+                                  )
+                                )
+                            )
   :config
   (setq vundo-glyph-alist vundo-unicode-symbols)
   )
@@ -847,26 +852,28 @@
   (prog-mode . evil-mc-mode)
   (markdown-mode . evil-mc-mode)
   (org-mode . evil-mc-mode)
-  :config
-  (custo/leader-key
-    :keymaps '(prog-mode-map markdown-mode-map org-mode-map)
-    "c a" '(evil-mc-make-all-cursors :wk "mc-mark and make all")
-    "c n" '(evil-mc-make-and-goto-next-match :wk "mc-mark and next")
-    "c p" '(evil-mc-make-and-goto-prev-match :wk "mc-mark and prev")
-    "c u" '(evil-mc-undo-all-cursors :wk "mc-mark undo all")
-    )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  :keymaps '(prog-mode-map markdown-mode-map org-mode-map)
+                                  "c a" '(evil-mc-make-all-cursors :wk "mc-mark and make all")
+                                  "c n" '(evil-mc-make-and-goto-next-match :wk "mc-mark and next")
+                                  "c p" '(evil-mc-make-and-goto-prev-match :wk "mc-mark and prev")
+                                  "c u" '(evil-mc-undo-all-cursors :wk "mc-mark undo all")
+                                  )
+                                )
+                            )
   )
 
 (use-package iedit
   :defer t
   :commands (iedit-mode)
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "c i" '(iedit-mode :wk "iedit")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "c i" '(iedit-mode :wk "iedit")
+                                  )
+                                )
+                            )
   )
 
 ;; setup project management
@@ -879,14 +886,14 @@
              projectile-project-root)
   :hook
   (vertico-mode . projectile-mode)
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "p" '(projectile-command-map :wk "projectile")
-                             :keymaps 'projectile-mode-map
-                             "p a" '(projectile-add-known-project :wk "add project")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "p" '(projectile-command-map :wk "projectile")
+                                  :keymaps 'projectile-mode-map
+                                  "p a" '(projectile-add-known-project :wk "add project")
+                                  )
+                                )
+                            )
   :custom
   ;; this allows projectile to use orderless
   (projectile-completion-system 'default)
@@ -900,14 +907,14 @@
   :commands (find-file-in-project
              ffip)
   :hook
-  (custo/after-wk-load . (lambda ()
-                       (custo/leader-key
-                         "f p" '(ffip :wk "find file in project")
-                         :keymaps 'projectile-mode-map
-                         "p f" '(ffip :wk "find file in project")
-                         )
-                       )
-                   )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "f p" '(ffip :wk "find file in project")
+                                  :keymaps 'projectile-mode-map
+                                  "p f" '(ffip :wk "find file in project")
+                                  )
+                                )
+                            )
   :config
   (setq ffip-use-rust-fd t)
   )
@@ -922,12 +929,12 @@
   :defer t
   :commands ranger
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "f d" '(ranger :wk "file directory")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "f d" '(ranger :wk "file directory")
+                                  )
+                                )
+                            )
   :config
   (setq ranger-preview-file nil
         ranger-show-literal t
@@ -972,29 +979,29 @@
              magit-stash
              )
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (defhydra hydra-smerge (:timeout 4)
-                             "smerge conflicts"
-                             ("q" nil "done" :exit t)
-                             ("n" smerge-next "next conflict")
-                             ("p" smerge-prev "prev conflict")
-                             ("u" smerge-keep-upper "keep upper")
-                             ("l" smerge-keep-lower "keep lower")
-                             ("b" smerge-keep-all "keep both")
-                             )
-                           (custo/leader-key
-                             "g" '(:ignore t :wk "magit")
-                             "g g" '(magit-status :wk "magit status")
-                             "g b" '(magit-branch :wk "magit branch")
-                             "g B" '(magit-blame :wk "magit blame")
-                             "g f" '(magit-fetch :wk "magit fetch")
-                             "g p" '(magit-pull :wk "magit pull")
-                             "g P" '(magit-push :wk "magit push")
-                             "g s" '(hydra-smerge/body :wk "smerge")
-                             "g S" '(magit-stash :wk "magit stash")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (defhydra hydra-smerge (:timeout 4)
+                                  "smerge conflicts"
+                                  ("q" nil "done" :exit t)
+                                  ("n" smerge-next "next conflict")
+                                  ("p" smerge-prev "prev conflict")
+                                  ("u" smerge-keep-upper "keep upper")
+                                  ("l" smerge-keep-lower "keep lower")
+                                  ("b" smerge-keep-all "keep both")
+                                  )
+                                (custo/leader-key
+                                  "g" '(:ignore t :wk "magit")
+                                  "g g" '(magit-status :wk "magit status")
+                                  "g b" '(magit-branch :wk "magit branch")
+                                  "g B" '(magit-blame :wk "magit blame")
+                                  "g f" '(magit-fetch :wk "magit fetch")
+                                  "g p" '(magit-pull :wk "magit pull")
+                                  "g P" '(magit-push :wk "magit push")
+                                  "g s" '(hydra-smerge/body :wk "smerge")
+                                  "g S" '(magit-stash :wk "magit stash")
+                                  )
+                                )
+                            )
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :config
@@ -1075,19 +1082,19 @@
   :defer t
   :commands (js-doc-insert-function-doc)
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/local-leader-key
-                             :keymaps '(js2-mode-map
-                                        rjsx-mode-map
-                                        typescript-mode-map
-                                        typescript-tsx-mode-map
-                                        svelte-mode-map
-                                        )
-                             "d" '(:ignore t :wk "jsdoc")
-                             "d f" '(js-doc-insert-function-doc :wk "jsdoc function")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/local-leader-key
+                                  :keymaps '(js2-mode-map
+                                             rjsx-mode-map
+                                             typescript-mode-map
+                                             typescript-tsx-mode-map
+                                             svelte-mode-map
+                                             )
+                                  "d" '(:ignore t :wk "jsdoc")
+                                  "d f" '(js-doc-insert-function-doc :wk "jsdoc function")
+                                  )
+                                )
+                            )
   )
 
 (use-package eslint-fix
@@ -1101,21 +1108,21 @@
   :commands (prettier-prettify)
   )
 
-(add-hook 'custo/after-wk-load-hook (lambda ()
-                                      (custo/local-leader-key
-                                        :keymaps '(js2-mode-map
-                                                   rsjx-mode-map
-                                                   typescript-mode-map
-                                                   typescript-tsx-mode-map
-                                                   svelte-mode-map
-                                                   web-mode-map)
-                                        "= =" '((lambda ()
-                                                  (interactive)
-                                                  (prettier-prettify)
-                                                  (eslint-fix)
-                                                  ) :wk "format with prettier and eslint")
-                                        )
-                                      )
+(add-hook 'custo/after-general-load-hook (lambda ()
+                                           (custo/local-leader-key
+                                             :keymaps '(js2-mode-map
+                                                        rsjx-mode-map
+                                                        typescript-mode-map
+                                                        typescript-tsx-mode-map
+                                                        svelte-mode-map
+                                                        web-mode-map)
+                                             "= =" '((lambda ()
+                                                       (interactive)
+                                                       (prettier-prettify)
+                                                       (eslint-fix)
+                                                       ) :wk "format with prettier and eslint")
+                                             )
+                                           )
           )
 
 (use-package scss-mode
@@ -1233,7 +1240,6 @@
                    )
   :defer t
   :hook (python-mode . pyenv-mode)
-  
   )
 
 
@@ -1488,15 +1494,15 @@
              org-babel-tangleorg-toggle-narrow-to-subtree
              )
   :hook
-  (custo/after-wk-load . (lambda ()
-                           ;; global key bindings
-                           (custo/leader-key
-                             "o a" '(org-agenda :wk "agenda")
-                             "o c" '(org-capture :wk "capture")
-                             "o t" '(org-todo-list :wk "list todos")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                ;; global key bindings
+                                (custo/leader-key
+                                  "o a" '(org-agenda :wk "agenda")
+                                  "o c" '(org-capture :wk "capture")
+                                  "o t" '(org-todo-list :wk "list todos")
+                                  )
+                                )
+                            )
   (org-mode . (lambda ()
                 (custo/org-mode-setup)
                 (org-babel-do-load-languages
@@ -1624,11 +1630,12 @@
   :defer t
   :commands (visual-fill-column-mode)
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "t v" '((lambda () (interactive) (call-interactively 'visual-fill-column-mode)) :wk "toggle visual-fill")
-                             )
-                           ))
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "t v" '((lambda () (interactive) (call-interactively 'visual-fill-column-mode)) :wk "toggle visual-fill")
+                                  )
+                                )
+                            )
   :config
   (setq visual-fill-column-width 100
         visual-fill-column-center-text t)
@@ -1638,12 +1645,12 @@
   :defer t
   :commands centaur-tabs-mode
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "t c" '(centaur-tabs-mode :wk "toggle centaur tabs")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "t c" '(centaur-tabs-mode :wk "toggle centaur tabs")
+                                  )
+                                )
+                            )
   :config
   (setq centaur-tabs-style "bar"
         centaur-tabs-height 28
@@ -1687,12 +1694,12 @@
   :defer t
   :commands circe
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "a c" '(circe :wk "circe")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "a c" '(circe :wk "circe")
+                                  )
+                                )
+                            )
   :config
   (defconst private-file (expand-file-name "~/.private.el"))
   (unless (file-exists-p private-file)
@@ -1725,14 +1732,14 @@
   :defer t
   :commands vterm
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "a T" '((lambda ()
-                                       (interactive)
-                                       (call-interactively 'vterm)) :wk "vterm")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "a T" '((lambda ()
+                                            (interactive)
+                                            (call-interactively 'vterm)) :wk "vterm")
+                                  )
+                                )
+                            )
   :config
   (setq vterm-timer-delay 0.1
         vterm-shell "fish")
@@ -1742,12 +1749,12 @@
   :defer t
   :commands prodigy
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "a p" '(prodigy :wk "prodigy")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "a p" '(prodigy :wk "prodigy")
+                                  )
+                                )
+                            )
   :config
   (prodigy-define-service
     :name "Megalith"
@@ -1792,14 +1799,14 @@
   :commands (devdocs-install
              devdocs-lookup)
   :hook
-  (custo/after-wk-load . (lambda ()
-                           (custo/leader-key
-                             "h d" '(:ignore t :wk "devdocs")
-                             "h d i" '(devdocs-install :wk "install devdocs")
-                             "h d l" '(devdocs-lookup :wk "lookup devdocs")
-                             )
-                           )
-                       )
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "h d" '(:ignore t :wk "devdocs")
+                                  "h d i" '(devdocs-install :wk "install devdocs")
+                                  "h d l" '(devdocs-lookup :wk "lookup devdocs")
+                                  )
+                                )
+                            )
   )
 
 (use-package gcmh
