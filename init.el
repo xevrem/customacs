@@ -365,11 +365,6 @@
   :after embark
   )
 
-(defun custo/corfu-lsp-setup ()
-  "Ensure corfu and lsp work better together."
-  (setq-local completion-styles '(orderless)
-              completion-category-defaults nil))
-
 (defun custo/lsp-mode-setup-completion ()
   (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
         '(orderless))) ;;
@@ -388,7 +383,6 @@
   :after (evil orderless)
   :hook
   (prog-mode . corfu-mode)
-  (lsp-mode . custo/corfu-lsp-setup)
   (lsp-completion-mode . custo/lsp-mode-setup-completion)
   :bind (:map corfu-map
               ("TAB" . corfu-next)
@@ -1006,18 +1000,18 @@
   :defer t
   :commands (tree-sitter-require)
   :hook
-  (after-init . (lambda ()
-                  (tree-sitter-require 'tsx)
-                  (tree-sitter-require 'html)
-                  (tree-sitter-require 'json)
-                  (tree-sitter-require 'css)
-                  (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
-                  (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
-                  (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
-                  (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
-                  (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
-                  )
-              )
+  (prog-mode . (lambda ()
+                 (tree-sitter-require 'tsx)
+                 (tree-sitter-require 'html)
+                 (tree-sitter-require 'json)
+                 (tree-sitter-require 'css)
+                 (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
+                 (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
+                 (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
+                 (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
+                 (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
+                 )
+             )
   )
 
 
