@@ -903,7 +903,6 @@
 (use-package ranger
   :defer t
   :commands ranger
-  :after dired
   :hook
   (custo/after-wk-load . (lambda ()
                            (custo/leader-key
@@ -965,7 +964,11 @@
                              "g g" '(magit-status :wk "magit status")
                              "g b" '(magit-branch :wk "magit branch")
                              "g B" '(magit-blame :wk "magit blame")
+                             "g f" '(magit-fetch :wk "magit fetch")
+                             "g p" '(magit-pull :wk "magit pull")
+                             "g P" '(magit-push :wk "magit push")
                              "g s" '(hydra-smerge/body :wk "smerge")
+                             "g S" '(magit-stash :wk "magit stash")
                              )
                            )
                        )
@@ -1316,8 +1319,8 @@
                python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
-    "g G" '(lsp-find-definition :wk "find definition")
-    "g g" '(lsp-goto-implementation :wk "goto definition")
+    "g g" '(lsp-find-definition :wk "find definition")
+    "g G" '(lsp-goto-implementation :wk "goto definition")
     "g R" '(lsp-ui-peek-find-references :wk "peek references")
     "g r" '(lsp-find-references :wk "find references")
     "g t" '(lsp-goto-type-definition :wk "goto type definition")
@@ -1717,7 +1720,7 @@
                        )
   :config
   (setq vterm-timer-delay 0.1
-        vterm-shell "nu")
+        vterm-shell "fish")
   )
 
 (use-package prodigy
