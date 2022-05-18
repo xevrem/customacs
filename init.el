@@ -770,10 +770,14 @@
                                 (yasnippet-snippets-initialize)
                                 (js-react-redux-yasnippets-initialize)
                                 (yas-reload-all)
-                                (custo/local-leader-key
-                                  "i s" '(yas-insert-snippet :wk "insert snippet"))
                                 )
                             )
+  (custo/after-wk-load . (lambda ()
+                           (custo/local-leader-key
+                             "i s" '(yas-insert-snippet :wk "insert snippet")
+                             )
+                           )
+                       )
   (text-mode . yas-minor-mode-on)
   (prog-mode . yas-minor-mode-on)
   (conf-mode . yas-minor-mode-on)
