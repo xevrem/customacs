@@ -204,6 +204,9 @@
 (defvar custo/after-wk-load-hook nil
   "Hook called after which key is loaded.")
 
+(defvar custo/after-load-hook nil
+  "Hook called after general-load hook.")
+
 ;;
 ;; PACKAGE CONFIGURATION
 ;;
@@ -343,6 +346,7 @@
                              )
                            (message "general hook")
                            (run-hooks 'custo/after-general-load-hook)
+                           (run-hooks 'custo/after-load-hook)
                            )
                        )
   )
@@ -557,12 +561,19 @@
 ;; add a better modeline
 (use-package doom-modeline
   :defer t
+  :commands (doom-modeline-mode
+             doom-modeline-refresh-font-width-cache)
   :hook
-  (custo/after-general-load . doom-modeline-mode)
+  (custo/after-load . doom-modeline-mode)
   (server-after-make-frame . doom-modeline-refresh-font-width-cache)
   :config
-  (setq doom-modeline-height 28)
+  (setq doom-modeline-height 26
+        doom-modeline-unicode-fallback t
+        doom-modeline-project-detection 'ffip
+        )
+  (doom-modeline-refresh-font-width-cache)
   )
+
 
 (use-package doom-themes
   :defer t
@@ -570,6 +581,8 @@
   (doom-modeline-mode . (lambda ()
                           (setq doom-themes-enable-bold t
                                 doom-themes-enable-italic t)
+                          (setq doom-challenger-deep-brighter-modeline t
+                                doom-challenger-deep-comment-bg t)
                           (consult-theme 'doom-challenger-deep)
                           )
                       )
