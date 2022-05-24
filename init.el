@@ -56,7 +56,6 @@
 (set-fringe-mode 10) ;; 'breathing' room
 ;; better line info
 (column-number-mode) ;; show column info
-;; (global-display-line-numbers-mode t) ;; display line numbers to the left
 (menu-bar--display-line-numbers-mode-relative) ;; make those line numbers relative
 
 ;; set global backup directory
@@ -100,8 +99,7 @@
             )
   )
 
-;; if in macOS, set size appropriately
-;; otherwise assume linux
+;; setup fonts and sizing regardless of OS
 (defun custo/setup-font-faces ()
   "Setup all customacs font faces."
   ;;re-disable GUI stuff we don't care about
