@@ -1705,6 +1705,7 @@
   :defer t
   :commands circe
   :hook
+  (circe-channel-mode . enable-circe-color-nicks)
   (custo/after-general-load . (lambda ()
                                 (custo/leader-key
                                   "a c" '(circe :wk "circe")
@@ -1735,7 +1736,6 @@
   (require 'circe-color-nicks)
   (setq circe-color-nicks-min-constrast-ratio 4.5
         circe-color-nicks-everywhere t)
-  :hook (circe-channel-mode . enable-circe-color-nicks)
   )
 
 
