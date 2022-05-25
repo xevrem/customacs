@@ -88,13 +88,6 @@
 ;; ugly flashes of unstyled Emacs.
 (setq-default inhibit-redisplay t
               inhibit-message t)
-(add-hook 'window-setup-hook
-          (lambda ()
-            (setq-default inhibit-redisplay nil
-                          inhibit-message nil)
-            (redisplay)
-            )
-          )
 
 ;; Site files tend to use `load-file', which emits "Loading X..." messages in
 ;; the echo area, which in turn triggers a redisplay. Redisplays can have a
@@ -103,7 +96,16 @@
 (define-advice load-file (:override (file) silence)
   (load file nil 'nomessage))
 
-;; Undo our `load-file' advice above, to limit the scope of any edge cases it
-;; may introduce down the road.
-(define-advice startup--load-user-init-file (:before (&rest _) init-doom)
-  (advice-remove #'load-file #'load-file@silence))
+
+(add-hook 'window-setup-hook
+          (lambda ()
+            ;; reset redisplay 
+            (setq-default inhibit-redisplay nil
+                          inhibit-message nil)
+            ;; Undo our `load-file' advice above, to limit the scope of any edge cases it
+            ;; may introduce down the road.
+            (advice-remove #'load-file #'load-file@silence)
+            (redisplay)
+            )
+          )
+
