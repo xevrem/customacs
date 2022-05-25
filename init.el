@@ -579,7 +579,7 @@
   (doom-modeline-mode . (lambda ()
                           (setq doom-themes-enable-bold t
                                 doom-themes-enable-italic t)
-                          (setq doom-challenger-deep-brighter-modeline t
+                          (setq doom-challenger-deep-brighter-comments t
                                 doom-challenger-deep-comment-bg t)
                           (consult-theme 'doom-challenger-deep)
                           )
