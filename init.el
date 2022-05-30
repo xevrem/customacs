@@ -1167,7 +1167,6 @@
 
 (use-package rustic
   :defer t
-  :after prog-mode
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
@@ -1175,8 +1174,8 @@
         lsp-rust-server 'rust-analyzer
         rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
-        lsp-rust-analyzer-display-parameter-hints t
-        lsp-rust-analyzer-server-display-inlay-hints t
+        lsp-rust-analyzer-display-parameter-hints nil
+        lsp-rust-analyzer-server-display-inlay-hints nil
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
@@ -1188,6 +1187,8 @@
     "c c" '(rustic-cargo-clippy :wk "cargo clippy")
     "c r" '(rustic-cargo-run :wk "cargo run")
     "c t" '(rustic-cargo-test :wk "cargo test")
+    "t" '(:ignore t :wk "toggles")
+    "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
     )
   )
 
@@ -1199,7 +1200,7 @@
 
 (use-package omnisharp
   :defer t
-  :mode ("\\.cs\\'" . omnisharp-mode)
+  ;; :mode ("\\.cs\\'" . omnisharp-mode)
   :after (corfu csharp-mode)
   :commands omnisharp-install-server
   :hook
