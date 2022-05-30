@@ -780,7 +780,8 @@
 ;; yasnippet
 (use-package yasnippet
   :defer t
-  :commands (yas-reload-all)
+  :commands (yas-reload-all
+             yas-insert-snippet)
   :hook
   (custo/after-wk-load . (lambda ()
                            (yasnippet-snippets-initialize)
