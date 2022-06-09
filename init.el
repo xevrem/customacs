@@ -1171,12 +1171,12 @@
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'lsp-mode
-        lsp-rust-server 'rust-analyzer
+        rustic-lsp-client 'eglot
+        ;; lsp-rust-server 'rust-analyzer
         rustic-lsp-server 'rust-analyzer
-        lsp-rust-analyzer-proc-macro-enable t
-        lsp-rust-analyzer-display-parameter-hints nil
-        lsp-rust-analyzer-server-display-inlay-hints nil
+        ;; lsp-rust-analyzer-proc-macro-enable t
+        ;; lsp-rust-analyzer-display-parameter-hints nil
+        ;; lsp-rust-analyzer-server-display-inlay-hints nil
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
@@ -1188,24 +1188,19 @@
     "c c" '(rustic-cargo-clippy :wk "cargo clippy")
     "c r" '(rustic-cargo-run :wk "cargo run")
     "c t" '(rustic-cargo-test :wk "cargo test")
-    "t" '(:ignore t :wk "toggles")
-    "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+    ;; "t" '(:ignore t :wk "toggles")
+    ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
     )
   )
 
 (use-package csharp-mode
   :defer t
-  :after prog-mode
   :mode "\\.cs\\'"
   )
 
 (use-package omnisharp
   :defer t
-  ;; :mode ("\\.cs\\'" . omnisharp-mode)
-  :after (corfu csharp-mode)
   :commands omnisharp-install-server
-  :hook
-  (csharp-mode . omnisharp-mode)
   :config
   (setq indent-tabs-mode nil
         c-syntactic-indentation t
@@ -1305,29 +1300,75 @@
 
 (use-package dockerfile-mode
   :defer t
-  :after prog-mode
   :mode ("\\Dockerfile\\'"))
 
+(use-package eglot
+  :defer t
+  :commands (eglot eglot-ensure)
+  :hook
+  ;; (csharp-mode . eglot-ensure)
+  (js2-mode . eglot-ensure)
+  (rjsx-mode . eglot-ensure)
+  (typescript-mode . eglot-ensure)
+  (typescript-tsx-mode . eglot-ensure)
+  :bind
+  ([remap xref-goto-xref] . custo/xref-goto-xref)
+  :config
+  (custo/local-leader-key
+    :keymaps '(
+               js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               ;; elixir-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               ;; web-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
+               ;; svelte-mode-map
+               ;; csharp-mode-map
+               ;; python-mode-map
+               )
+    "a" '(eglot-code-actions :wk "excute code action")
+    "g g" '(eglot-find-implementation :wk "find definition")
+    "g G" '(eglot-find-declaration :wk "goto definition")
+    ;; "g R" '(xref-find-references :wk "peek references")
+    "g r" '(xref-find-references :wk "find references")
+    "g t" '(eglot-find-typeDefinition :wk "goto type definition")
+    "h" '(:ignore t :wk "help")
+    ;; "h g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "h d" '(eldoc-doc-buffer :wk "describe symbol")
+    ;; "h s" '(lsp-signature-activate :wk "show signature")
+    ;; "o" '(lsp-ui-imenu :wk "overview")
+    "r" '(:ignore t :wk "refactor")
+    "r r" '(eglot-rename :wk "rename")
+    "=" '(:ignore t :wk "format")
+    "= l" '(eglot-format-buffer :wk "format with lsp")
+    )
+  )
 
 ;; lsp-mode
 (use-package lsp-mode
   :defer t
   :commands (lsp lsp-deferred lsp-mode-map)
   :hook 
-  (js2-mode . lsp-deferred)
-  (rsjx-mode . lsp-deferred)
-  (typescript-mode . lsp-deferred)
-  (typescript-tsx-mode . lsp-deferred)
-  (rustic-mode . lsp-deferred)
-  (elixir-mode . lsp-deferred)
-  (scss-mode . lsp-deferred)
-  (yaml-mode . lsp-deferred)
-  (json-mode . lsp-deferred)
-  (web-mode . lsp-deferred)
-  (go-mode . lsp-deferred)
-  (svelte-mode . lsp-deferred)
+  ;; (js2-mode . lsp-deferred)
+  ;; (rsjx-mode . lsp-deferred)
+  ;; (typescript-mode . lsp-deferred)
+  ;; (typescript-tsx-mode . lsp-deferred)
+  ;; (rustic-mode . lsp-deferred)
+  ;; (elixir-mode . lsp-deferred)
+  ;; (scss-mode . lsp-deferred)
+  ;; (yaml-mode . lsp-deferred)
+  ;; (json-mode . lsp-deferred)
+  ;; (web-mode . lsp-deferred)
+  ;; (go-mode . lsp-deferred)
+  ;; (svelte-mode . lsp-deferred)
   (csharp-mode . lsp-deferred)
-  (gdscript-mode . lsp-deferred)
+  ;; (gdscript-mode . lsp-deferred)
   (lsp-mode . lsp-enable-which-key-integration)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1347,21 +1388,21 @@
         )
   (custo/local-leader-key
     :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               scss-mode-map
-               web-mode-map
-               go-mode-map
-               gdscript-mode-map
-               svelte-mode-map
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; rustic-mode-map
+               ;; elixir-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               ;; web-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
+               ;; svelte-mode-map
                csharp-mode-map
-               python-mode-map
+               ;; python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :wk "find definition")
@@ -1420,21 +1461,21 @@
     )
   (custo/local-leader-key
     :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
-               elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               scss-mode-map
-               web-mode-map
-               go-mode-map
-               gdscript-mode-map
-               svelte-mode-map
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; rustic-mode-map
+               ;; elixir-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               ;; web-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
+               ;; svelte-mode-map
                csharp-mode-map
-               python-mode-map
+               ;; python-mode-map
                )
     "e" '(:ignore t :wk "errors")
     )
