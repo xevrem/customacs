@@ -21,11 +21,11 @@
               ;; disable until we actually call it
               recentf-auto-cleanup 'never
               ;; adjust the startup size of emacs
-              default-frame-alist `((width . 120) ;; chars
-                                    (height . 39) ;; lines
+              default-frame-alist `((width . 150) ;; chars
+                                    (height . 50) ;; lines
                                     )
-              initial-frame-alist `((width . 120) ;; chars
-                                    (height . 39) ;; lines
+              initial-frame-alist `((width . 150) ;; chars
+                                    (height . 50) ;; lines
                                     )
               ;; Resizing the Emacs frame can be a terribly expensive part of changing the
               ;; font. By inhibiting this, we halve startup times, particularly when we use
@@ -136,8 +136,8 @@
       (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
       )
     ;; set current frame to 120x45 characters
-    (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 39)
+    (set-frame-width (frame-focus) 150)
+    (set-frame-height (frame-focus) 50)
     (doom-modeline-refresh-font-width-cache)
     )
   )
@@ -1753,7 +1753,7 @@
                                 )
                             )
   :config
-  (setq vterm-timer-delay 0.1
+  (setq vterm-timer-delay 0.016
         vterm-shell "fish")
   )
 
