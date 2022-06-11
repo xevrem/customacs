@@ -1175,8 +1175,9 @@
         lsp-rust-server 'rust-analyzer
         rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
-        lsp-rust-analyzer-display-parameter-hints nil
-        lsp-rust-analyzer-server-display-inlay-hints nil
+        lsp-rust-analyzer-display-parameter-hints t
+        lsp-rust-analyzer-server-display-inlay-hints t
+        lsp-rust-analyzer-inlay-hints-mode nil
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
