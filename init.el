@@ -215,13 +215,11 @@
   :commands (exec-path-from-shell-initialize)
   :hook
   (after-init . (lambda ()
-                  (when (memq window-system '(mac ns x))
-                    (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
-                    (exec-path-from-shell-initialize)
-                    )
-                  (when (daemonp)
-                    (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
-                    (exec-path-from-shell-initialize)
+                  (unless (daemonp)
+                    (when (memq window-system '(mac ns x))
+                      (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
+                      (exec-path-from-shell-initialize)
+                      )
                     )
                   )
               )
@@ -476,46 +474,46 @@
   (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
         '(orderless))) ;;
 
-(defun corfu-move-to-minibuffer ()
-  "Allows corfu to be moved into the minibuffer for better orderless completions."
-  (interactive)
-  (let ((completion-extra-properties corfu--extra)
-        completion-cycle-threshold completion-cycling)
-    (apply #'consult-completion-in-region completion-in-region--data)
-    )
-  )
+;; (defun corfu-move-to-minibuffer ()
+;;   "Allows corfu to be moved into the minibuffer for better orderless completions."
+;;   (interactive)
+;;   (let ((completion-extra-properties corfu--extra)
+;;         completion-cycle-threshold completion-cycling)
+;;     (apply #'consult-completion-in-region completion-in-region--data)
+;;     )
+;;   )
 
-(use-package corfu
-  :defer t
-  :hook
-  (prog-mode . corfu-mode)
-  (lsp-completion-mode . custo/lsp-mode-setup-completion)
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<tab>" . corfu-next)
-              ("S-TAB" . corfu-previous)
-              ("<backtab>" . corfu-previous)
-              ("SPC" . corfu-move-to-minibuffer)
-              ("<space>" . corfu-move-to-minibuffer)
-              )
-  :custom
-  (corfu-cycle t)
-  :config
-  ;; since we use orderless
-  (setq corfu-quit-at-boundary nil
-        corfu-auto nil
-        )
-  (use-package cape
-    :straight (:type git
-                     :host github
-                     :repo "minad/cape")
-    :config
-    (add-to-list 'completion-at-point-functions #'cape-file)
-    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-    (add-to-list 'completion-at-point-functions #'cape-keyword)
-    (add-to-list 'completion-at-point-functions #'cape-symbol)
-    )
-  )
+;; (use-package corfu
+;;   :defer t
+;;   :hook
+;;   (prog-mode . corfu-mode)
+;;   (lsp-completion-mode . custo/lsp-mode-setup-completion)
+;;   :bind (:map corfu-map
+;;               ("TAB" . corfu-next)
+;;               ("<tab>" . corfu-next)
+;;               ("S-TAB" . corfu-previous)
+;;               ("<backtab>" . corfu-previous)
+;;               ("SPC" . corfu-move-to-minibuffer)
+;;               ("<space>" . corfu-move-to-minibuffer)
+;;               )
+;;   :custom
+;;   (corfu-cycle t)
+;;   :config
+;;   ;; since we use orderless
+;;   (setq corfu-quit-at-boundary nil
+;;         corfu-auto nil
+;;         )
+;;   (use-package cape
+;;     :straight (:type git
+;;                      :host github
+;;                      :repo "minad/cape")
+;;     :config
+;;     (add-to-list 'completion-at-point-functions #'cape-file)
+;;     (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+;;     (add-to-list 'completion-at-point-functions #'cape-keyword)
+;;     (add-to-list 'completion-at-point-functions #'cape-symbol)
+;;     )
+;;   )
 
 
 
@@ -1042,6 +1040,11 @@
                 (tree-sitter-hl-mode)
                 )
             )
+  (eglot--managed-mode . (lambda ()
+                           (tree-sitter-mode)
+                           (tree-sitter-hl-mode)
+                           )
+                       )
   )
 
 (use-package tree-sitter-langs
@@ -1168,7 +1171,7 @@
 
 (use-package rustic
   :defer t
-  :mode ("\\.rs\\'" . rustic-mode)
+  ;; :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'eglot
@@ -1302,13 +1305,41 @@
   :defer t
   :mode ("\\Dockerfile\\'"))
 
+(use-package company
+  :defer t
+  :hook
+  (prog-mode . company-mode)
+  :bind (:map prog-mode-map
+              ("TAB" . company-complete)
+              ("<tab>" . company-complete)
+              :map company-mode-map
+              ("TAB" . company-select-next)
+              ("<tab>" . company-select-next)
+              ("S-TAB" . company-select-previous)
+              ("<backtab>" . company-select-previous)
+              ;;               ("SPC" . corfu-move-to-minibuffer)
+              ;;               ("<space>" . corfu-move-to-minibuffer)
+              )
+  :config
+  (setq company-auto-complete nil
+        company-async-redisplay-delay 0.250
+        company-echo-delay 0.250
+        company-idle-delay 0.500
+        company-tooltip-idle-delay 1.000
+        company-minimum-prefix-length 3
+        company-tooltip-limit 10
+        company-backends '(company-capf)
+        company-dabbrev-other-buffers nil
+        )
+  )
+
 (use-package eglot
   :defer t
   :commands (eglot eglot-ensure)
   :hook
-  ;; (csharp-mode . eglot-ensure)
   (js2-mode . eglot-ensure)
   (rjsx-mode . eglot-ensure)
+  (rustic-mode . eglot-ensure)
   (typescript-mode . eglot-ensure)
   (typescript-tsx-mode . eglot-ensure)
   :bind
@@ -1321,28 +1352,14 @@
                typescript-mode-map
                typescript-tsx-mode-map
                rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; svelte-mode-map
-               ;; csharp-mode-map
-               ;; python-mode-map
                )
     "a" '(eglot-code-actions :wk "excute code action")
     "g g" '(eglot-find-implementation :wk "find definition")
     "g G" '(eglot-find-declaration :wk "goto definition")
-    ;; "g R" '(xref-find-references :wk "peek references")
     "g r" '(xref-find-references :wk "find references")
     "g t" '(eglot-find-typeDefinition :wk "goto type definition")
     "h" '(:ignore t :wk "help")
-    ;; "h g" '(lsp-ui-doc-glance :wk "glance symbol")
     "h d" '(eldoc-doc-buffer :wk "describe symbol")
-    ;; "h s" '(lsp-signature-activate :wk "show signature")
-    ;; "o" '(lsp-ui-imenu :wk "overview")
     "r" '(:ignore t :wk "refactor")
     "r r" '(eglot-rename :wk "rename")
     "=" '(:ignore t :wk "format")
@@ -1360,20 +1377,20 @@
   ;; (typescript-mode . lsp-deferred)
   ;; (typescript-tsx-mode . lsp-deferred)
   ;; (rustic-mode . lsp-deferred)
-  ;; (elixir-mode . lsp-deferred)
-  ;; (scss-mode . lsp-deferred)
-  ;; (yaml-mode . lsp-deferred)
-  ;; (json-mode . lsp-deferred)
-  ;; (web-mode . lsp-deferred)
-  ;; (go-mode . lsp-deferred)
-  ;; (svelte-mode . lsp-deferred)
+  (elixir-mode . lsp-deferred)
+  (scss-mode . lsp-deferred)
+  (yaml-mode . lsp-deferred)
+  (json-mode . lsp-deferred)
+  (web-mode . lsp-deferred)
+  (go-mode . lsp-deferred)
+  (svelte-mode . lsp-deferred)
   (csharp-mode . lsp-deferred)
-  ;; (gdscript-mode . lsp-deferred)
+  (gdscript-mode . lsp-deferred)
   (lsp-mode . lsp-enable-which-key-integration)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (setq lsp-completion-provider :none
+  (setq lsp-completion-provider :capf
         ;; lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable t
@@ -1393,16 +1410,16 @@
                ;; typescript-mode-map
                ;; typescript-tsx-mode-map
                ;; rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; svelte-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               web-mode-map
+               go-mode-map
+               gdscript-mode-map
+               svelte-mode-map
                csharp-mode-map
-               ;; python-mode-map
+               python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :wk "find definition")
@@ -1466,16 +1483,16 @@
                ;; typescript-mode-map
                ;; typescript-tsx-mode-map
                ;; rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; svelte-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               web-mode-map
+               go-mode-map
+               gdscript-mode-map
+               svelte-mode-map
                csharp-mode-map
-               ;; python-mode-map
+               python-mode-map
                )
     "e" '(:ignore t :wk "errors")
     )
