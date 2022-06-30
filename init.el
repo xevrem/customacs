@@ -1005,10 +1005,10 @@
                                   "g b" '(magit-branch :wk "magit branch")
                                   "g B" '(magit-blame :wk "magit blame")
                                   "g f" '(magit-fetch :wk "magit fetch")
-                                  "g p" '(magit-pull :wk "magit pull")
+                                  "g F" '(magit-pull :wk "magit pull")
                                   "g P" '(magit-push :wk "magit push")
                                   "g s" '(hydra-smerge/body :wk "smerge")
-                                  "g S" '(magit-stash :wk "magit stash")
+                                  "g z" '(magit-stash :wk "magit stash")
                                   )
                                 )
                             )
@@ -1310,9 +1310,9 @@
   :hook
   (prog-mode . company-mode)
   :bind (:map prog-mode-map
-              ("TAB" . company-complete)
-              ("<tab>" . company-complete)
-              :map company-mode-map
+              ("TAB" . company-indent-or-complete-common)
+              ("<tab>" . company-indent-or-complete-common)
+              :map company-active-map
               ("TAB" . company-select-next)
               ("<tab>" . company-select-next)
               ("S-TAB" . company-select-previous)
@@ -1322,16 +1322,23 @@
               )
   :config
   (setq company-auto-complete nil
+        company-auto-complete-chars nil
         company-async-redisplay-delay 0.250
         company-echo-delay 0.250
-        company-idle-delay 0.500
+        company-idle-delay nil
         company-tooltip-idle-delay 1.000
         company-minimum-prefix-length 3
         company-tooltip-limit 10
         company-backends '(company-capf)
         company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers nil
         )
   )
+
+(use-package flymake)
+(use-package json)
+(use-package eldoc)
+(use-package xref)
 
 (use-package eglot
   :defer t
@@ -1354,6 +1361,8 @@
                rustic-mode-map
                )
     "a" '(eglot-code-actions :wk "excute code action")
+    "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flymake :wk "list errors")
     "g g" '(eglot-find-implementation :wk "find definition")
     "g G" '(eglot-find-declaration :wk "goto definition")
     "g r" '(xref-find-references :wk "find references")
@@ -1465,14 +1474,14 @@
   :hook
   (lsp-mode . flycheck-mode)
   :config
-  (setq flycheck-disabled-checkers
-        (append flycheck-disabled-checkers
-                '(javascript-jshint)))
-  (setq flycheck-temp-prefix ".flycheck")
-  (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  ;; (setq flycheck-disabled-checkers
+  ;;       (append flycheck-disabled-checkers
+  ;;               '(javascript-jshint)))
+  ;; (setq flycheck-temp-prefix ".flycheck")
+  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/leader-key
     "e" '(:ignore t :wk "errors")
     )
