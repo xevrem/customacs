@@ -1175,10 +1175,10 @@
         rustic-lsp-client 'eglot
         ;; lsp-rust-server 'rust-analyzer
         rustic-lsp-server 'rust-analyzer
-        lsp-rust-analyzer-proc-macro-enable t
-        lsp-rust-analyzer-display-parameter-hints t
-        lsp-rust-analyzer-server-display-inlay-hints t
-        lsp-rust-analyzer-inlay-hints-mode t
+        ;; lsp-rust-analyzer-proc-macro-enable t
+        ;; lsp-rust-analyzer-display-parameter-hints t
+        ;; lsp-rust-analyzer-server-display-inlay-hints t
+        ;; lsp-rust-analyzer-inlay-hints-mode t
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
