@@ -215,13 +215,11 @@
   :commands (exec-path-from-shell-initialize)
   :hook
   (after-init . (lambda ()
-                  (when (memq window-system '(mac ns x))
-                    (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
-                    (exec-path-from-shell-initialize)
-                    )
-                  (when (daemonp)
-                    (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
-                    (exec-path-from-shell-initialize)
+                  (unless (daemonp)
+                    (when (memq window-system '(mac ns x))
+                      (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
+                      (exec-path-from-shell-initialize)
+                      )
                     )
                   )
               )
@@ -379,6 +377,7 @@
              consult-ripgrep
              consult-theme
              consult-xref
+             consult-flymake
              )
   :hook
   (custo/after-general-load . (lambda ()
@@ -426,12 +425,14 @@
   :hook
   (custo/after-consult-load . (lambda ()
                                 (custo/leader-key
+                                  :keymaps 'lsp-mode-map
                                   "e l" '(consult-flycheck :wk "list errors")
                                   )
                                 )
                             )
   :config
   (custo/local-leader-key
+    :keymaps 'lsp-mode-map
     "e l" '(consult-flycheck :wk "list errors")
     )
   )
@@ -476,46 +477,46 @@
   (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
         '(orderless))) ;;
 
-(defun corfu-move-to-minibuffer ()
-  "Allows corfu to be moved into the minibuffer for better orderless completions."
-  (interactive)
-  (let ((completion-extra-properties corfu--extra)
-        completion-cycle-threshold completion-cycling)
-    (apply #'consult-completion-in-region completion-in-region--data)
-    )
-  )
+;; (defun corfu-move-to-minibuffer ()
+;;   "Allows corfu to be moved into the minibuffer for better orderless completions."
+;;   (interactive)
+;;   (let ((completion-extra-properties corfu--extra)
+;;         completion-cycle-threshold completion-cycling)
+;;     (apply #'consult-completion-in-region completion-in-region--data)
+;;     )
+;;   )
 
-(use-package corfu
-  :defer t
-  :hook
-  (prog-mode . corfu-mode)
-  (lsp-completion-mode . custo/lsp-mode-setup-completion)
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<tab>" . corfu-next)
-              ("S-TAB" . corfu-previous)
-              ("<backtab>" . corfu-previous)
-              ("SPC" . corfu-move-to-minibuffer)
-              ("<space>" . corfu-move-to-minibuffer)
-              )
-  :custom
-  (corfu-cycle t)
-  :config
-  ;; since we use orderless
-  (setq corfu-quit-at-boundary nil
-        corfu-auto nil
-        )
-  (use-package cape
-    :straight (:type git
-                     :host github
-                     :repo "minad/cape")
-    :config
-    (add-to-list 'completion-at-point-functions #'cape-file)
-    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-    (add-to-list 'completion-at-point-functions #'cape-keyword)
-    (add-to-list 'completion-at-point-functions #'cape-symbol)
-    )
-  )
+;; (use-package corfu
+;;   :defer t
+;;   :hook
+;;   (prog-mode . corfu-mode)
+;;   (lsp-completion-mode . custo/lsp-mode-setup-completion)
+;;   :bind (:map corfu-map
+;;               ("TAB" . corfu-next)
+;;               ("<tab>" . corfu-next)
+;;               ("S-TAB" . corfu-previous)
+;;               ("<backtab>" . corfu-previous)
+;;               ("SPC" . corfu-move-to-minibuffer)
+;;               ("<space>" . corfu-move-to-minibuffer)
+;;               )
+;;   :custom
+;;   (corfu-cycle t)
+;;   :config
+;;   ;; since we use orderless
+;;   (setq corfu-quit-at-boundary nil
+;;         corfu-auto nil
+;;         )
+;;   (use-package cape
+;;     :straight (:type git
+;;                      :host github
+;;                      :repo "minad/cape")
+;;     :config
+;;     (add-to-list 'completion-at-point-functions #'cape-file)
+;;     (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+;;     (add-to-list 'completion-at-point-functions #'cape-keyword)
+;;     (add-to-list 'completion-at-point-functions #'cape-symbol)
+;;     )
+;;   )
 
 
 
@@ -579,9 +580,10 @@
   (doom-modeline-mode . (lambda ()
                           (setq doom-themes-enable-bold t
                                 doom-themes-enable-italic t)
-                          (setq doom-challenger-deep-brighter-comments t
-                                doom-challenger-deep-comment-bg t)
-                          (consult-theme 'doom-challenger-deep)
+                          ;; (setq doom-challenger-deep-brighter-comments t
+                          ;;       doom-challenger-deep-comment-bg t)
+                          ;; (consult-theme 'doom-challenger-deep)
+                          (consult-theme 'doom-moonlight)
                           )
                       )
   )
@@ -1007,10 +1009,10 @@
                                   "g b" '(magit-branch :wk "magit branch")
                                   "g B" '(magit-blame :wk "magit blame")
                                   "g f" '(magit-fetch :wk "magit fetch")
-                                  "g p" '(magit-pull :wk "magit pull")
+                                  "g F" '(magit-pull :wk "magit pull")
                                   "g P" '(magit-push :wk "magit push")
                                   "g s" '(hydra-smerge/body :wk "smerge")
-                                  "g S" '(magit-stash :wk "magit stash")
+                                  "g z" '(magit-stash :wk "magit stash")
                                   )
                                 )
                             )
@@ -1042,6 +1044,11 @@
                 (tree-sitter-hl-mode)
                 )
             )
+  (eglot--managed-mode . (lambda ()
+                           (tree-sitter-mode)
+                           (tree-sitter-hl-mode)
+                           )
+                       )
   )
 
 (use-package tree-sitter-langs
@@ -1070,7 +1077,6 @@
 ;; better javascript mode
 (use-package js2-mode
   :defer t
-  :after prog-mode
   :mode ("\\.js\\'" "\\.cjs\\'")
   :config
   (setq js-indent-level 2)
@@ -1079,13 +1085,11 @@
 ;; teach js2-mode how to jsx
 (use-package rjsx-mode
   :defer t
-  :after prog-mode
   :mode ("components\\/.*\\.js\\'" "\\.jsx\\'")
   )
 
 (use-package svelte-mode
   :defer t
-  :after prog-mode
   :mode ("\\.svelte\\'")
   )
 
@@ -1139,7 +1143,6 @@
 
 (use-package scss-mode
   :defer t
-  :after prog-mode
   :mode ("\\.scss\\'" "\\.css\\'")
   :config
   (setq css-indent-offset 2)
@@ -1147,7 +1150,6 @@
 
 (use-package web-mode
   :defer t
-  :after prog-mode
   :mode ("\\.html\\'" )
   :config
   (setq web-mode-css-indent-offset 2
@@ -1157,7 +1159,6 @@
 
 (use-package typescript-mode
   :defer t
-  :after prog-mode
   :mode "\\.ts\\'"
   :config
   (setq typescript-indent-level 2)
@@ -1168,7 +1169,7 @@
 
 (use-package rustic
   :defer t
-  :mode ("\\.rs\\'" . rustic-mode)
+  ;; :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'eglot
@@ -1218,7 +1219,6 @@
 
 (use-package elixir-mode
   :defer t
-  :after prog-mode
   :mode ("\\.ex\\'"
          "\\.eex\\'"
          "\\.exs\\'"
@@ -1228,13 +1228,11 @@
 
 (use-package python-black
   :defer t
-  :after python
   :commands (python-black-buffer)
   )
 
 (use-package python
   :defer t
-  :after prog-mode
   :mode ("\\.py\\'" . python-mode)
   :config
   (custo/local-leader-key
@@ -1254,7 +1252,6 @@
 
 (use-package json-mode
   :defer t
-  :after prog-mode
   :mode "\\.json\\'"
   :config
   (setq json-indent-offset 2)
@@ -1262,7 +1259,6 @@
 
 (use-package yaml-mode
   :defer t
-  :after prog-mode
   :mode ("\\.yml\\'" "\\.yaml\\'")
   :config
   (setq yaml-indent-offset 2)
@@ -1277,12 +1273,10 @@
 
 (use-package gdscript-mode
   :defer t
-  :after prog-mode
   :mode "\\.gd\\'")
 
 (use-package go-mode
   :defer t
-  :after prog-mode
   :mode "\\.go\\'"
   )
 
@@ -1291,7 +1285,6 @@
                     :repo "skuro/plantuml-mode"
                     :branch "develop")
   :defer t
-  :after prog-mode
   :mode ("\\.puml\\'" "\\.pml\\'")
   :config
   (setq plantuml-default-exec-mode 'server
@@ -1303,52 +1296,106 @@
   :defer t
   :mode ("\\Dockerfile\\'"))
 
+(use-package company
+  :defer t
+  :hook
+  (prog-mode . company-mode)
+  :bind (:map prog-mode-map
+              ("TAB" . company-indent-or-complete-common)
+              ("<tab>" . company-indent-or-complete-common)
+              :map company-active-map
+              ("TAB" . company-select-next)
+              ("<tab>" . company-select-next)
+              ("S-TAB" . company-select-previous)
+              ("<backtab>" . company-select-previous)
+              ;;               ("SPC" . corfu-move-to-minibuffer)
+              ;;               ("<space>" . corfu-move-to-minibuffer)
+              )
+  :config
+  (setq company-auto-complete nil
+        company-auto-complete-chars nil
+        company-async-redisplay-delay 0.250
+        company-echo-delay 0.250
+        company-idle-delay nil
+        company-tooltip-idle-delay 1.000
+        company-minimum-prefix-length 3
+        company-tooltip-limit 10
+        company-backends '(company-capf)
+        company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers nil
+        )
+  )
+
+(use-package flymake
+  :hook
+  (custo/after-general-load . (lambda()
+                                     (custo/leader-key
+                                       :keymaps '(
+                                                  js2-mode-map
+                                                  rjsx-mode-map
+                                                  typescript-mode-map
+                                                  typescript-tsx-mode-map
+                                                  rustic-mode-map
+                                                  python-mode-map
+                                                  )
+                                       "e" '(:ignore t :wk "errors")
+                                       "e l" '(consult-flymake :wk "list errors")
+                                       )
+                                     (custo/local-leader-key
+                                       :keymaps '(
+                                                  js2-mode-map
+                                                  rjsx-mode-map
+                                                  typescript-mode-map
+                                                  typescript-tsx-mode-map
+                                                  rustic-mode-map
+                                                  python-mode-map
+                                                  )
+                                       "e" '(:ignore t :wk "errors")
+                                       "e l" '(consult-flymake :wk "list errors")
+                                       )
+                                     )
+                                 )
+  )
+(use-package json)
+(use-package eldoc)
+(use-package xref)
+
 (use-package eglot
   :defer t
   :commands (eglot eglot-ensure)
   :hook
-  ;; (csharp-mode . eglot-ensure)
+  (custo/after-general-load . (lambda ()
+                                (custo/local-leader-key
+                                  :keymaps '(
+                                             js2-mode-map
+                                             rjsx-mode-map
+                                             typescript-mode-map
+                                             typescript-tsx-mode-map
+                                             rustic-mode-map
+                                             python-mode-map
+                                             )
+                                  "a" '(eglot-code-actions :wk "excute code action")
+                                  "g g" '(eglot-find-implementation :wk "find definition")
+                                  "g G" '(eglot-find-declaration :wk "goto definition")
+                                  "g r" '(xref-find-references :wk "find references")
+                                  "g t" '(eglot-find-typeDefinition :wk "goto type definition")
+                                  "h" '(:ignore t :wk "help")
+                                  "h d" '(eldoc-doc-buffer :wk "describe symbol")
+                                  "r" '(:ignore t :wk "refactor")
+                                  "r r" '(eglot-rename :wk "rename")
+                                  "=" '(:ignore t :wk "format")
+                                  "= l" '(eglot-format-buffer :wk "format with lsp")
+                                  )
+                                )
+                            )
   (js2-mode . eglot-ensure)
   (rjsx-mode . eglot-ensure)
+  (rustic-mode . eglot-ensure)
   (typescript-mode . eglot-ensure)
   (typescript-tsx-mode . eglot-ensure)
+  (python-mode . eglot-ensure)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
-  :config
-  (custo/local-leader-key
-    :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; svelte-mode-map
-               ;; csharp-mode-map
-               ;; python-mode-map
-               )
-    "a" '(eglot-code-actions :wk "excute code action")
-    "g g" '(eglot-find-implementation :wk "find definition")
-    "g G" '(eglot-find-declaration :wk "goto definition")
-    ;; "g R" '(xref-find-references :wk "peek references")
-    "g r" '(xref-find-references :wk "find references")
-    "g t" '(eglot-find-typeDefinition :wk "goto type definition")
-    "h" '(:ignore t :wk "help")
-    ;; "h g" '(lsp-ui-doc-glance :wk "glance symbol")
-    "h d" '(eldoc-doc-buffer :wk "describe symbol")
-    ;; "h s" '(lsp-signature-activate :wk "show signature")
-    ;; "o" '(lsp-ui-imenu :wk "overview")
-    "r" '(:ignore t :wk "refactor")
-    "r r" '(eglot-rename :wk "rename")
-    "=" '(:ignore t :wk "format")
-    "= l" '(eglot-format-buffer :wk "format with lsp")
-    )
   )
 
 ;; lsp-mode
@@ -1361,20 +1408,20 @@
   ;; (typescript-mode . lsp-deferred)
   ;; (typescript-tsx-mode . lsp-deferred)
   ;; (rustic-mode . lsp-deferred)
-  ;; (elixir-mode . lsp-deferred)
-  ;; (scss-mode . lsp-deferred)
-  ;; (yaml-mode . lsp-deferred)
-  ;; (json-mode . lsp-deferred)
-  ;; (web-mode . lsp-deferred)
-  ;; (go-mode . lsp-deferred)
-  ;; (svelte-mode . lsp-deferred)
+  (elixir-mode . lsp-deferred)
+  (scss-mode . lsp-deferred)
+  (yaml-mode . lsp-deferred)
+  (json-mode . lsp-deferred)
+  (web-mode . lsp-deferred)
+  (go-mode . lsp-deferred)
+  (svelte-mode . lsp-deferred)
   (csharp-mode . lsp-deferred)
-  ;; (gdscript-mode . lsp-deferred)
+  (gdscript-mode . lsp-deferred)
   (lsp-mode . lsp-enable-which-key-integration)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
   :config
-  (setq lsp-completion-provider :none
+  (setq lsp-completion-provider :capf
         ;; lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable t
@@ -1388,23 +1435,24 @@
         lsp-use-plists t
         )
   (custo/local-leader-key
-    :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; svelte-mode-map
-               csharp-mode-map
-               ;; python-mode-map
-               )
+    :keymaps 'lsp-mode-map
+    ;; :keymaps '(
+    ;;            ;; js2-mode-map
+    ;;            ;; rjsx-mode-map
+    ;;            ;; typescript-mode-map
+    ;;            ;; typescript-tsx-mode-map
+    ;;            ;; rustic-mode-map
+    ;;            elixir-mode-map
+    ;;            yaml-mode-map
+    ;;            json-mode-map
+    ;;            scss-mode-map
+    ;;            web-mode-map
+    ;;            go-mode-map
+    ;;            gdscript-mode-map
+    ;;            svelte-mode-map
+    ;;            csharp-mode-map
+    ;;            ;; python-mode-map
+    ;;            )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :wk "find definition")
     "g G" '(lsp-goto-implementation :wk "goto definition")
@@ -1423,12 +1471,12 @@
     )
   )
 
-(use-package lsp-pyright
-  :defer t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp-deferred)))
-  )
+;; (use-package lsp-pyright
+;;   :defer t
+;;   :hook (python-mode . (lambda ()
+;;                          (require 'lsp-pyright)
+;;                          (lsp-deferred)))
+;;   )
 
 ;; prettier lsp
 (use-package lsp-ui
@@ -1449,35 +1497,37 @@
   :hook
   (lsp-mode . flycheck-mode)
   :config
-  (setq flycheck-disabled-checkers
-        (append flycheck-disabled-checkers
-                '(javascript-jshint)))
-  (setq flycheck-temp-prefix ".flycheck")
-  (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  ;; (setq flycheck-disabled-checkers
+  ;;       (append flycheck-disabled-checkers
+  ;;               '(javascript-jshint)))
+  ;; (setq flycheck-temp-prefix ".flycheck")
+  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/leader-key
+    :keymaps 'lsp-mode-map
     "e" '(:ignore t :wk "errors")
     )
   (custo/local-leader-key
-    :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
-               ;; elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; svelte-mode-map
-               csharp-mode-map
-               ;; python-mode-map
-               )
+    :keymaps 'lsp-mode-map
+    ;; :keymaps '(
+    ;;            js2-mode-map
+    ;;            rjsx-mode-map
+    ;;            typescript-mode-map
+    ;;            typescript-tsx-mode-map
+    ;;            rustic-mode-map
+    ;;            elixir-mode-map
+    ;;            yaml-mode-map
+    ;;            json-mode-map
+    ;;            scss-mode-map
+    ;;            web-mode-map
+    ;;            go-mode-map
+    ;;            gdscript-mode-map
+    ;;            svelte-mode-map
+    ;;            csharp-mode-map
+    ;;            python-mode-map
+    ;;            )
     "e" '(:ignore t :wk "errors")
     )
   )
