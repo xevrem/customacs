@@ -294,6 +294,7 @@
                              "b r" '(revert-buffer-quick :wk "revert buffer")
                              "c" '(:ignore t :wk "cursor")
                              "c c" '(comment-line :wk "comment line")
+                             "e" '(:ignore t :wk "errors")
                              "f" '(:ignore f :wk "file")
                              "f f" '(find-file :wk "find file")
                              "f P" '(find-file-in-project-by-selected :wk "find file in project w/ regex")
@@ -425,7 +426,6 @@
   :hook
   (custo/after-consult-load . (lambda ()
                                 (custo/leader-key
-                                  :keymaps 'lsp-mode-map
                                   "e l" '(consult-flycheck :wk "list errors")
                                   )
                                 )
@@ -1044,11 +1044,6 @@
                 (tree-sitter-hl-mode)
                 )
             )
-  (eglot--managed-mode . (lambda ()
-                           (tree-sitter-mode)
-                           (tree-sitter-hl-mode)
-                           )
-                       )
   )
 
 (use-package tree-sitter-langs
@@ -1172,13 +1167,13 @@
   ;; :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
-        ;; lsp-rust-server 'rust-analyzer
+        rustic-lsp-client 'lsp
+        lsp-rust-server 'rust-analyzer
         rustic-lsp-server 'rust-analyzer
-        ;; lsp-rust-analyzer-proc-macro-enable t
-        ;; lsp-rust-analyzer-display-parameter-hints t
-        ;; lsp-rust-analyzer-server-display-inlay-hints t
-        ;; lsp-rust-analyzer-inlay-hints-mode t
+        lsp-rust-analyzer-proc-macro-enable t
+        lsp-rust-analyzer-display-parameter-hints t
+        lsp-rust-analyzer-server-display-inlay-hints t
+        lsp-rust-analyzer-inlay-hints-mode t
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
@@ -1190,8 +1185,8 @@
     "c c" '(rustic-cargo-clippy :wk "cargo clippy")
     "c r" '(rustic-cargo-run :wk "cargo run")
     "c t" '(rustic-cargo-test :wk "cargo test")
-    ;; "t" '(:ignore t :wk "toggles")
-    ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+    "t" '(:ignore t :wk "toggles")
+    "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
     )
   )
 
@@ -1326,88 +1321,16 @@
         )
   )
 
-(use-package flymake
-  :hook
-  (custo/after-general-load . (lambda()
-                                     (custo/leader-key
-                                       :keymaps '(
-                                                  js2-mode-map
-                                                  rjsx-mode-map
-                                                  typescript-mode-map
-                                                  typescript-tsx-mode-map
-                                                  rustic-mode-map
-                                                  python-mode-map
-                                                  )
-                                       "e" '(:ignore t :wk "errors")
-                                       "e l" '(consult-flymake :wk "list errors")
-                                       )
-                                     (custo/local-leader-key
-                                       :keymaps '(
-                                                  js2-mode-map
-                                                  rjsx-mode-map
-                                                  typescript-mode-map
-                                                  typescript-tsx-mode-map
-                                                  rustic-mode-map
-                                                  python-mode-map
-                                                  )
-                                       "e" '(:ignore t :wk "errors")
-                                       "e l" '(consult-flymake :wk "list errors")
-                                       )
-                                     )
-                                 )
-  )
-(use-package json)
-(use-package eldoc)
-(use-package xref)
-
-(use-package eglot
-  :defer t
-  :commands (eglot eglot-ensure)
-  :hook
-  (custo/after-general-load . (lambda ()
-                                (custo/local-leader-key
-                                  :keymaps '(
-                                             js2-mode-map
-                                             rjsx-mode-map
-                                             typescript-mode-map
-                                             typescript-tsx-mode-map
-                                             rustic-mode-map
-                                             python-mode-map
-                                             )
-                                  "a" '(eglot-code-actions :wk "excute code action")
-                                  "g g" '(eglot-find-implementation :wk "find definition")
-                                  "g G" '(eglot-find-declaration :wk "goto definition")
-                                  "g r" '(xref-find-references :wk "find references")
-                                  "g t" '(eglot-find-typeDefinition :wk "goto type definition")
-                                  "h" '(:ignore t :wk "help")
-                                  "h d" '(eldoc-doc-buffer :wk "describe symbol")
-                                  "r" '(:ignore t :wk "refactor")
-                                  "r r" '(eglot-rename :wk "rename")
-                                  "=" '(:ignore t :wk "format")
-                                  "= l" '(eglot-format-buffer :wk "format with lsp")
-                                  )
-                                )
-                            )
-  (js2-mode . eglot-ensure)
-  (rjsx-mode . eglot-ensure)
-  (rustic-mode . eglot-ensure)
-  (typescript-mode . eglot-ensure)
-  (typescript-tsx-mode . eglot-ensure)
-  (python-mode . eglot-ensure)
-  :bind
-  ([remap xref-goto-xref] . custo/xref-goto-xref)
-  )
-
 ;; lsp-mode
 (use-package lsp-mode
   :defer t
   :commands (lsp lsp-deferred lsp-mode-map)
   :hook 
-  ;; (js2-mode . lsp-deferred)
-  ;; (rsjx-mode . lsp-deferred)
-  ;; (typescript-mode . lsp-deferred)
-  ;; (typescript-tsx-mode . lsp-deferred)
-  ;; (rustic-mode . lsp-deferred)
+  (js2-mode . lsp-deferred)
+  (rsjx-mode . lsp-deferred)
+  (typescript-mode . lsp-deferred)
+  (typescript-tsx-mode . lsp-deferred)
+  (rustic-mode . lsp-deferred)
   (elixir-mode . lsp-deferred)
   (scss-mode . lsp-deferred)
   (yaml-mode . lsp-deferred)
@@ -1435,24 +1358,23 @@
         lsp-use-plists t
         )
   (custo/local-leader-key
-    :keymaps 'lsp-mode-map
-    ;; :keymaps '(
-    ;;            ;; js2-mode-map
-    ;;            ;; rjsx-mode-map
-    ;;            ;; typescript-mode-map
-    ;;            ;; typescript-tsx-mode-map
-    ;;            ;; rustic-mode-map
-    ;;            elixir-mode-map
-    ;;            yaml-mode-map
-    ;;            json-mode-map
-    ;;            scss-mode-map
-    ;;            web-mode-map
-    ;;            go-mode-map
-    ;;            gdscript-mode-map
-    ;;            svelte-mode-map
-    ;;            csharp-mode-map
-    ;;            ;; python-mode-map
-    ;;            )
+    :keymaps '(
+               js2-mode-map
+               rjsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               web-mode-map
+               go-mode-map
+               gdscript-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               python-mode-map
+               )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :wk "find definition")
     "g G" '(lsp-goto-implementation :wk "goto definition")
@@ -1471,12 +1393,12 @@
     )
   )
 
-;; (use-package lsp-pyright
-;;   :defer t
-;;   :hook (python-mode . (lambda ()
-;;                          (require 'lsp-pyright)
-;;                          (lsp-deferred)))
-;;   )
+(use-package lsp-pyright
+  :defer t
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp-deferred)))
+  )
 
 ;; prettier lsp
 (use-package lsp-ui
@@ -1497,38 +1419,17 @@
   :hook
   (lsp-mode . flycheck-mode)
   :config
-  ;; (setq flycheck-disabled-checkers
-  ;;       (append flycheck-disabled-checkers
-  ;;               '(javascript-jshint)))
-  ;; (setq flycheck-temp-prefix ".flycheck")
-  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
-  (custo/leader-key
-    :keymaps 'lsp-mode-map
-    "e" '(:ignore t :wk "errors")
-    )
+  (setq flycheck-disabled-checkers
+        (append flycheck-disabled-checkers
+                '(javascript-jshint)))
+  (setq flycheck-temp-prefix ".flycheck")
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/local-leader-key
-    :keymaps 'lsp-mode-map
-    ;; :keymaps '(
-    ;;            js2-mode-map
-    ;;            rjsx-mode-map
-    ;;            typescript-mode-map
-    ;;            typescript-tsx-mode-map
-    ;;            rustic-mode-map
-    ;;            elixir-mode-map
-    ;;            yaml-mode-map
-    ;;            json-mode-map
-    ;;            scss-mode-map
-    ;;            web-mode-map
-    ;;            go-mode-map
-    ;;            gdscript-mode-map
-    ;;            svelte-mode-map
-    ;;            csharp-mode-map
-    ;;            python-mode-map
-    ;;            )
     "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flycheck :wk "list errors")
     )
   )
 
