@@ -161,7 +161,7 @@
 
 ;; setup straight for package management, its much better than use-package
 (setq straight-use-package-by-default t
-      straight-repository-branch "develop"
+      straight-repository-branch "master"
       ;; single file for caching autoloads
       straight-cache-autoloads t
       ;; NOTE: requires python3 and watchexec
@@ -307,7 +307,6 @@
                              "h s B" '(straight-rebuild-package :wk "build package")
                              "h s c" '(:ingore t :wk "cleaning")
                              "h s c p" '(straight-prune-build :wk "prune builds")
-                             "h s c c" '(straight-prune-build-cache :wk "prune build cache only")
                              "j" '(:ignore t :wk "jump")
                              "j f" '(evil-jump-forward :wk "jump forward")
                              "j b" '(evil-jump-backward :wk "jump forward")
@@ -1172,8 +1171,8 @@
         rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
         lsp-rust-analyzer-display-parameter-hints t
-        lsp-rust-analyzer-server-display-inlay-hints t
-        lsp-rust-analyzer-inlay-hints-mode t
+        lsp-rust-analyzer-server-display-inlay-hints nil
+        lsp-rust-analyzer-inlay-hints-mode nil
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
