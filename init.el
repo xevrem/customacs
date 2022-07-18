@@ -212,17 +212,25 @@
 ;; get shell variables
 (use-package exec-path-from-shell
   :defer t
-  :commands (exec-path-from-shell-initialize)
+  :commands (exec-path-from-shell-initialize
+             exec-path-from-shell-copy-env)
   :hook
   (after-init . (lambda ()
                   (unless (daemonp)
                     (when (memq window-system '(mac ns x))
+                      (message "setup env vars")
                       (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
                       (exec-path-from-shell-initialize)
                       )
                     )
                   )
               )
+  ;; (server-after-make-frame . (lambda ()
+  ;;                              (message "setup env vars for daemon")
+  ;;                              (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
+  ;;                              (exec-path-from-shell-initialize)
+  ;;                              )
+  ;;                          )
   )
 
 
