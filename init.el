@@ -581,8 +581,8 @@
                                 doom-themes-enable-italic t)
                           ;; (setq doom-challenger-deep-brighter-comments t
                           ;;       doom-challenger-deep-comment-bg t)
-                          ;; (consult-theme 'doom-challenger-deep)
-                          (consult-theme 'doom-moonlight)
+                          (consult-theme 'doom-challenger-deep)
+                          ;; (consult-theme 'doom-moonlight)
                           )
                       )
   )
