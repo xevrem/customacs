@@ -1235,11 +1235,14 @@
 
 (use-package python
   :defer t
-  :mode ("\\.py\\'" . python-mode)
+  ;; :mode ("\\.py\\'" . python-mode)
   :config
   (custo/local-leader-key
     :keymaps '(python-mode-map)
-    "= =" '(python-black-buffer :wk "format with black"))
+    "= =" '(python-black-buffer :wk "format with black")
+    "= r" '(python-black-region :wk "format region with black")
+    "= s" '(python-black-statement :wk "format statement with black")
+    )
   )
 
 (use-package pyenv-mode
@@ -1249,6 +1252,13 @@
                    )
   :defer t
   :hook (python-mode . pyenv-mode)
+  :config
+  (custo/local-leader-key
+    :keymaps '(python-mode-map)
+    "p" '(:ignore t :wk "pyenv")
+    "p s" '(pyenv-mode-set :wk "set pyenv environment")
+    "p u" '(pyenv-mode-unset :wk "unset pyenv environment")
+    )
   )
 
 
