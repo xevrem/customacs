@@ -1757,15 +1757,15 @@
   :hook
   (custo/after-general-load . (lambda ()
                                 (custo/leader-key
-                                  "a T" '((lambda ()
+                                  "a v" '((lambda ()
                                             (interactive)
-                                            (call-interactively 'vterm)) :wk "vterm")
+                                            (call-interactively (vterm t))) :wk "vterm")
                                   )
                                 )
                             )
   :config
   (setq vterm-timer-delay 0.016
-        vterm-shell "fish")
+        vterm-shell "nu")
   )
 
 (use-package prodigy
