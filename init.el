@@ -1360,7 +1360,7 @@
   (lsp-mode . lsp-enable-which-key-integration)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
-  ([remap evil-lookup] . custo/xref-goto-xref)
+  ([remap evil-lookup] . lsp-describe-thing-at-point)
   :config
   (setq lsp-completion-provider :none
         ;; lsp-file-watch-threshold 100
