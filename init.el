@@ -1363,12 +1363,12 @@
   (setq lsp-completion-provider :none
         ;; lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
-        lsp-lens-enable nil;
+        lsp-lens-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
         lsp-idle-delay 1.0
         lsp-log-io nil
         lsp-enable-snippet nil ;; disable snippet completion as it causes more problems than it helps
-        lsp-modeline-diagnostics-enable t;; disable warnings that usually get in the way
+        lsp-modeline-diagnostics-enable nil;; disable warnings that usually get in the way
         lsp-lense-debounce-interval 0.5 ;; set it to a more sane value
         lsp-lense-place-position 'above-line
         lsp-use-plists t
@@ -1420,7 +1420,7 @@
 (use-package lsp-ui
   :defer t
   :config
-  (setq lsp-ui-doc-enable nil;
+  (setq lsp-ui-doc-enable nil
         lsp-ui-doc-position 'top
         lsp-ui-doc-show-with-cursor t
         lsp-ui-doc-delay 1.0
@@ -1764,7 +1764,7 @@
                             )
   :config
   (setq vterm-timer-delay 0.016
-        vterm-shell "nu")
+        vterm-shell "fish")
   )
 
 (use-package prodigy
