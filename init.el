@@ -108,9 +108,9 @@
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
-    (set-face-attribute 'default nil :font (font-spec :family "MesloLGS Nerd Font Mono" :size 20 :weight 'regular))
+    (set-face-attribute 'default nil :font (font-spec :family "MesloLGM Nerd Font Mono" :size 20 :weight 'regular))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGS Nerd Font Mono" :size 20 :weight 'regular))
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGM Nerd Font Mono" :size 20 :weight 'regular))
     ;; Set the variable pitch face which is the same for mac and linux
     (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
     ;; after org-mode we want to adjust font sizes
@@ -484,46 +484,46 @@
   (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
         '(orderless))) ;;
 
-;; (defun corfu-move-to-minibuffer ()
-;;   "Allows corfu to be moved into the minibuffer for better orderless completions."
-;;   (interactive)
-;;   (let ((completion-extra-properties corfu--extra)
-;;         completion-cycle-threshold completion-cycling)
-;;     (apply #'consult-completion-in-region completion-in-region--data)
-;;     )
-;;   )
+(defun corfu-move-to-minibuffer ()
+  "Allows corfu to be moved into the minibuffer for better orderless completions."
+  (interactive)
+  (let ((completion-extra-properties corfu--extra)
+        completion-cycle-threshold completion-cycling)
+    (apply #'consult-completion-in-region completion-in-region--data)
+    )
+  )
 
-;; (use-package corfu
-;;   :defer t
-;;   :hook
-;;   (prog-mode . corfu-mode)
-;;   (lsp-completion-mode . custo/lsp-mode-setup-completion)
-;;   :bind (:map corfu-map
-;;               ("TAB" . corfu-next)
-;;               ("<tab>" . corfu-next)
-;;               ("S-TAB" . corfu-previous)
-;;               ("<backtab>" . corfu-previous)
-;;               ("SPC" . corfu-move-to-minibuffer)
-;;               ("<space>" . corfu-move-to-minibuffer)
-;;               )
-;;   :custom
-;;   (corfu-cycle t)
-;;   :config
-;;   ;; since we use orderless
-;;   (setq corfu-quit-at-boundary nil
-;;         corfu-auto nil
-;;         )
-;;   (use-package cape
-;;     :straight (:type git
-;;                      :host github
-;;                      :repo "minad/cape")
-;;     :config
-;;     (add-to-list 'completion-at-point-functions #'cape-file)
-;;     (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-;;     (add-to-list 'completion-at-point-functions #'cape-keyword)
-;;     (add-to-list 'completion-at-point-functions #'cape-symbol)
-;;     )
-;;   )
+(use-package corfu
+  :defer t
+  :hook
+  (prog-mode . corfu-mode)
+  (lsp-completion-mode . custo/lsp-mode-setup-completion)
+  :bind (:map corfu-map
+              ("TAB" . corfu-next)
+              ("<tab>" . corfu-next)
+              ("S-TAB" . corfu-previous)
+              ("<backtab>" . corfu-previous)
+              ("SPC" . corfu-move-to-minibuffer)
+              ("<space>" . corfu-move-to-minibuffer)
+              )
+  :custom
+  (corfu-cycle t)
+  :config
+  ;; since we use orderless
+  (setq corfu-quit-at-boundary nil
+        corfu-auto nil
+        )
+  (use-package cape
+    :straight (:type git
+                     :host github
+                     :repo "minad/cape")
+    :config
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'cape-keyword)
+    (add-to-list 'completion-at-point-functions #'cape-symbol)
+    )
+  )
 
 
 
@@ -1308,35 +1308,33 @@
   :defer t
   :mode ("\\Dockerfile\\'"))
 
-(use-package company
-  :defer t
-  :hook
-  (prog-mode . company-mode)
-  :bind (:map prog-mode-map
-              ("TAB" . company-indent-or-complete-common)
-              ("<tab>" . company-indent-or-complete-common)
-              :map company-active-map
-              ("TAB" . company-select-next)
-              ("<tab>" . company-select-next)
-              ("S-TAB" . company-select-previous)
-              ("<backtab>" . company-select-previous)
-              ;;               ("SPC" . corfu-move-to-minibuffer)
-              ;;               ("<space>" . corfu-move-to-minibuffer)
-              )
-  :config
-  (setq company-auto-complete nil
-        company-auto-complete-chars nil
-        company-async-redisplay-delay 0.250
-        company-echo-delay 0.250
-        company-idle-delay nil
-        company-tooltip-idle-delay 1.000
-        company-minimum-prefix-length 3
-        company-tooltip-limit 10
-        company-backends '(company-capf)
-        company-dabbrev-other-buffers nil
-        company-dabbrev-code-other-buffers nil
-        )
-  )
+;; (use-package company
+;;   :defer t
+;;   :hook
+;;   (prog-mode . company-mode)
+;;   :bind (:map prog-mode-map
+;;               ("TAB" . company-indent-or-complete-common)
+;;               ("<tab>" . company-indent-or-complete-common)
+;;               :map company-active-map
+;;               ("TAB" . company-select-next)
+;;               ("<tab>" . company-select-next)
+;;               ("S-TAB" . company-select-previous)
+;;               ("<backtab>" . company-select-previous)
+;;               )
+;;   :config
+;;   (setq company-auto-complete nil
+;;         company-auto-complete-chars nil
+;;         company-async-redisplay-delay 0.250
+;;         company-echo-delay 0.250
+;;         company-idle-delay nil
+;;         company-tooltip-idle-delay 1.000
+;;         company-minimum-prefix-length 3
+;;         company-tooltip-limit 10
+;;         company-backends '(company-capf)
+;;         company-dabbrev-other-buffers nil
+;;         company-dabbrev-code-other-buffers nil
+;;         )
+;;   )
 
 ;; lsp-mode
 (use-package lsp-mode
@@ -1360,11 +1358,12 @@
   (lsp-mode . lsp-enable-which-key-integration)
   :bind
   ([remap xref-goto-xref] . custo/xref-goto-xref)
+  ([remap evil-lookup] . lsp-describe-thing-at-point)
   :config
-  (setq lsp-completion-provider :capf
+  (setq lsp-completion-provider :none
         ;; lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
-        lsp-lens-enable t
+        lsp-lens-enable nil;
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
         lsp-idle-delay 1.0
         lsp-log-io nil
@@ -1421,7 +1420,7 @@
 (use-package lsp-ui
   :defer t
   :config
-  (setq lsp-ui-doc-enable t
+  (setq lsp-ui-doc-enable nil;
         lsp-ui-doc-position 'top
         lsp-ui-doc-show-with-cursor t
         lsp-ui-doc-delay 1.0
