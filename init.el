@@ -136,8 +136,8 @@
       (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
       )
     ;; set current frame to 120x45 characters
-    (set-frame-width (frame-focus) 137)
-    (set-frame-height (frame-focus) 35)
+    (set-frame-width (frame-focus) 147)
+    (set-frame-height (frame-focus) 37)
     (doom-modeline-refresh-font-width-cache)
     )
   )
@@ -204,6 +204,9 @@
 
 (defvar custo/after-load-hook nil
   "Hook called after general-load hook.")
+
+(defvar custo/after-orderless-init-hook nil
+  "Hook called after orderless init.")
 
 ;;
 ;; PACKAGE CONFIGURATION
@@ -464,6 +467,7 @@
                                                         (variable (styles orderless)))
                         orderless-component-separator #'orderless-escapable-split-on-space ;; allow escaping space with backslash!
                         )
+                  (run-hooks 'custo/after-orderless-init-hook)
                   )
               )
   )
@@ -513,19 +517,24 @@
   (setq corfu-quit-at-boundary nil
         corfu-auto nil
         )
-  (use-package cape
+  
+  )
+
+(use-package cape
     :straight (:type git
                      :host github
                      :repo "minad/cape")
-    :config
-    (add-to-list 'completion-at-point-functions #'cape-file)
-    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-    (add-to-list 'completion-at-point-functions #'cape-keyword)
-    (add-to-list 'completion-at-point-functions #'cape-symbol)
+    :defer t
+    :commands (cape-file cape-dabbref cape-keyword cape-symbol)
+    :hook
+    (custo/after-orderless-init . (lambda ()
+                                          (add-to-list 'completion-at-point-functions #'cape-file)
+                                          (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+                                          (add-to-list 'completion-at-point-functions #'cape-keyword)
+                                          (add-to-list 'completion-at-point-functions #'cape-symbol)
+                                          )
+                                )
     )
-  )
-
-
 
 (use-package emacs
   :init
@@ -642,18 +651,19 @@
 (use-package rainbow-identifiers
   :defer t
   :hook
-  (prog-mode . rainbow-identifiers-mode)
+  (emacs-lisp-mode . rainbow-identifiers-mode)
   :config
   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
         rainbow-identifiers-cie-l*a*b*-lightness 75
         rainbow-identifiers-cie-l*a*b*-saturation 50)
+  (rainbow-identifiers-mode 1)
   )
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
   :defer t
   :hook
-  (prog-mode . rainbow-delimiters-mode)
+  (emacs-lisp-mode . rainbow-delimiters-mode)
   )
 
 (defun custo/smart-parens ()
@@ -1174,7 +1184,7 @@
   ;; :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'lsp
+        rustic-lsp-client 'eglot
         lsp-rust-server 'rust-analyzer
         rustic-lsp-server 'rust-analyzer
         lsp-rust-analyzer-proc-macro-enable t
@@ -1336,16 +1346,49 @@
 ;;         )
 ;;   )
 
+(use-package eglot
+  :defer t
+  :hook
+  (eglot-managed-mode . (lambda ()
+                          (rainbow-identifiers-mode 1)
+                          (rainbow-delimiters-mode 1)
+                          )
+                      )
+  (js2-mode . eglot-ensure)
+  (rsjx-mode . eglot-ensure)
+  (typescript-mode . eglot-ensure)
+  (typescript-tsx-mode . eglot-ensure)
+  (rustic-mode . eglot-ensure)
+  :bind
+  (:map eglot-mode-map
+        ([remap xref-goto-xref] . custo/xref-goto-xref)
+        ([remap evil-lookup] . eldoc)
+        )
+  :config
+  (custo/local-leader-key
+    :keymaps 'eglot-mode-map
+    "a" '(:ignore t :wk "quick actions")
+    "a a" '(eglot-code-actions :wk "quick actions")
+    "g d" '(xref-find-definitions :wk "xref find definition")
+    "g D" '(eglot-find-declaration :wk "eglot find declaration")
+    "g i" '(eglot-find-implementation :wk "eglot find implementation")
+    "g r" '(xref-find-references :wk "xref find references")
+    "g t" '(eglot-find-typeDefinition :wk "eglot find type definition")
+    "r" '(eglot-rename :wk "rename")
+    "= b" '(eglot-format-buffer :wk "format buffer")
+    )
+  )
+
 ;; lsp-mode
 (use-package lsp-mode
   :defer t
   :commands (lsp lsp-deferred lsp-mode-map)
   :hook 
-  (js2-mode . lsp-deferred)
-  (rsjx-mode . lsp-deferred)
-  (typescript-mode . lsp-deferred)
-  (typescript-tsx-mode . lsp-deferred)
-  (rustic-mode . lsp-deferred)
+  ;; (js2-mode . lsp-deferred)
+  ;; (rsjx-mode . lsp-deferred)
+  ;; (typescript-mode . lsp-deferred)
+  ;; (typescript-tsx-mode . lsp-deferred)
+  ;; (rustic-mode . lsp-deferred)
   (elixir-mode . lsp-deferred)
   (scss-mode . lsp-deferred)
   (yaml-mode . lsp-deferred)
@@ -1355,10 +1398,17 @@
   (svelte-mode . lsp-deferred)
   (csharp-mode . lsp-deferred)
   (gdscript-mode . lsp-deferred)
-  (lsp-mode . lsp-enable-which-key-integration)
+  (lsp-mode . (lambda ()
+                (lsp-enable-which-key-integration)
+                (rainbow-identifiers-mode 1)
+                (rainbow-delimiters-mode 1)
+                )
+            )
   :bind
-  ([remap xref-goto-xref] . custo/xref-goto-xref)
-  ([remap evil-lookup] . lsp-describe-thing-at-point)
+  (:map lsp-mode-map
+        ([remap xref-goto-xref] . custo/xref-goto-xref)
+        ([remap evil-lookup] . lsp-describe-thing-at-point)
+        )
   :config
   (setq lsp-completion-provider :none
         ;; lsp-file-watch-threshold 100
@@ -1375,11 +1425,11 @@
         )
   (custo/local-leader-key
     :keymaps '(
-               js2-mode-map
-               rjsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; rustic-mode-map
                elixir-mode-map
                yaml-mode-map
                json-mode-map
@@ -1435,15 +1485,32 @@
   :hook
   (lsp-mode . flycheck-mode)
   :config
-  (setq flycheck-disabled-checkers
-        (append flycheck-disabled-checkers
-                '(javascript-jshint)))
+  ;; (setq flycheck-disabled-checkers
+  ;;       (append flycheck-disabled-checkers
+  ;;               '(javascript-jshint)))
   (setq flycheck-temp-prefix ".flycheck")
-  (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/local-leader-key
+    :keymaps '(
+               ;; js2-mode-map
+               ;; rjsx-mode-map
+               ;; typescript-mode-map
+               ;; typescript-tsx-mode-map
+               ;; rustic-mode-map
+               elixir-mode-map
+               yaml-mode-map
+               json-mode-map
+               scss-mode-map
+               web-mode-map
+               go-mode-map
+               gdscript-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               python-mode-map
+               )
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
     )
