@@ -17,7 +17,7 @@
               ring-bell-function 'ignore ;; disable all visual and audible bells
               indent-tabs-mode nil ;; uses spaces and not tabs
               create-lockfiles nil ;; do not create lockfiles
-              truncate-lines 1 ;; do not truncate lines by default
+              truncate-lines 0 ;; truncate lines by default
               ;; disable until we actually call it
               recentf-auto-cleanup 'never
               ;; adjust the startup size of emacs
@@ -652,6 +652,8 @@
   :defer t
   :hook
   (emacs-lisp-mode . rainbow-identifiers-mode)
+  (eglot-managed-mode . rainbow-identifiers-mode)
+  (lsp-mode . rainbow-identifiers-mode)
   :config
   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
         rainbow-identifiers-cie-l*a*b*-lightness 75
@@ -664,6 +666,8 @@
   :defer t
   :hook
   (emacs-lisp-mode . rainbow-delimiters-mode)
+  (eglot-managed-mode . rainbow-delimiters-mode)
+  (lsp-mode . rainbow-delimiters-mode)
   )
 
 (defun custo/smart-parens ()
@@ -1349,11 +1353,6 @@
 (use-package eglot
   :defer t
   :hook
-  (eglot-managed-mode . (lambda ()
-                          (rainbow-identifiers-mode 1)
-                          (rainbow-delimiters-mode 1)
-                          )
-                      )
   (js2-mode . eglot-ensure)
   (rsjx-mode . eglot-ensure)
   (typescript-mode . eglot-ensure)
@@ -1398,12 +1397,7 @@
   (svelte-mode . lsp-deferred)
   (csharp-mode . lsp-deferred)
   (gdscript-mode . lsp-deferred)
-  (lsp-mode . (lambda ()
-                (lsp-enable-which-key-integration)
-                (rainbow-identifiers-mode 1)
-                (rainbow-delimiters-mode 1)
-                )
-            )
+  (lsp-mode . lsp-enable-which-key-integration)
   :bind
   (:map lsp-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1825,13 +1819,15 @@
                                 (custo/leader-key
                                   "a v" '((lambda ()
                                             (interactive)
-                                            (call-interactively (vterm t))) :wk "vterm")
+                                            (vterm t)
+                                            (evil-emacs-state t)
+                                            ) :wk "vterm")
                                   )
                                 )
                             )
   :config
   (setq vterm-timer-delay 0.016
-        vterm-shell "fish")
+        vterm-shell "nu")
   )
 
 (use-package prodigy
