@@ -433,20 +433,16 @@
 (use-package consult-flycheck
   :defer t
   :commands consult-flycheck
-  :hook
-  (custo/after-consult-load . (lambda ()
-                                (custo/leader-key
-                                  "e l" '(consult-flycheck :wk "list errors")
-                                  )
-                                )
-                            )
   :config
+  (custo/leader-key
+    :keymaps 'lsp-mode-map
+    "e l" '(consult-flycheck :wk "list errors")
+    )
   (custo/local-leader-key
     :keymaps 'lsp-mode-map
     "e l" '(consult-flycheck :wk "list errors")
     )
   )
-
 
 (use-package marginalia
   :defer t
@@ -651,23 +647,18 @@
 (use-package rainbow-identifiers
   :defer t
   :hook
-  (emacs-lisp-mode . rainbow-identifiers-mode)
-  (eglot-managed-mode . rainbow-identifiers-mode)
-  (lsp-mode . rainbow-identifiers-mode)
+  ((emacs-lisp-mode eglot-managed-mode lsp-mode) . rainbow-identifiers-mode)
   :config
   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
         rainbow-identifiers-cie-l*a*b*-lightness 75
         rainbow-identifiers-cie-l*a*b*-saturation 50)
-  (rainbow-identifiers-mode 1)
   )
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
   :defer t
   :hook
-  (emacs-lisp-mode . rainbow-delimiters-mode)
-  (eglot-managed-mode . rainbow-delimiters-mode)
-  (lsp-mode . rainbow-delimiters-mode)
+  ((emacs-lisp-mode eglot-managed-mode lsp-mode) . rainbow-delimiters-mode)
   )
 
 (defun custo/smart-parens ()
@@ -677,9 +668,7 @@
 (use-package smartparens
   :defer t
   :hook
-  (prog-mode . custo/smart-parens)
-  (markdown-mode . custo/smart-parens)
-  (org-mode . custo/smart-parens)
+  ((prog-mode markdown-mode org-mode) . custo/smart-parens)
   :config
   ;; don't interfere with yasnippets
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
@@ -1060,7 +1049,7 @@
   :defer t
   :after tree-sitter-langs
   :hook
-  (lsp-mode . (lambda ()
+  ((lsp-mode eglot-managed-mode) . (lambda ()
                 (tree-sitter-mode)
                 (tree-sitter-hl-mode)
                 )
@@ -1159,14 +1148,12 @@
 
 (use-package scss-mode
   :defer t
-  :mode ("\\.scss\\'" "\\.css\\'")
   :config
   (setq css-indent-offset 2)
   )
 
 (use-package web-mode
   :defer t
-  :mode ("\\.html\\'" )
   :config
   (setq web-mode-css-indent-offset 2
         web-mode-markup-indent-offset 2
@@ -1175,7 +1162,6 @@
 
 (use-package typescript-mode
   :defer t
-  :mode "\\.ts\\'"
   :config
   (setq typescript-indent-level 2)
   )
@@ -1185,16 +1171,15 @@
 
 (use-package rustic
   :defer t
-  ;; :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'eglot
-        lsp-rust-server 'rust-analyzer
-        rustic-lsp-server 'rust-analyzer
-        lsp-rust-analyzer-proc-macro-enable t
-        lsp-rust-analyzer-display-parameter-hints t
-        lsp-rust-analyzer-server-display-inlay-hints nil
-        lsp-rust-analyzer-inlay-hints-mode nil
+        ;; lsp-rust-server 'rust-analyzer
+        ;; rustic-lsp-server 'rust-analyzer
+        ;; lsp-rust-analyzer-proc-macro-enable t
+        ;; lsp-rust-analyzer-display-parameter-hints t
+        ;; lsp-rust-analyzer-server-display-inlay-hints nil
+        ;; lsp-rust-analyzer-inlay-hints-mode nil
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
@@ -1206,14 +1191,13 @@
     "c c" '(rustic-cargo-clippy :wk "cargo clippy")
     "c r" '(rustic-cargo-run :wk "cargo run")
     "c t" '(rustic-cargo-test :wk "cargo test")
-    "t" '(:ignore t :wk "toggles")
-    "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+    ;; "t" '(:ignore t :wk "toggles")
+    ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
     )
   )
 
 (use-package csharp-mode
   :defer t
-  :mode "\\.cs\\'"
   )
 
 (use-package omnisharp
@@ -1235,11 +1219,11 @@
 
 (use-package elixir-mode
   :defer t
-  :mode ("\\.ex\\'"
-         "\\.eex\\'"
-         "\\.exs\\'"
-         "\\.heex\\'"
-         "\\.leex\\'")
+  ;; :mode ("\\.ex\\'"
+  ;;        "\\.eex\\'"
+  ;;        "\\.exs\\'"
+  ;;        "\\.heex\\'"
+  ;;        "\\.leex\\'")
   )
 
 (use-package python-black
@@ -1249,7 +1233,6 @@
 
 (use-package python
   :defer t
-  ;; :mode ("\\.py\\'" . python-mode)
   :config
   (custo/local-leader-key
     :keymaps '(python-mode-map)
@@ -1278,32 +1261,30 @@
 
 (use-package json-mode
   :defer t
-  :mode "\\.json\\'"
   :config
   (setq json-indent-offset 2)
   )
 
 (use-package yaml-mode
   :defer t
-  :mode ("\\.yml\\'" "\\.yaml\\'")
   :config
   (setq yaml-indent-offset 2)
   )
 
 (use-package markdown-mode
   :defer t
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
+  :mode (("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode)
+         ("README\\.md\\'" . gfm-mode)
+         )
   )
 
 (use-package gdscript-mode
   :defer t
-  :mode "\\.gd\\'")
+  )
 
 (use-package go-mode
   :defer t
-  :mode "\\.go\\'"
   )
 
 (use-package plantuml-mode
@@ -1311,7 +1292,6 @@
                     :repo "skuro/plantuml-mode"
                     :branch "develop")
   :defer t
-  :mode ("\\.puml\\'" "\\.pml\\'")
   :config
   (setq plantuml-default-exec-mode 'server
         plantuml-server-url "http://localhost:8080"
@@ -1320,7 +1300,7 @@
 
 (use-package dockerfile-mode
   :defer t
-  :mode ("\\Dockerfile\\'"))
+  )
 
 ;; (use-package company
 ;;   :defer t
@@ -1351,23 +1331,27 @@
 ;;   )
 
 (use-package eglot
-  :defer t
   :hook
-  (js2-mode . eglot-ensure)
-  (rsjx-mode . eglot-ensure)
-  (typescript-mode . eglot-ensure)
-  (typescript-tsx-mode . eglot-ensure)
-  (rustic-mode . eglot-ensure)
+  ((js2-mode
+    rsjx-mode
+    typescript-mode
+    typescript-tsx-mode
+    rustic-mode) . eglot-ensure)
   :bind
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
         ([remap evil-lookup] . eldoc)
         )
   :config
+  (custo/leader-key
+    :keymaps 'eglot-mode-map
+    "e l" '(consult-flymake :wk "list errors")
+    )
   (custo/local-leader-key
     :keymaps 'eglot-mode-map
     "a" '(:ignore t :wk "quick actions")
     "a a" '(eglot-code-actions :wk "quick actions")
+    "e l" '(consult-flymake :wk "list errors")
     "g d" '(xref-find-definitions :wk "xref find definition")
     "g D" '(eglot-find-declaration :wk "eglot find declaration")
     "g i" '(eglot-find-implementation :wk "eglot find implementation")
