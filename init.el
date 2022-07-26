@@ -1351,7 +1351,10 @@
     :keymaps 'eglot-mode-map
     "a" '(:ignore t :wk "quick actions")
     "a a" '(eglot-code-actions :wk "quick actions")
+    "e" '(:ignore t :wk "errors")
+    "e b" '(flymake-show-buffer-diagnostics :wk "buffer errors")
     "e l" '(consult-flymake :wk "list errors")
+    "e p" '(flymake-show-project-diagnostics :wk "project errors")
     "g d" '(xref-find-definitions :wk "xref find definition")
     "g D" '(eglot-find-declaration :wk "eglot find declaration")
     "g i" '(eglot-find-implementation :wk "eglot find implementation")
@@ -1360,6 +1363,12 @@
     "r" '(eglot-rename :wk "rename")
     "= b" '(eglot-format-buffer :wk "format buffer")
     )
+  )
+
+(use-package flymake
+  :defer t
+  :commands (flymake-show-buffer-diagnostics
+             flymake-show-project-diagnostics)
   )
 
 ;; lsp-mode
