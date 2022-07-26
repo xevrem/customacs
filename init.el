@@ -1189,12 +1189,12 @@
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'eglot
-        lsp-rust-server 'rust-analyzer
-        rustic-lsp-server 'rust-analyzer
-        lsp-rust-analyzer-proc-macro-enable t
-        lsp-rust-analyzer-display-parameter-hints t
-        lsp-rust-analyzer-server-display-inlay-hints nil
-        lsp-rust-analyzer-inlay-hints-mode nil
+        ;; lsp-rust-server 'rust-analyzer
+        ;; rustic-lsp-server 'rust-analyzer
+        ;; lsp-rust-analyzer-proc-macro-enable t
+        ;; lsp-rust-analyzer-display-parameter-hints t
+        ;; lsp-rust-analyzer-server-display-inlay-hints nil
+        ;; lsp-rust-analyzer-inlay-hints-mode nil
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
@@ -1206,8 +1206,8 @@
     "c c" '(rustic-cargo-clippy :wk "cargo clippy")
     "c r" '(rustic-cargo-run :wk "cargo run")
     "c t" '(rustic-cargo-test :wk "cargo test")
-    "t" '(:ignore t :wk "toggles")
-    "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+    ;; "t" '(:ignore t :wk "toggles")
+    ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
     )
   )
 
@@ -1368,6 +1368,10 @@
     :keymaps 'eglot-mode-map
     "a" '(:ignore t :wk "quick actions")
     "a a" '(eglot-code-actions :wk "quick actions")
+    "e" '(:ignore t :wk "errors")
+    "e b" '(flymake-show-buffer-diagnostics :wk "buffer errors")
+    "e l" '(consult-flymake :wk "list errors")
+    "e p" '(flymake-show-project-diagnostics :wk "project errors")
     "g d" '(xref-find-definitions :wk "xref find definition")
     "g D" '(eglot-find-declaration :wk "eglot find declaration")
     "g i" '(eglot-find-implementation :wk "eglot find implementation")
@@ -1376,6 +1380,12 @@
     "r" '(eglot-rename :wk "rename")
     "= b" '(eglot-format-buffer :wk "format buffer")
     )
+  )
+
+(use-package flymake
+  :defer t
+  :commands (flymake-show-buffer-diagnostics
+             flymake-show-project-diagnostics)
   )
 
 ;; lsp-mode
