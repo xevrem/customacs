@@ -108,9 +108,9 @@
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
-    (set-face-attribute 'default nil :font (font-spec :family "MesloLGM Nerd Font Mono" :size 20 :weight 'regular))
+    (set-face-attribute 'default nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size 18 :weight 'regular))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGM Nerd Font Mono" :size 20 :weight 'regular))
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size 18 :weight 'regular))
     ;; Set the variable pitch face which is the same for mac and linux
     (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
     ;; after org-mode we want to adjust font sizes
@@ -694,10 +694,10 @@
   :commands clipetty-mode
   )
 
-(use-package xclip
-  :defer t
-  :commands xclip-mode
-  )
+;; (use-package xclip
+  ;; :defer t
+  ;; :commands xclip-mode
+  ;; )
 
 ;; ensure that these are added to all the appropriat modes
 (add-hook 'after-init-hook (lambda ()
@@ -706,7 +706,7 @@
                                                conf-mode-hook
                                                text-mode-hook
                                                ))
-                                 (add-hook mode 'xclip-mode)
+                                 ;; (add-hook mode 'xclip-mode)
                                  (add-hook mode 'clipetty-mode)
                                  )
                                )
@@ -1760,16 +1760,6 @@
   (prog-mode . term-cursor-mode)
   )
 
-
-;; (defconst private-file (expand-file-name "~/.private.el"))
-;; (unless (file-exists-p private-file)
-;;   (with-temp-buffer (write-file private-file))
-;;   )
-
-;; ;; IRC
-;; (with-eval-after-load 'circe
-;;   (load private-file)
-;;   )
 
 (use-package circe
   :defer t
