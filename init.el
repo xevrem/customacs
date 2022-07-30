@@ -1330,6 +1330,11 @@
 ;;         )
 ;;   )
 
+(defun custo/eldoc ()
+  (eldoc)
+  (other-window)
+  )
+
 (use-package eglot
   :hook
   ((js2-mode
@@ -1340,7 +1345,7 @@
   :bind
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
-        ([remap evil-lookup] . eldoc)
+        ([remap evil-lookup] . custo/eldoc)
         )
   :config
   (custo/leader-key
