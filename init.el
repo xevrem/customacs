@@ -692,25 +692,38 @@
 (use-package clipetty
   :defer t
   :commands clipetty-mode
+  :unless 'display-graphic-p
+  :hook
+  ((after-init
+    server-after-make-frame) . clipetty-mode)
   )
 
-;; (use-package xclip
-  ;; :defer t
-  ;; :commands xclip-mode
-  ;; )
+(use-package xclip
+  :defer t
+  :commands xclip-mode
+  :unless 'display-graphic-p
+  :hook
+  ((after-init
+    server-after-make-frame) . xclip-mode)
+  )
 
-;; ensure that these are added to all the appropriat modes
-(add-hook 'after-init-hook (lambda ()
-                             (unless (display-graphic-p)
-                               (dolist (mode '(prog-mode-hook
-                                               conf-mode-hook
-                                               text-mode-hook
-                                               ))
-                                 ;; (add-hook mode 'xclip-mode)
-                                 (add-hook mode 'clipetty-mode)
-                                 )
-                               )
-                             ))
+;; ;; ensure that these are added to all the appropriat modes
+;; (dolist (calling-hook '(after-init-hook
+;;                         server-after-make-frame-hook)
+;;                       )
+;;   (add-hook calling-hook (lambda ()
+;;                            (unless (display-graphic-p)
+;;                              (dolist (mode '(prog-mode-hook
+;;                                              conf-mode-hook
+;;                                              text-mode-hook
+;;                                              ))
+;;                                (add-hook mode 'xclip-mode)
+;;                                (add-hook mode 'clipetty-mode)
+;;                                )
+;;                              )
+;;                            )
+;;             )
+;;   )
 
 
 
@@ -1302,6 +1315,10 @@
   :defer t
   )
 
+(use-package lua-mode
+  :defer t
+  )
+
 ;; (use-package company
 ;;   :defer t
 ;;   :hook
@@ -1341,7 +1358,8 @@
     rsjx-mode
     typescript-mode
     typescript-tsx-mode
-    rustic-mode) . eglot-ensure)
+    rustic-mode
+    lua-mode) . eglot-ensure)
   :bind
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
