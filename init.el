@@ -1319,6 +1319,15 @@
   :defer t
   )
 
+(use-package wgsl-mode
+  :defer t
+  :straight '(:type git :host github
+                    :repo "acowley/wgsl-mode"
+                    :branch "master"
+                    )
+  :mode ("\\.wgsl\\'")
+  )
+
 ;; (use-package company
 ;;   :defer t
 ;;   :hook
