@@ -692,7 +692,7 @@
 (use-package clipetty
   :defer t
   :commands clipetty-mode
-  :unless 'display-graphic-p
+  :unless (display-graphic-p)
   :hook
   ((after-init
     server-after-make-frame) . clipetty-mode)
@@ -701,7 +701,7 @@
 (use-package xclip
   :defer t
   :commands xclip-mode
-  :unless 'display-graphic-p
+  :unless (display-graphic-p)
   :hook
   ((after-init
     server-after-make-frame) . xclip-mode)
