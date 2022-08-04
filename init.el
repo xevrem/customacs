@@ -1087,6 +1087,8 @@
                  (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
                  (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
                  (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
+                 (add-to-list 'tree-sitter-major-mode-language-alist '(css-mode . css))
+                 (add-to-list 'tree-sitter-major-mode-language-alist '(less-css-mode . css))
                  )
              )
   )
@@ -1368,7 +1370,11 @@
     typescript-mode
     typescript-tsx-mode
     rustic-mode
-    lua-mode) . eglot-ensure)
+    lua-mode
+    scss-mode
+    css-mode
+    less-css-mode
+    html-mode) . eglot-ensure)
   :bind
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1414,10 +1420,10 @@
   ;; (typescript-tsx-mode . lsp-deferred)
   ;; (rustic-mode . lsp-deferred)
   (elixir-mode . lsp-deferred)
-  (scss-mode . lsp-deferred)
-  (yaml-mode . lsp-deferred)
-  (json-mode . lsp-deferred)
-  (web-mode . lsp-deferred)
+  ;; (scss-mode . lsp-deferred)
+  ;; (yaml-mode . lsp-deferred)
+  ;; (json-mode . lsp-deferred)
+  ;; (web-mode . lsp-deferred)
   (go-mode . lsp-deferred)
   (svelte-mode . lsp-deferred)
   (csharp-mode . lsp-deferred)
@@ -1450,10 +1456,10 @@
                ;; typescript-tsx-mode-map
                ;; rustic-mode-map
                elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               scss-mode-map
-               web-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               ;; web-mode-map
                go-mode-map
                gdscript-mode-map
                svelte-mode-map
@@ -1520,10 +1526,10 @@
                ;; typescript-tsx-mode-map
                ;; rustic-mode-map
                elixir-mode-map
-               yaml-mode-map
-               json-mode-map
-               scss-mode-map
-               web-mode-map
+               ;; yaml-mode-map
+               ;; json-mode-map
+               ;; scss-mode-map
+               ;; web-mode-map
                go-mode-map
                gdscript-mode-map
                svelte-mode-map
@@ -1548,6 +1554,7 @@
           ("DONE" . ,(face-foreground 'success))
           ("NOTE" . ,(face-foreground 'warning))
           ("HACK" . ,(face-foreground 'warning))
+          ("IDEA" . ,(face-foreground 'success))
           ("FIXME" . ,(face-foreground 'error ))
           ("WARNING" . ,(face-foreground 'warning))
           ))
