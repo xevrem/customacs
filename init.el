@@ -647,7 +647,7 @@
 (use-package rainbow-identifiers
   :defer t
   :hook
-  ((emacs-lisp-mode eglot-managed-mode lsp-mode) . rainbow-identifiers-mode)
+  ((emacs-lisp-mode prog-mode conf-mode) . rainbow-identifiers-mode)
   :config
   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
         rainbow-identifiers-cie-l*a*b*-lightness 75
@@ -658,7 +658,7 @@
 (use-package rainbow-delimiters
   :defer t
   :hook
-  ((emacs-lisp-mode eglot-managed-mode lsp-mode) . rainbow-delimiters-mode)
+  ((emacs-lisp-mode conf-mode prog-mode) . rainbow-delimiters-mode)
   )
 
 (defun custo/smart-parens ()
@@ -668,7 +668,11 @@
 (use-package smartparens
   :defer t
   :hook
-  ((prog-mode markdown-mode org-mode) . custo/smart-parens)
+  ((prog-mode
+    text-mode
+    conf-mode
+    markdown-mode
+    org-mode) . custo/smart-parens)
   :config
   ;; don't interfere with yasnippets
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
@@ -679,7 +683,7 @@
 (use-package paren
   :defer t
   :hook
-  (prog-mode . show-paren-mode)
+  ((prog-mode conf-mode) . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
         show-paren-highlight-openparen t
@@ -1292,6 +1296,10 @@
          )
   )
 
+(use-package conf-mode
+  :defer t
+  :mode ("\\.nu\\'"))
+
 (use-package gdscript-mode
   :defer t
   )
@@ -1785,6 +1793,8 @@
   :commands (term-cursor-mode)
   :hook
   (prog-mode . term-cursor-mode)
+  (conf-mode . term-cursor-mode)
+  (text-mode . term-cursor-mode)
   )
 
 
