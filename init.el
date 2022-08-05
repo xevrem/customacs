@@ -1192,13 +1192,13 @@
   :defer t
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
-        ;; lsp-rust-server 'rust-analyzer
-        ;; rustic-lsp-server 'rust-analyzer
-        ;; lsp-rust-analyzer-proc-macro-enable t
-        ;; lsp-rust-analyzer-display-parameter-hints t
-        ;; lsp-rust-analyzer-server-display-inlay-hints nil
-        ;; lsp-rust-analyzer-inlay-hints-mode nil
+        rustic-lsp-client 'lsp-mode
+        lsp-rust-server 'rust-analyzer
+        rustic-lsp-server 'rust-analyzer
+        lsp-rust-analyzer-proc-macro-enable t
+        lsp-rust-analyzer-display-parameter-hints t
+        lsp-rust-analyzer-server-display-inlay-hints nil
+        lsp-rust-analyzer-inlay-hints-mode nil
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
@@ -1210,8 +1210,8 @@
     "c c" '(rustic-cargo-clippy :wk "cargo clippy")
     "c r" '(rustic-cargo-run :wk "cargo run")
     "c t" '(rustic-cargo-test :wk "cargo test")
-    ;; "t" '(:ignore t :wk "toggles")
-    ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+    "t" '(:ignore t :wk "toggles")
+    "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
     )
   )
 
@@ -1222,6 +1222,7 @@
 (use-package omnisharp
   :defer t
   :commands omnisharp-install-server
+  :hook (csharp-mode . omnisharp-mode)
   :config
   (setq indent-tabs-mode nil
         c-syntactic-indentation t
@@ -1372,17 +1373,19 @@
   )
 
 (use-package eglot
-  :hook
-  ((js2-mode
-    rsjx-mode
-    typescript-mode
-    typescript-tsx-mode
-    rustic-mode
-    lua-mode
-    scss-mode
-    css-mode
-    less-css-mode
-    html-mode) . eglot-ensure)
+  :defer t
+  ;; :hook
+  ;; ((js2-mode
+  ;;   rsjx-mode
+  ;;   typescript-mode
+  ;;   typescript-tsx-mode
+  ;;   rustic-mode
+  ;;   lua-mode
+  ;;   scss-mode
+  ;;   css-mode
+  ;;   less-css-mode
+  ;;   html-mode
+  ;;   ) . eglot-ensure)
   :bind
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1422,20 +1425,22 @@
   :defer t
   :commands (lsp lsp-deferred lsp-mode-map)
   :hook 
-  ;; (js2-mode . lsp-deferred)
-  ;; (rsjx-mode . lsp-deferred)
-  ;; (typescript-mode . lsp-deferred)
-  ;; (typescript-tsx-mode . lsp-deferred)
-  ;; (rustic-mode . lsp-deferred)
-  (elixir-mode . lsp-deferred)
-  ;; (scss-mode . lsp-deferred)
-  ;; (yaml-mode . lsp-deferred)
-  ;; (json-mode . lsp-deferred)
-  ;; (web-mode . lsp-deferred)
-  (go-mode . lsp-deferred)
-  (svelte-mode . lsp-deferred)
-  (csharp-mode . lsp-deferred)
-  (gdscript-mode . lsp-deferred)
+  ((js2-mode
+    rsjx-mode
+    typescript-mode
+    typescript-tsx-mode
+    rustic-mode
+    lua-mode
+    scss-mode
+    css-mode
+    less-css-mode
+    html-mode
+    elixir-mode
+    web-mode
+    svelte-mode
+    csharp-mode
+    gdscript-mode
+    ) . lsp-deferred)
   (lsp-mode . lsp-enable-which-key-integration)
   :bind
   (:map lsp-mode-map
@@ -1457,22 +1462,22 @@
         lsp-use-plists t
         )
   (custo/local-leader-key
-    :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
-               elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               go-mode-map
-               gdscript-mode-map
-               svelte-mode-map
-               csharp-mode-map
-               python-mode-map
+    :keymaps '(lsp-mode-map
+               ;; ;; js2-mode-map
+               ;; ;; rjsx-mode-map
+               ;; ;; typescript-mode-map
+               ;; ;; typescript-tsx-mode-map
+               ;; ;; rustic-mode-map
+               ;; elixir-mode-map
+               ;; ;; yaml-mode-map
+               ;; ;; json-mode-map
+               ;; ;; scss-mode-map
+               ;; ;; web-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
+               ;; svelte-mode-map
+               ;; csharp-mode-map
+               ;; python-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :wk "find definition")
@@ -1527,22 +1532,22 @@
   ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
   ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/local-leader-key
-    :keymaps '(
+    :keymaps '(lsp-mode-map
                ;; js2-mode-map
                ;; rjsx-mode-map
                ;; typescript-mode-map
                ;; typescript-tsx-mode-map
                ;; rustic-mode-map
-               elixir-mode-map
+               ;; elixir-modemap
                ;; yaml-mode-map
                ;; json-mode-map
                ;; scss-mode-map
                ;; web-mode-map
-               go-mode-map
-               gdscript-mode-map
-               svelte-mode-map
-               csharp-mode-map
-               python-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
+               ;; svelte-mode-map
+               ;; csharp-mode-map
+               ;; python-mode-map
                )
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
@@ -1859,7 +1864,7 @@
                             )
   :config
   (setq vterm-timer-delay 0.016
-        vterm-shell "nu")
+        vterm-shell "fish")
   )
 
 (use-package prodigy
