@@ -1169,6 +1169,7 @@
 
 (use-package web-mode
   :defer t
+  :mode "\\.html\\'"
   :config
   (setq web-mode-css-indent-offset 2
         web-mode-markup-indent-offset 2
@@ -1218,6 +1219,8 @@
 (use-package omnisharp
   :defer t
   :commands omnisharp-install-server
+  :hook
+  (csharp-mode . omnisharp-mode)
   :config
   (setq indent-tabs-mode nil
         c-syntactic-indentation t
@@ -1364,6 +1367,7 @@
   )
 
 (use-package eglot
+  :defer t
   :hook
   ((js2-mode
     rsjx-mode
@@ -1374,13 +1378,15 @@
     scss-mode
     css-mode
     less-css-mode
-    html-mode) . eglot-ensure)
+    ;; html-mode
+    web-mode) . eglot-ensure)
   :bind
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
         ([remap evil-lookup] . custo/eldoc)
         )
   :config
+  (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
   (custo/leader-key
     :keymaps 'eglot-mode-map
     "e l" '(consult-flymake :wk "list errors")
