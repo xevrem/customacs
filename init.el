@@ -20,12 +20,16 @@
               truncate-lines 0 ;; truncate lines by default
               ;; disable until we actually call it
               recentf-auto-cleanup 'never
+              ;; custo globals
+              custo/width 120
+              custo/height 40
+              custo/font-size 20
               ;; adjust the startup size of emacs
-              default-frame-alist `((width . 120) ;; chars
-                                    (height . 40) ;; lines
+              default-frame-alist `((width . custo/width) ;; chars
+                                    (height . custo/height) ;; lines
                                     )
-              initial-frame-alist `((width . 120) ;; chars
-                                    (height . 40) ;; lines
+              initial-frame-alist `((width . custo/width) ;; chars
+                                    (height . custo/height) ;; lines
                                     )
               ;; Resizing the Emacs frame can be a terribly expensive part of changing the
               ;; font. By inhibiting this, we halve startup times, particularly when we use
@@ -102,17 +106,18 @@
 ;; setup fonts and sizing regardless of OS
 (defun custo/setup-font-faces ()
   "Setup all customacs font faces."
+  (message "setup font faces")
   ;;re-disable GUI stuff we don't care about
   (push '(menu-bar-lines . 0) default-frame-alist)
   (push '(tool-bar-lines . 0) default-frame-alist)
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
-    (set-face-attribute 'default nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size 18 :weight 'regular))
+    (set-face-attribute 'default nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size custo/font-size :weight 'regular ))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size 18 :weight 'regular))
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size custo/font-size :weight 'regular))
     ;; Set the variable pitch face which is the same for mac and linux
-    (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size 20 :weight 'regular))
+    (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size custo/font-size :weight 'regular))
     ;; after org-mode we want to adjust font sizes
     (with-eval-after-load 'org
       (dolist (face '((org-level-1 . 1.3)
@@ -136,15 +141,11 @@
       (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
       )
     ;; set current frame to 120x45 characters
-    (set-frame-width (frame-focus) 120)
-    (set-frame-height (frame-focus) 40)
+    (set-frame-width (frame-focus) custo/width)
+    (set-frame-height (frame-focus) custo/height)
     (doom-modeline-refresh-font-width-cache)
     )
   )
-;; run this hook after we have initialized the first time
-(add-hook 'after-init-hook 'custo/setup-font-faces)
-;; re-run this hook if we create a new frame from daemonized Emacs
-(add-hook 'server-after-make-frame-hook 'custo/setup-font-faces)
 
 ;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some
 ;;      reason; inexplicably doubling startup time for terminal Emacs. Keeping
@@ -208,6 +209,44 @@
 (defvar custo/after-orderless-init-hook nil
   "Hook called after orderless init.")
 
+(defvar custo/after-init-hook nil
+  "Hook called after init or server frame")
+
+(defun custo/run-after-init-hooks ()
+  "Run all custo-after-init hooks."
+  (run-hooks 'custo/after-init-hook)
+  )
+
+(add-hook 'after-init-hook 'custo/run-after-init-hooks)
+(add-hook 'server-after-make-frame-hook 'custo/run-after-init-hooks)
+
+
+;; macos customizations
+(defun custo/mac-os-compat ()
+  "Setup various mac-os compatability settings."
+  (when (memq window-system '(mac ns))
+    (message "mac compat")
+      ;; Curse Lion and its sudden but inevitable fullscreen mode!
+      ;; NOTE Meaningless to railwaycat's emacs-mac build
+      (setq ns-use-native-fullscreen nil)
+    ;; Visit files opened outside of Emacs in existing frame, not a new one
+    (setq ns-pop-up-frames nil)
+
+    ;; sane trackpad/mouse scroll settings
+    (setq mac-redisplay-dont-reset-vscroll t
+          mac-mouse-wheel-smooth-scroll nil)
+
+    ;; adjust the font-size
+    (setq-default custo/font-size 30)
+    ;; re-run font setup because we don't know when we were called
+    (custo/setup-font-faces)
+    )
+  )
+
+(add-hook 'custo/after-init-hook 'custo/mac-os-compat)
+
+;; now we can run setup after we have initialized the first time
+(add-hook 'custo/after-init-hook 'custo/setup-font-faces)
 ;;
 ;; PACKAGE CONFIGURATION
 ;;
@@ -575,10 +614,10 @@
   :commands (doom-modeline-mode
              doom-modeline-refresh-font-width-cache)
   :hook
-  (custo/after-load . doom-modeline-mode)
-  (server-after-make-frame . doom-modeline-refresh-font-width-cache)
+  (custo/after-init . doom-modeline-mode)
+  ;; (custo/after-init . doom-modeline-refresh-font-width-cache)
   :config
-  (setq doom-modeline-height 26
+  (setq doom-modeline-height 00
         doom-modeline-unicode-fallback t
         doom-modeline-project-detection 'ffip
         )
@@ -647,7 +686,7 @@
 (use-package rainbow-identifiers
   :defer t
   :hook
-  ((emacs-lisp-mode eglot-managed-mode lsp-mode) . rainbow-identifiers-mode)
+  ((emacs-lisp-mode prog-mode conf-mode) . rainbow-identifiers-mode)
   :config
   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
         rainbow-identifiers-cie-l*a*b*-lightness 75
@@ -658,7 +697,7 @@
 (use-package rainbow-delimiters
   :defer t
   :hook
-  ((emacs-lisp-mode eglot-managed-mode lsp-mode) . rainbow-delimiters-mode)
+  ((emacs-lisp-mode conf-mode prog-mode) . rainbow-delimiters-mode)
   )
 
 (defun custo/smart-parens ()
@@ -668,7 +707,11 @@
 (use-package smartparens
   :defer t
   :hook
-  ((prog-mode markdown-mode org-mode) . custo/smart-parens)
+  ((prog-mode
+    text-mode
+    conf-mode
+    markdown-mode
+    org-mode) . custo/smart-parens)
   :config
   ;; don't interfere with yasnippets
   (advice-add #'yas-expand :before #'sp-remove-active-pair-overlay)
@@ -679,7 +722,7 @@
 (use-package paren
   :defer t
   :hook
-  (prog-mode . show-paren-mode)
+  ((prog-mode conf-mode) . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
         show-paren-highlight-openparen t
@@ -1297,6 +1340,10 @@
          )
   )
 
+(use-package conf-mode
+  :defer t
+  :mode ("\\.nu\\'"))
+
 (use-package gdscript-mode
   :defer t
   )
@@ -1333,34 +1380,6 @@
   :mode ("\\.wgsl\\'")
   )
 
-;; (use-package company
-;;   :defer t
-;;   :hook
-;;   (prog-mode . company-mode)
-;;   :bind (:map prog-mode-map
-;;               ("TAB" . company-indent-or-complete-common)
-;;               ("<tab>" . company-indent-or-complete-common)
-;;               :map company-active-map
-;;               ("TAB" . company-select-next)
-;;               ("<tab>" . company-select-next)
-;;               ("S-TAB" . company-select-previous)
-;;               ("<backtab>" . company-select-previous)
-;;               )
-;;   :config
-;;   (setq company-auto-complete nil
-;;         company-auto-complete-chars nil
-;;         company-async-redisplay-delay 0.250
-;;         company-echo-delay 0.250
-;;         company-idle-delay nil
-;;         company-tooltip-idle-delay 1.000
-;;         company-minimum-prefix-length 3
-;;         company-tooltip-limit 10
-;;         company-backends '(company-capf)
-;;         company-dabbrev-other-buffers nil
-;;         company-dabbrev-code-other-buffers nil
-;;         )
-;;   )
-
 (defun custo/eldoc ()
   (eldoc)
   (other-window)
@@ -1378,8 +1397,19 @@
     scss-mode
     css-mode
     less-css-mode
-    ;; html-mode
-    web-mode) . eglot-ensure)
+    html-mode
+    html+
+    html+js
+    elixir-mode
+    gdscript-mode
+    python-mode
+    ) . eglot-ensure)
+  :commands (eglot-find-declaration
+             eglot-find-implementation
+             eglot-find-typeDefinition
+             eglot-rename
+             eglot-format-buffer
+             )
   :bind
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1418,23 +1448,18 @@
 ;; lsp-mode
 (use-package lsp-mode
   :defer t
-  :commands (lsp lsp-deferred lsp-mode-map)
+  :commands (lsp
+             lsp-mode
+             lsp-deferred
+             lsp-mode-map
+             lsp-describe-thing-at-point)
   :hook 
-  ;; (js2-mode . lsp-deferred)
-  ;; (rsjx-mode . lsp-deferred)
-  ;; (typescript-mode . lsp-deferred)
-  ;; (typescript-tsx-mode . lsp-deferred)
-  ;; (rustic-mode . lsp-deferred)
-  (elixir-mode . lsp-deferred)
-  ;; (scss-mode . lsp-deferred)
-  ;; (yaml-mode . lsp-deferred)
-  ;; (json-mode . lsp-deferred)
-  ;; (web-mode . lsp-deferred)
-  (go-mode . lsp-deferred)
-  (svelte-mode . lsp-deferred)
-  (csharp-mode . lsp-deferred)
-  (gdscript-mode . lsp-deferred)
+  ((web-mode
+    svelte-mode
+    csharp-mode
+    ) . lsp-deferred)
   (lsp-mode . lsp-enable-which-key-integration)
+  (lsp-mode . lsp-mode)
   :bind
   (:map lsp-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1453,25 +1478,10 @@
         lsp-lense-debounce-interval 0.5 ;; set it to a more sane value
         lsp-lense-place-position 'above-line
         lsp-use-plists t
+        lsp-keymap-prefix "<super>-l"
         )
   (custo/local-leader-key
-    :keymaps '(
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
-               elixir-mode-map
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               go-mode-map
-               gdscript-mode-map
-               svelte-mode-map
-               csharp-mode-map
-               python-mode-map
-               )
+    :keymaps 'lsp-mode-map
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :wk "find definition")
     "g G" '(lsp-goto-implementation :wk "goto definition")
@@ -1490,12 +1500,12 @@
     )
   )
 
-(use-package lsp-pyright
-  :defer t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp-deferred)))
-  )
+;; (use-package lsp-pyright
+;;   :defer t
+;;   :hook (python-mode . (lambda ()
+;;                          (require 'lsp-pyright)
+;;                          (lsp-deferred)))
+;;   )
 
 ;; prettier lsp
 (use-package lsp-ui
@@ -1525,22 +1535,22 @@
   ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
   ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/local-leader-key
-    :keymaps '(
+    :keymaps '(lsp-mode-map
                ;; js2-mode-map
                ;; rjsx-mode-map
                ;; typescript-mode-map
                ;; typescript-tsx-mode-map
                ;; rustic-mode-map
-               elixir-mode-map
+               ;; elixir-modemap
                ;; yaml-mode-map
                ;; json-mode-map
                ;; scss-mode-map
                ;; web-mode-map
-               go-mode-map
-               gdscript-mode-map
-               svelte-mode-map
-               csharp-mode-map
-               python-mode-map
+               ;; go-mode-map
+               ;; gdscript-mode-map
+               ;; svelte-mode-map
+               ;; csharp-mode-map
+               ;; python-mode-map
                )
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
@@ -1798,6 +1808,8 @@
   :commands (term-cursor-mode)
   :hook
   (prog-mode . term-cursor-mode)
+  (conf-mode . term-cursor-mode)
+  (text-mode . term-cursor-mode)
   )
 
 
