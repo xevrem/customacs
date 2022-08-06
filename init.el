@@ -695,7 +695,6 @@
   (setq dashboard-center-content t
         dashboard-items '((recents  . 5)
                           (projects . 5)
-                          (agenda . 5)
                           )
         dashboard-startup-banner 'logo
         dashboard-banner-logo-title "Welcome to Customacs!"
