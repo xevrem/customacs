@@ -1676,10 +1676,7 @@
   (setq org-ellipsis " ▼"
         org-hide-emphasis-markers t
         org-startup-indented nil
-        ;; org-agenda-files `("~/org/tasks.org"
-        ;;                    "~/org/ideas.org"
-        ;;                    "~/org/journal.org"
-        ;;                    )
+        org-agenda-files '("~/org/tasks.org")
         org-agenda-start-with-log-mode t
         org-log-done 'time
         org-log-into-drawer t
@@ -1695,7 +1692,7 @@
                              "CANCELLED"
                              "OBE"
                              "MOVED"))
-        org-todo-keyword-faces `(("TODO" . "#88ff88")
+        org-todo-keyword-faces '(("TODO" . "#88ff88")
                                  ("DOING" . "#ffff88")
                                  ("DELAYED" . "#ffbb88")
                                  ("PARTIAL" . "#8855ff")
@@ -1848,7 +1845,7 @@
                             )
   :config
   (setq circe-network-options
-        `(("irc.chat.twitch.tv"
+        '(("irc.chat.twitch.tv"
            :tls t
            :port 6697
            :nick ,private/circe-nick
