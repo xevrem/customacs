@@ -24,6 +24,7 @@
               custo/width 120
               custo/height 40
               custo/font-size 20
+              custo/mode-line-size 18
               ;; adjust the startup size of emacs
               default-frame-alist `((width . custo/width) ;; chars
                                     (height . custo/height) ;; lines
@@ -115,9 +116,11 @@
     ;; set default font
     (set-face-attribute 'default nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size custo/font-size :weight 'regular ))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size custo/font-size :weight 'regular))
-    ;; Set the variable pitch face which is the same for mac and linux
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size custo/font-size :weight 'regular :slant 'italic))
+    ;; Set the variable pitch face 
     (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size custo/font-size :weight 'regular))
+    ;; Set the modeline face 
+    (set-face-attribute 'mode-line nil :font (font-spec :family "FiraCode Nerd Font Mono" :size custo/mode-line-size :weight 'regular))
     ;; after org-mode we want to adjust font sizes
     (with-eval-after-load 'org
       (dolist (face '((org-level-1 . 1.3)
@@ -220,15 +223,35 @@
 (add-hook 'after-init-hook 'custo/run-after-init-hooks)
 (add-hook 'server-after-make-frame-hook 'custo/run-after-init-hooks)
 
+;; creates a private config file to store custom locals used by this config
+(defconst private-file (expand-file-name "~/.private.el"))
+(unless (file-exists-p private-file)
+  (with-temp-buffer
+    (message "creating private file...")
+    (insert "(setq private/circe-nick nil)\n")
+    (insert "(setq private/circe-pass nil)\n")
+    (insert "(setq private/libera-nick nil)\n")
+    (insert "(setq private/libera-pass nil)\n")
+    (insert "(setq custo/font-size 18)\n")
+    (insert "(setq custo/mode-line-size 18)\n")
+    (insert "(setq custo/width 120)")
+    (insert "(setq custo/height 35)")
+    (message "writing private file...")
+    (write-file private-file)
+    (message "private file written...")
+    )
+  )
+(if (file-exists-p private-file)
+    (load private-file))
 
 ;; macos customizations
 (defun custo/mac-os-compat ()
   "Setup various mac-os compatability settings."
   (when (memq window-system '(mac ns))
     (message "mac compat")
-      ;; Curse Lion and its sudden but inevitable fullscreen mode!
-      ;; NOTE Meaningless to railwaycat's emacs-mac build
-      (setq ns-use-native-fullscreen nil)
+    ;; Curse Lion and its sudden but inevitable fullscreen mode!
+    ;; NOTE Meaningless to railwaycat's emacs-mac build
+    (setq ns-use-native-fullscreen nil)
     ;; Visit files opened outside of Emacs in existing frame, not a new one
     (setq ns-pop-up-frames nil)
 
@@ -236,8 +259,6 @@
     (setq mac-redisplay-dont-reset-vscroll t
           mac-mouse-wheel-smooth-scroll nil)
 
-    ;; adjust the font-size
-    (setq-default custo/font-size 30)
     ;; re-run font setup because we don't know when we were called
     (custo/setup-font-faces)
     )
@@ -247,6 +268,7 @@
 
 ;; now we can run setup after we have initialized the first time
 (add-hook 'custo/after-init-hook 'custo/setup-font-faces)
+
 ;;
 ;; PACKAGE CONFIGURATION
 ;;
@@ -257,16 +279,16 @@
   :commands (exec-path-from-shell-initialize
              exec-path-from-shell-copy-env)
   :hook
-  (after-init . (lambda ()
-                  (unless (daemonp)
-                    (when (memq window-system '(mac ns x))
-                      (message "setup env vars")
-                      (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
-                      (exec-path-from-shell-initialize)
-                      )
-                    )
-                  )
-              )
+  (custo/after-init . (lambda ()
+			(unless (daemonp)
+			  (when (memq window-system '(mac ns x))
+			    (message "setup env vars")
+			    (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
+			    (exec-path-from-shell-initialize)
+			    )
+			  )
+			)
+		    )
   ;; (server-after-make-frame . (lambda ()
   ;;                              (message "setup env vars for daemon")
   ;;                              (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
@@ -278,15 +300,15 @@
 
 ;; restart
 (use-package restart-emacs
-  :defer t
-  :commands restart-emacs
-  :hook
-  (custo/after-general-load . (lambda ()
-                                (custo/leader-key
-                                  "q r" '(restart-emacs :wk "restart emacs")
-                                  )
-                                )
-                            )
+	     :defer t
+	     :commands restart-emacs
+	     :hook
+	     (custo/after-general-load . (lambda ()
+					   (custo/leader-key
+					     "q r" '(restart-emacs :wk "restart emacs")
+					     )
+					   )
+				       )
   )
 
 
@@ -369,6 +391,7 @@
                              "q Q" '(kill-emacs :wk "quit no-save")
                              "s" '(:ignore t :wk "search")
                              "t" '(:ignore t :wk "toggles")
+                             "t f" '(toggle-frame-maximized :wk "toggle fullscreent")
                              "t l" '(display-line-numbers-mode :wk "toggle line numbers")
                              "t r" '((lambda ()
                                        (interactive)
@@ -615,9 +638,8 @@
              doom-modeline-refresh-font-width-cache)
   :hook
   (custo/after-init . doom-modeline-mode)
-  ;; (custo/after-init . doom-modeline-refresh-font-width-cache)
   :config
-  (setq doom-modeline-height 00
+  (setq doom-modeline-height 12
         doom-modeline-unicode-fallback t
         doom-modeline-project-detection 'ffip
         )
@@ -1825,11 +1847,6 @@
                                 )
                             )
   :config
-  (defconst private-file (expand-file-name "~/.private.el"))
-  (unless (file-exists-p private-file)
-    (with-temp-buffer (write-file private-file))
-    )
-  (load private-file)
   (setq circe-network-options
         `(("irc.chat.twitch.tv"
            :tls t
