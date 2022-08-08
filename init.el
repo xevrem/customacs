@@ -1927,6 +1927,12 @@
   (prodigy-define-service
     :name "redshift"
     :command "redshift"
+    :args '("-P" "-O" "2900" "-b" "1.00")
+    :stop-signal 'sigterm
+    )
+  (prodigy-define-service
+    :name "redshift-night"
+    :command "redshift"
     :args '("-P" "-O" "2700" "-b" "0.75")
     :stop-signal 'sigterm
     )
