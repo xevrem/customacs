@@ -107,11 +107,11 @@
 (defun custo/setup-font-faces ()
   "Setup all customacs font faces."
   (message "setup font faces")
-  ;;because emacs enables them by default
+  ;; because emacs enables them by default
   ;; re-disable GUI stuff we don't care about
-  ;; (push '(menu-bar-lines . 0) default-frame-alist)
-  ;; (push '(tool-bar-lines . 0) default-frame-alist)
-  ;; (push '(vertical-scroll-bars) default-frame-alist)
+  (push '(menu-bar-lines . 0) default-frame-alist)
+  (push '(tool-bar-lines . 0) default-frame-alist)
+  (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
     (set-face-attribute 'default nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size custo/font-size :weight 'regular ))
@@ -389,6 +389,10 @@
                              "t" '(:ignore t :wk "toggles")
                              "t f" '(toggle-frame-maximized :wk "toggle fullscreent")
                              "t l" '(display-line-numbers-mode :wk "toggle line numbers")
+                             "t m" '((lambda ()
+                                       (interactive)
+                                       (call-interactively 'menu-bar-mode))
+                                     :wk "toggle menu bar")
                              "t r" '((lambda ()
                                        (interactive)
                                        (custo/setup-font-faces))
@@ -708,7 +712,10 @@
 (use-package rainbow-identifiers
   :defer t
   :hook
-  ((emacs-lisp-mode prog-mode conf-mode) . rainbow-identifiers-mode)
+  ((emacs-lisp-mode
+    ;; prog-mode
+    ;; conf-mode
+    ) . rainbow-identifiers-mode)
   :config
   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
         rainbow-identifiers-cie-l*a*b*-lightness 75
@@ -1131,11 +1138,13 @@
   :defer t
   :after tree-sitter-langs
   :hook
-  ((lsp-mode eglot-managed-mode) . (lambda ()
-                (tree-sitter-mode)
-                (tree-sitter-hl-mode)
-                )
-            )
+  ((lsp-mode
+    eglot-managed-mode) . (lambda ()
+    (rainbow-identifiers-mode)
+    (tree-sitter-mode)
+    (tree-sitter-hl-mode)
+    )
+    )
   )
 
 (use-package tree-sitter-langs
@@ -1429,7 +1438,7 @@
     elixir-mode
     gdscript-mode
     python-mode
-    shell-script-mode
+    sh-mode
     ) . eglot-ensure)
   :commands (eglot-find-declaration
              eglot-find-implementation
