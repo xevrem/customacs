@@ -33,42 +33,60 @@
 ;;(make-directory "~/.cache/emacs")
 ;;(setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
 ;; set user caching directory
-(unless (file-directory-p (expand-file-name ".cache/" user-emacs-directory))
-  (make-directory (expand-file-name ".cache/" user-emacs-directory))
+(unless (file-directory-p (expand-file-name "~/.cache/emacs" user-emacs-directory))
+  (make-directory (expand-file-name "~/.cache/emacs" user-emacs-directory))
   )
-(setq-default user-emacs-directory (expand-file-name ".cache/" user-emacs-directory))
+(setq-default user-emacs-directory (expand-file-name "~/.cache/emacs" user-emacs-directory))
 
 ;; native comp insanity
 ;; if native comp is used, cache compiled code
-(when (boundp 'native-comp-eln-load-path)
-  (setcar native-comp-eln-load-path
-          (expand-file-name "eln-cache/" user-emacs-directory)))
+;; (when (boundp 'native-comp-eln-load-path)
+;;   (setcar native-comp-eln-load-path
+;;           (expand-file-name "eln-cache/" user-emacs-directory)))
 
-;;Another tip from doom.
-(setq-default default-file-name-handler-alist file-name-handler-alist
-      file-name-handler-alist nil)
+(when (boundp 'native-comp-eln-load-path)
+  (startup-redirect-eln-cache (expand-file-name "eln-cache" user-emacs-directory)))
+
+
+(defvar custo/after-startup-hook nil
+  "Hook called after emacs has started.")
 
 ;; And then finally a hook to reset everything.
 (add-hook 'emacs-startup-hook
           (lambda (&rest _)
             ;; (message "startup hook was fired")
-            (setq-default gc-cons-threshold default-gc-cons-threshold
-                  gc-cons-percentage default-gc-cons-percentage
-                  file-name-handler-alist default-file-name-handler-alist)
+            (setq-default 
+	      gc-cons-threshold default-gc-cons-threshold
+              gc-cons-percentage default-gc-cons-percentage
+              file-name-handler-alist default-file-name-handler-alist)
 
             ;; delete no longer necessary startup variable
             (makunbound 'default-file-name-handler-alist)
+            (run-hooks 'custo/after-startup-hook)
             )
           )
 
-;; (setq frame-inhibit-implied-resize t)
+(setq-default
+ ;; Resizing the Emacs frame can be a terribly expensive part of changing the
+ ;; font. By inhibiting this, we halve startup times, particularly when we use
+ ;; fonts that are larger than the system default (which would resize the frame).
+ frame-inhibit-implied-resize t
+ ;; Emacs "updates" its ui more often than it needs to, so slow it down slightly
+ idle-update-delay 1.0
+ ;; prevent package.el loading stuff too early
+ package-enable-at-startup nil
+ ;; Premature redisplays can substantially affect startup times and produce
+ ;; ugly flashes of unstyled Emacs.
+ inhibit-redisplay t
+ inhibit-message t
+ ;;Another tip from doom.
+ default-file-name-handler-alist file-name-handler-alist
+ file-name-handler-alist nil
+ ;; dont report async compile warnings
+ native-comp-async-report-warnings-errors nil
+ )
+
 (set-language-environment "UTF-8")
-
-;;prevent package.el loading stuff too early
-(setq-default package-enable-at-startup nil)
-
-;; prevent bug with straight.el
-;; OBE: (defvar comp-deferred-compilation-deny-list ())
 
 ;; use whatever is available, then replace it with native comp one
 (when (boundp 'native-comp-deferred-compilation)
@@ -80,14 +98,6 @@
   (setq-default native-comp-speed 2)
   )
 
-;; dont report async compile warnings
-(setq-default native-comp-async-report-warnings-errors nil)
-
-
-;; Premature redisplays can substantially affect startup times and produce
-;; ugly flashes of unstyled Emacs.
-(setq-default inhibit-redisplay t
-              inhibit-message t)
 
 ;; Site files tend to use `load-file', which emits "Loading X..." messages in
 ;; the echo area, which in turn triggers a redisplay. Redisplays can have a
@@ -96,6 +106,9 @@
 (define-advice load-file (:override (file) silence)
   (load file nil 'nomessage))
 
+
+(defvar custo/after-window-hook nil
+  "Hook called after emacs has setup a window.")
 
 (add-hook 'window-setup-hook
           (lambda ()
@@ -106,6 +119,7 @@
             ;; may introduce down the road.
             (advice-remove #'load-file #'load-file@silence)
             (redisplay)
+            (run-hooks 'custo/after-window-hook)
             )
           )
 

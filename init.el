@@ -51,7 +51,18 @@
               initial-major-mode 'fundamental-mode
               initial-scratch-message nil
               )
-(set-fringe-mode 10) ;; 'breathing' room
+
+;; adjust the startup size and position of emacs
+(dolist
+    (items
+     '((width . custo/width) ;; chars
+       (height . custo/height) ;; lines
+       (left . 0)
+       (top . 0)))
+  (push items default-frame-alist)
+  (push items initial-frame-alist)
+  )
+;;(set-fringe-mode 10) ;; 'breathing' room
 ;; better line info
 (column-number-mode) ;; show column info
 (menu-bar--display-line-numbers-mode-relative) ;; make those line numbers relative
@@ -84,34 +95,30 @@
                 eshell-mode-hook
                 ansi-term-mode-hook
                 vterm-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0)
-                   )
-            )
-  )
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (dolist (mode '(prog-mode-hook
                 conf-mode-hook
                 text-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 1)
-                   )
-            )
-  )
+  (add-hook mode (lambda () (display-line-numbers-mode 1))))
+
 
 ;; setup fonts and sizing regardless of OS
 (defun custo/setup-font-faces ()
   "Setup all customacs font faces."
   (message "setup font faces")
-  ;;re-disable GUI stuff we don't care about
-  (push '(menu-bar-lines . 0) default-frame-alist)
-  (push '(tool-bar-lines . 0) default-frame-alist)
-  (push '(vertical-scroll-bars) default-frame-alist)
+  ;;because emacs enables them by default
+  ;; re-disable GUI stuff we don't care about
+  ;; (push '(menu-bar-lines . 0) default-frame-alist)
+  ;; (push '(tool-bar-lines . 0) default-frame-alist)
+  ;; (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
     (set-face-attribute 'default nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size custo/font-size :weight 'regular ))
     ;; Set the fixed pitch face
     (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size custo/font-size :weight 'regular :slant 'italic))
     ;; Set the variable pitch face 
-    (set-face-attribute 'variable-pitch nil :font (font-spec :family "Arial" :size custo/font-size :weight 'regular))
+    (set-face-attribute 'variable-pitch nil :font (font-spec :family "Menlo" :size custo/font-size :weight 'regular))
     ;; Set the modeline face 
     (set-face-attribute 'mode-line nil :font (font-spec :family "FiraCode Nerd Font Mono" :size custo/mode-line-size :weight 'regular))
     ;; after org-mode we want to adjust font sizes
@@ -136,7 +143,7 @@
       (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
       (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
       )
-    ;; set current frame to 120x45 characters
+    ;; set current frame to 120x30 characters
     (set-frame-width (frame-focus) custo/width)
     (set-frame-height (frame-focus) custo/height)
     (doom-modeline-refresh-font-width-cache)
@@ -171,19 +178,15 @@
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5)
-      )
+      (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/master/install.el"
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
          'silent 'inhibit-cookies)
       (goto-char (point-max))
-      (eval-print-last-sexp)
-      )
-    )
-  (load bootstrap-file nil 'nomessage)
-  )
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 (straight-use-package 'use-package)
 
 ;;
@@ -392,11 +395,16 @@
                                      :wk "reset font-faces")
                              "t t" '(toggle-truncate-lines :wk "toggle truncate lines")
                              "w" '(:ignore t :wk "window")
-                             "w w" '(other-window :wk "other window")
+                             "w b" '(balance-windows :ignore t :wk "balance windows")
                              "w d" '(delete-window :wk "delete window")
-                             "w o" '(delete-other-windows :wk "delete other windows")
                              "w h" '(evil-window-vsplit :wk "add window horizontally")
+                             "w o" '(delete-other-windows :wk "delete other windows")
                              "w v" '(evil-window-split :wk "add window vertically")
+                             "w w" '(other-window :wk "other window")
+                             "<right>" '(evil-window-right :wk "->")
+                             "<left>" '(evil-window-left :wk "<-")
+                             "<up>" '(evil-window-up :wk "^")
+                             "<down>" '(evil-window-down :wk "v")
                              )
 
                            (custo/local-leader-key
@@ -537,7 +545,7 @@
 
 (defun custo/lsp-mode-setup-completion ()
   (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-        '(orderless))) ;;
+        '(orderless)))
 
 (defun corfu-move-to-minibuffer ()
   "Allows corfu to be moved into the minibuffer for better orderless completions."
@@ -758,6 +766,7 @@
 (use-package xclip
   :defer t
   :commands xclip-mode
+  ;;:unless ((memq window-system '(mac ns x)));;
   :unless (display-graphic-p)
   :hook
   ((after-init
@@ -898,8 +907,11 @@
                                   )
                                 (defhydra hydra-window-resize (:timeout 4)
                                   "resize window"
-                                  ("l" enlarge-window "enlarge window")
-                                  ("h" shrink-window "shrink window")
+                                  ("<right>" evil-window-increase-width  "enlarge window")
+                                  ("<up>" evil-window-increase-height "enlarge window")
+                                  ("<left>" evil-window-decrease-width "enlarge window")
+                                  ("<down>" evil-window-decrease-height "enlarge window")
+                                  ("r" balance-windows "reset windows")
                                   ("q" nil "done" :exit t)
                                   )
                                 ;; since custo leader keys are defined, we can bind to them now :D
@@ -1417,6 +1429,7 @@
     elixir-mode
     gdscript-mode
     python-mode
+    shell-script-mode
     ) . eglot-ensure)
   :commands (eglot-find-declaration
              eglot-find-implementation
