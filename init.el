@@ -22,27 +22,20 @@
               recentf-auto-cleanup 'never
               ;; custo globals
               custo/width 120
-              custo/height 40
-              custo/font-size 20
-              custo/mode-line-size 18
-              ;; adjust the startup size of emacs
-              default-frame-alist `((width . custo/width) ;; chars
-                                    (height . custo/height) ;; lines
-                                    )
-              initial-frame-alist `((width . custo/width) ;; chars
-                                    (height . custo/height) ;; lines
-                                    )
-              ;; Resizing the Emacs frame can be a terribly expensive part of changing the
-              ;; font. By inhibiting this, we halve startup times, particularly when we use
-              ;; fonts that are larger than the system default (which would resize the frame).
-              frame-inhibit-implied-resize t
-              ;; Emacs "updates" its ui more often than it needs to, so slow it down slightly
-              idle-update-delay 1.0
+              custo/height 35
+              custo/font-size 16
+              custo/mode-line-size 20
+              ;; ;; Resizing the Emacs frame can be a terribly expensive part of changing the
+              ;; ;; font. By inhibiting this, we halve startup times, particularly when we use
+              ;; ;; fonts that are larger than the system default (which would resize the frame).
+              ;; frame-inhibit-implied-resize t
+              ;; ;; Emacs "updates" its ui more often than it needs to, so slow it down slightly
+              ;; idle-update-delay 1.0
               ;; Font compacting can be terribly expensive, especially for rendering icon
               ;; fonts on Windows. Whether disabling it has a notable affect on Linux and Mac
               ;; hasn't been determined, but do it there anyway, just in case. This increases
               ;; memory usage, however!
-              inhibit-compacting-font-caches t
+              inhibit-compacting-font-caches nil
               ;; Introduced in Emacs HEAD (b2f8c9f), this inhibits fontification while
               ;; receiving input, which should help a little with scrolling performance.
               redisplay-skip-fontification-on-input t
