@@ -1885,8 +1885,8 @@
                                 )
                             )
   :config
-  (setq vterm-timer-delay 0.016
-        vterm-shell "nu")
+  (setq vterm-timer-delay 0.032
+        vterm-shell "zsh")
   )
 
 (use-package prodigy
