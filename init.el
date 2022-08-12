@@ -847,6 +847,7 @@
   :bind
   (:map evil-insert-state-map
         ("C-g" . evil-normal-state)
+        ("C-<tab>" . evil-switch-to-windows-last-buffer)
         )
   )
 
@@ -1937,6 +1938,12 @@
     :command "mpv"
     :cwd "~/Movies/Kaptures"
     :args '("--window-scale=0.5" "--loop-file" "textured-lines.mp4")
+    :stop-signal 'sigterm
+    )
+  (prodigy-define-service
+    :name "redshift-light"
+    :command "redshift"
+    :args '("-P" "-O" "3400" "-b" "1.00")
     :stop-signal 'sigterm
     )
   (prodigy-define-service
