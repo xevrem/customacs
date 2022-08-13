@@ -1085,6 +1085,7 @@
 (use-package magit
   :defer t
   :commands (magit-status
+             magit-dispatch
              magit-branch
              magit-blame
              magit-fetch
@@ -1105,14 +1106,18 @@
                                   )
                                 (custo/leader-key
                                   "g" '(:ignore t :wk "magit")
-                                  "g g" '(magit-status :wk "magit status")
-                                  "g b" '(magit-branch :wk "magit branch")
-                                  "g B" '(magit-blame :wk "magit blame")
+                                  "g b" '(:ignore t :wk "magit b*")
+                                  "g b r" '(magit-branch :wk "magit branch")
+                                  "g b l" '(magit-blame :wk "magit blame")
+                                  "g d" '(magit-dispatch :wk "magit dispatch")
                                   "g f" '(magit-fetch :wk "magit fetch")
-                                  "g F" '(magit-pull :wk "magit pull")
-                                  "g P" '(magit-push :wk "magit push")
-                                  "g s" '(hydra-smerge/body :wk "smerge")
-                                  "g z" '(magit-stash :wk "magit stash")
+                                  "g p" '(:ignore t :wk "magit p*")
+                                  "g p p" '(magit-pull :wk "magit pull")
+                                  "g p u" '(magit-push :wk "magit push")
+                                  "g s" '(:ignore t :wk "magit s*")
+                                  "g s s" '(magit-status :wk "magit status")
+                                  "g s m" '(hydra-smerge/body :wk "smerge")
+                                  "g s t" '(magit-stash :wk "magit stash")
                                   )
                                 )
                             )
@@ -1124,10 +1129,17 @@
         ;; trigger a bunch of unwanted side-effects, like save hooks and
         ;; formatters. Trust the user to know what they're doing.
         magit-save-repository-buffers nil
-        ;; Don't display parent/related refs in commit buffers; they are rarely
+        ;; Don't display parent/related refs in commit buffers. they are rarely
         ;; helpful and only add to runtime costs.
         magit-revision-insert-related-refs nil
+        ;; don't unecessarily refresh the status buffer unless we are actively
+        ;; viewing it
+        magit-refresh-status-buffer nil
+        ;; only show whitespace that causes issues
+        magit-diff-paint-whitespace 'uncommitted 
         )
+  (remove-hook 'magit-refs-sections-hook 'magit-insert-tags)
+  (remove-hook 'server-switch-hook 'magit-commit-diff)
   )
 
 ;;enable super syntax highlighting
@@ -1417,7 +1429,8 @@
   )
 
 (defun custo/eldoc ()
-  (eldoc)
+  (interactive)
+  (eldoc-message)
   (other-window)
   )
 
