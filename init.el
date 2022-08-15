@@ -23,8 +23,11 @@
               ;; custo globals
               custo/width 120
               custo/height 35
+              custo/font "Monospace"
               custo/font-size 16
-              custo/mode-line-size 20
+              custo/variable-font "Arial"
+              custo/mode-line-font "Monospace" 
+              custo/mode-line-size 18
               ;; ;; Resizing the Emacs frame can be a terribly expensive part of changing the
               ;; ;; font. By inhibiting this, we halve startup times, particularly when we use
               ;; ;; fonts that are larger than the system default (which would resize the frame).
@@ -114,13 +117,13 @@
   (push '(vertical-scroll-bars) default-frame-alist)
   (when (display-graphic-p)
     ;; set default font
-    (set-face-attribute 'default nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size custo/font-size :weight 'regular ))
+    (set-face-attribute 'default nil :font (font-spec :family custo/font :size custo/font-size :weight 'regular ))
     ;; Set the fixed pitch face
-    (set-face-attribute 'fixed-pitch nil :font (font-spec :family "MesloLGL Nerd Font Mono" :size custo/font-size :weight 'regular :slant 'italic))
+    (set-face-attribute 'fixed-pitch nil :font (font-spec :family custo/font :size custo/font-size :weight 'regular :slant 'italic))
     ;; Set the variable pitch face 
-    (set-face-attribute 'variable-pitch nil :font (font-spec :family "Menlo" :size custo/font-size :weight 'regular))
+    (set-face-attribute 'variable-pitch nil :font (font-spec :family custo/variable-font :size custo/font-size :weight 'regular))
     ;; Set the modeline face 
-    (set-face-attribute 'mode-line nil :font (font-spec :family "FiraCode Nerd Font Mono" :size custo/mode-line-size :weight 'regular))
+    (set-face-attribute 'mode-line nil :font (font-spec :family custo/mode-line-font :size custo/mode-line-size :weight 'regular))
     ;; after org-mode we want to adjust font sizes
     (with-eval-after-load 'org
       (dolist (face '((org-level-1 . 1.3)
@@ -224,14 +227,18 @@
 (unless (file-exists-p private-file)
   (with-temp-buffer
     (message "creating private file...")
-    (insert "(setq private/circe-nick nil)\n")
-    (insert "(setq private/circe-pass nil)\n")
-    (insert "(setq private/libera-nick nil)\n")
-    (insert "(setq private/libera-pass nil)\n")
-    (insert "(setq custo/font-size 18)\n")
-    (insert "(setq custo/mode-line-size 18)\n")
-    (insert "(setq custo/width 120)\n")
-    (insert "(setq custo/height 35)\n")
+    (insert "
+(setq private/circe-nick nil
+      private/circe-pass nil
+      private/libera-nick nil
+      private/libera-pass nil
+      custo/font \"Monospace\"
+      custo/font-size 16
+      custo/variable-font \"Arial\"
+      custo/mode-line-font \"Monospace\" 
+      custo/mode-line-size 18
+      custo/width 120
+      custo/height 35)")
     (message "writing private file...")
     (write-file private-file)
     (message "private file written...")
@@ -395,6 +402,7 @@
                                      :wk "toggle menu bar")
                              "t r" '((lambda ()
                                        (interactive)
+                                       (load private-file)
                                        (custo/setup-font-faces))
                                      :wk "reset font-faces")
                              "t t" '(toggle-truncate-lines :wk "toggle truncate lines")
@@ -648,6 +656,8 @@
         doom-modeline-unicode-fallback t
         doom-modeline-project-detection 'ffip
         )
+  (doom-modeline--font-height)
+  (doom-modeline--font-width)
   (doom-modeline-refresh-font-width-cache)
   )
 
@@ -660,8 +670,8 @@
                                 doom-themes-enable-italic t)
                           ;; (setq doom-challenger-deep-brighter-comments t
                           ;;       doom-challenger-deep-comment-bg t)
-                          (consult-theme 'doom-challenger-deep)
-                          ;; (consult-theme 'doom-moonlight)
+                          ;; (consult-theme 'doom-challenger-deep)
+                          (consult-theme 'doom-moonlight)
                           )
                       )
   )
@@ -1276,32 +1286,36 @@
 (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
 
-(use-package rustic
+(use-package rust-mode
   :defer t
-  :config
-  (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
-        ;; lsp-rust-server 'rust-analyzer
-        ;; rustic-lsp-server 'rust-analyzer
-        ;; lsp-rust-analyzer-proc-macro-enable t
-        ;; lsp-rust-analyzer-display-parameter-hints t
-        ;; lsp-rust-analyzer-server-display-inlay-hints nil
-        ;; lsp-rust-analyzer-inlay-hints-mode nil
-        rustic-indent-offset 4
-        rustic-format-on-save nil)
-  (custo/local-leader-key
-    :keymaps 'rustic-mode-map
-    "= =" '(rustic-format-buffer :wk "format with rustfmt")
-    "c" '(:ignore t :wk "cargo commands")
-    "c b" '(rustic-cargo-build :wk "cargo build")
-    "c C" '(rustic-cargo-check :wk "cargo check")
-    "c c" '(rustic-cargo-clippy :wk "cargo clippy")
-    "c r" '(rustic-cargo-run :wk "cargo run")
-    "c t" '(rustic-cargo-test :wk "cargo test")
-    ;; "t" '(:ignore t :wk "toggles")
-    ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
-    )
-  )
+  :mode "\\.rs\\'")
+
+;; (use-package rustic
+;;   :defer t
+;;   :config
+;;   (setq indent-tabs-mode nil
+;;         rustic-lsp-client 'eglot
+;;         ;; lsp-rust-server 'rust-analyzer
+;;         ;; rustic-lsp-server 'rust-analyzer
+;;         ;; lsp-rust-analyzer-proc-macro-enable t
+;;         ;; lsp-rust-analyzer-display-parameter-hints t
+;;         ;; lsp-rust-analyzer-server-display-inlay-hints nil
+;;         ;; lsp-rust-analyzer-inlay-hints-mode nil
+;;         rustic-indent-offset 4
+;;         rustic-format-on-save nil)
+;;   (custo/local-leader-key
+;;     :keymaps 'rustic-mode-map
+;;     "= =" '(rustic-format-buffer :wk "format with rustfmt")
+;;     "c" '(:ignore t :wk "cargo commands")
+;;     "c b" '(rustic-cargo-build :wk "cargo build")
+;;     "c C" '(rustic-cargo-check :wk "cargo check")
+;;     "c c" '(rustic-cargo-clippy :wk "cargo clippy")
+;;     "c r" '(rustic-cargo-run :wk "cargo run")
+;;     "c t" '(rustic-cargo-test :wk "cargo test")
+;;     ;; "t" '(:ignore t :wk "toggles")
+;;     ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+;;     )
+;;   )
 
 (use-package csharp-mode
   :defer t
@@ -1430,9 +1444,11 @@
 
 (defun custo/eldoc ()
   (interactive)
-  (eldoc-message)
+  (eldoc)
   (other-window)
   )
+
+
 
 (use-package eglot
   :defer t
@@ -1441,7 +1457,8 @@
     rsjx-mode
     typescript-mode
     typescript-tsx-mode
-    rustic-mode
+    ;; rustic-mode
+    rust-mode
     lua-mode
     scss-mode
     css-mode
@@ -1459,6 +1476,7 @@
              eglot-find-typeDefinition
              eglot-rename
              eglot-format-buffer
+             eglot-lsp-server
              )
   :bind
   (:map eglot-mode-map
@@ -1962,7 +1980,7 @@
   (prodigy-define-service
     :name "redshift"
     :command "redshift"
-    :args '("-P" "-O" "2900" "-b" "1.00")
+    :args '("-P" "-O" "3000" "-b" "1.00")
     :stop-signal 'sigterm
     )
   (prodigy-define-service
