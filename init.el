@@ -721,11 +721,11 @@
 
 (use-package rainbow-identifiers
   :defer t
-  :hook
-  ((emacs-lisp-mode
-    ;; prog-mode
-    ;; conf-mode
-    ) . rainbow-identifiers-mode)
+  ;; :hook
+  ;; ((emacs-lisp-mode
+  ;;   ;; prog-mode
+  ;;   ;; conf-mode
+  ;;   ) . rainbow-identifiers-mode)
   :config
   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
         rainbow-identifiers-cie-l*a*b*-lightness 75
@@ -1163,7 +1163,7 @@
   :hook
   ((lsp-mode
     eglot-managed-mode) . (lambda ()
-    (rainbow-identifiers-mode)
+    ;; (rainbow-identifiers-mode)
     (tree-sitter-mode)
     (tree-sitter-hl-mode)
     )
@@ -1196,18 +1196,18 @@
 
 
 ;; better javascript mode
-(use-package js2-mode
-  :defer t
-  :mode ("\\.js\\'" "\\.cjs\\'")
-  :config
-  (setq js-indent-level 2)
-  )
+;; (use-package js2-mode
+;;   :defer t
+;;   :mode ("\\.js\\'" "\\.cjs\\'")
+;;   :config
+;;   (setq js-indent-level 2)
+;;   )
 
 ;; teach js2-mode how to jsx
-(use-package rjsx-mode
-  :defer t
-  :mode ("components\\/.*\\.js\\'" "\\.jsx\\'")
-  )
+;; (use-package rjsx-mode
+;;   :defer t
+;;   :mode ("components\\/.*\\.js\\'" "\\.jsx\\'")
+;;   )
 
 (use-package svelte-mode
   :defer t
@@ -1221,8 +1221,8 @@
   :hook
   (custo/after-general-load . (lambda ()
                                 (custo/local-leader-key
-                                  :keymaps '(js2-mode-map
-                                             rjsx-mode-map
+                                  :keymaps '(js-mode-map
+                                             js-jsx-mode-map
                                              typescript-mode-map
                                              typescript-tsx-mode-map
                                              svelte-mode-map
@@ -1247,8 +1247,8 @@
 
 (add-hook 'custo/after-general-load-hook (lambda ()
                                            (custo/local-leader-key
-                                             :keymaps '(js2-mode-map
-                                                        rsjx-mode-map
+                                             :keymaps '(js-mode-map
+                                                        js-jsx-mode-map
                                                         typescript-mode-map
                                                         typescript-tsx-mode-map
                                                         svelte-mode-map
@@ -1453,8 +1453,8 @@
 (use-package eglot
   :defer t
   :hook
-  ((js2-mode
-    rsjx-mode
+  ((js-mode
+    js-jsx-mode
     typescript-mode
     typescript-tsx-mode
     ;; rustic-mode
@@ -1505,6 +1505,8 @@
     "r" '(eglot-rename :wk "rename")
     "= b" '(eglot-format-buffer :wk "format buffer")
     )
+  ;; other config stuff
+  (setq js-indent-level 2)
   )
 
 (use-package flymake
