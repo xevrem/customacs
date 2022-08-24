@@ -721,11 +721,11 @@
 
 (use-package rainbow-identifiers
   :defer t
-  ;; :hook
-  ;; ((emacs-lisp-mode
+  :hook
+  ((emacs-lisp-mode
   ;;   ;; prog-mode
   ;;   ;; conf-mode
-  ;;   ) . rainbow-identifiers-mode)
+    ) . rainbow-identifiers-mode)
   :config
   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
         rainbow-identifiers-cie-l*a*b*-lightness 75
@@ -1116,18 +1116,15 @@
                                   )
                                 (custo/leader-key
                                   "g" '(:ignore t :wk "magit")
-                                  "g b" '(:ignore t :wk "magit b*")
-                                  "g b r" '(magit-branch :wk "magit branch")
-                                  "g b l" '(magit-blame :wk "magit blame")
+                                  "g b" '(magit-branch :wk "magit branch")
+                                  "g B" '(magit-blame :wk "magit blame")
                                   "g d" '(magit-dispatch :wk "magit dispatch")
                                   "g f" '(magit-fetch :wk "magit fetch")
-                                  "g p" '(:ignore t :wk "magit p*")
-                                  "g p p" '(magit-pull :wk "magit pull")
-                                  "g p u" '(magit-push :wk "magit push")
-                                  "g s" '(:ignore t :wk "magit s*")
-                                  "g s s" '(magit-status :wk "magit status")
-                                  "g s m" '(hydra-smerge/body :wk "smerge")
-                                  "g s t" '(magit-stash :wk "magit stash")
+                                  "g F" '(magit-pull :wk "magit pull")
+                                  "g p" '(magit-push :wk "magit push")
+                                  "g g" '(magit-status :wk "magit status")
+                                  "g s" '(hydra-smerge/body :wk "smerge")
+                                  "g z" '(magit-stash :wk "magit stash")
                                   )
                                 )
                             )
@@ -1163,9 +1160,9 @@
   :hook
   ((lsp-mode
     eglot-managed-mode) . (lambda ()
-    ;; (rainbow-identifiers-mode)
     (tree-sitter-mode)
     (tree-sitter-hl-mode)
+    (rainbow-identifiers-mode)
     )
     )
   )
