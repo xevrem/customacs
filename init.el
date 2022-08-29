@@ -1175,21 +1175,21 @@
   :defer t
   :commands (tree-sitter-require)
   :hook
-  (prog-mode . (lambda ()
-                 (tree-sitter-require 'tsx)
-                 (tree-sitter-require 'html)
-                 (tree-sitter-require 'json)
-                 (tree-sitter-require 'css)
-                 (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
-                 (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
-                 (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
-                 (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
-                 (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
-                 (add-to-list 'tree-sitter-major-mode-language-alist '(css-mode . css))
-                 (add-to-list 'tree-sitter-major-mode-language-alist '(less-css-mode . css))
-                 )
-             )
-  )
+  (custo/after-init-hook
+   .
+   (lambda ()
+     (tree-sitter-require 'tsx)
+     (tree-sitter-require 'html)
+     (tree-sitter-require 'json)
+     (tree-sitter-require 'css)
+     (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
+     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
+     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
+     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
+     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(css-mode . css))
+     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(less-css-mode . css))
+     )))
 
 
 ;; better javascript mode
@@ -1265,14 +1265,14 @@
   (setq css-indent-offset 2)
   )
 
-(use-package web-mode
-  :defer t
-  :mode "\\.html\\'"
-  :config
-  (setq web-mode-css-indent-offset 2
-        web-mode-markup-indent-offset 2
-        web-mode-code-indent-offset 2)
-  )
+;; (use-package web-mode
+;;   :defer t
+;;   :mode "\\.html\\'"
+;;   :config
+;;   (setq web-mode-css-indent-offset 2
+;;         web-mode-markup-indent-offset 2
+;;         web-mode-code-indent-offset 2)
+;;   )
 
 (use-package typescript-mode
   :defer t
@@ -1283,36 +1283,32 @@
 (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
 
-(use-package rust-mode
+(use-package rustic
   :defer t
-  :mode "\\.rs\\'")
-
-;; (use-package rustic
-;;   :defer t
-;;   :config
-;;   (setq indent-tabs-mode nil
-;;         rustic-lsp-client 'eglot
-;;         ;; lsp-rust-server 'rust-analyzer
-;;         ;; rustic-lsp-server 'rust-analyzer
-;;         ;; lsp-rust-analyzer-proc-macro-enable t
-;;         ;; lsp-rust-analyzer-display-parameter-hints t
-;;         ;; lsp-rust-analyzer-server-display-inlay-hints nil
-;;         ;; lsp-rust-analyzer-inlay-hints-mode nil
-;;         rustic-indent-offset 4
-;;         rustic-format-on-save nil)
-;;   (custo/local-leader-key
-;;     :keymaps 'rustic-mode-map
-;;     "= =" '(rustic-format-buffer :wk "format with rustfmt")
-;;     "c" '(:ignore t :wk "cargo commands")
-;;     "c b" '(rustic-cargo-build :wk "cargo build")
-;;     "c C" '(rustic-cargo-check :wk "cargo check")
-;;     "c c" '(rustic-cargo-clippy :wk "cargo clippy")
-;;     "c r" '(rustic-cargo-run :wk "cargo run")
-;;     "c t" '(rustic-cargo-test :wk "cargo test")
-;;     ;; "t" '(:ignore t :wk "toggles")
-;;     ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
-;;     )
-;;   )
+  :config
+  (setq indent-tabs-mode nil
+        rustic-lsp-client 'lsp
+        ;; lsp-rust-server 'rust-analyzer
+        ;; rustic-lsp-server 'rust-analyzer
+        lsp-rust-analyzer-proc-macro-enable t
+        ;; lsp-rust-analyzer-display-parameter-hints t
+        lsp-rust-analyzer-server-display-inlay-hints t
+        lsp-rust-analyzer-inlay-hints-mode t
+        rustic-indent-offset 4
+        rustic-format-on-save nil)
+  (custo/local-leader-key
+    :keymaps 'rustic-mode-map
+    "= =" '(rustic-format-buffer :wk "format with rustfmt")
+    "c" '(:ignore t :wk "cargo commands")
+    "c b" '(rustic-cargo-build :wk "cargo build")
+    "c C" '(rustic-cargo-check :wk "cargo check")
+    "c c" '(rustic-cargo-clippy :wk "cargo clippy")
+    "c r" '(rustic-cargo-run :wk "cargo run")
+    "c t" '(rustic-cargo-test :wk "cargo test")
+    "t" '(:ignore t :wk "toggles")
+    "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+    )
+  )
 
 (use-package csharp-mode
   :defer t
@@ -1439,72 +1435,71 @@
   :mode ("\\.wgsl\\'")
   )
 
-(defun custo/eldoc ()
-  (interactive)
-  (eldoc)
-  (other-window)
-  )
-
-
+;; (defun custo/eldoc ()
+;;   (interactive)
+;;   (eldoc)
+;;   (other-window)
+;;   )
 
 (use-package eglot
-  :defer t
-  :hook
-  ((js-mode
-    js-jsx-mode
-    typescript-mode
-    typescript-tsx-mode
-    ;; rustic-mode
-    rust-mode
-    lua-mode
-    scss-mode
-    css-mode
-    less-css-mode
-    html-mode
-    html+
-    html+js
-    elixir-mode
-    gdscript-mode
-    python-mode
-    sh-mode
-    ) . eglot-ensure)
-  :commands (eglot-find-declaration
-             eglot-find-implementation
-             eglot-find-typeDefinition
-             eglot-rename
-             eglot-format-buffer
-             eglot-lsp-server
-             )
-  :bind
-  (:map eglot-mode-map
-        ([remap xref-goto-xref] . custo/xref-goto-xref)
-        ([remap evil-lookup] . custo/eldoc)
-        )
-  :config
-  (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
-  (custo/leader-key
-    :keymaps 'eglot-mode-map
-    "e l" '(consult-flymake :wk "list errors")
-    )
-  (custo/local-leader-key
-    :keymaps 'eglot-mode-map
-    "a" '(:ignore t :wk "quick actions")
-    "a a" '(eglot-code-actions :wk "quick actions")
-    "e" '(:ignore t :wk "errors")
-    "e b" '(flymake-show-buffer-diagnostics :wk "buffer errors")
-    "e l" '(consult-flymake :wk "list errors")
-    "e p" '(flymake-show-project-diagnostics :wk "project errors")
-    "g d" '(xref-find-definitions :wk "xref find definition")
-    "g D" '(eglot-find-declaration :wk "eglot find declaration")
-    "g i" '(eglot-find-implementation :wk "eglot find implementation")
-    "g r" '(xref-find-references :wk "xref find references")
-    "g t" '(eglot-find-typeDefinition :wk "eglot find type definition")
-    "r" '(eglot-rename :wk "rename")
-    "= b" '(eglot-format-buffer :wk "format buffer")
-    )
-  ;; other config stuff
-  (setq js-indent-level 2)
-  )
+  :defer t)
+;; (use-package eglot
+;;   :defer t
+;;   :hook
+;;   ((js-mode
+;;     js-jsx-mode
+;;     typescript-mode
+;;     typescript-tsx-mode
+;;     rustic-mode
+;;     lua-mode
+;;     scss-mode
+;;     css-mode
+;;     less-css-mode
+;;     html-mode
+;;     html+
+;;     html+js
+;;     elixir-mode
+;;     gdscript-mode
+;;     python-mode
+;;     sh-mode               
+;;     ) . eglot-ensure)
+;;   :commands (eglot-find-declaration
+;;              eglot-find-implementation
+;;              eglot-find-typeDefinition
+;;              eglot-rename
+;;              eglot-format-buffer
+;;              eglot-lsp-server
+;;              )
+;;   :bind
+;;   (:map eglot-mode-map
+;;         ([remap xref-goto-xref] . custo/xref-goto-xref)
+;;         ([remap evil-lookup] . custo/eldoc)
+;;         )
+;;   :config
+;;   (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
+;;   (custo/leader-key
+;;     :keymaps 'eglot-mode-map
+;;     "e l" '(consult-flymake :wk "list errors")
+;;     )
+;;   (custo/local-leader-key
+;;     :keymaps 'eglot-mode-map
+;;     "a" '(:ignore t :wk "quick actions")
+;;     "a a" '(eglot-code-actions :wk "quick actions")
+;;     "e" '(:ignore t :wk "errors")
+;;     "e b" '(flymake-show-buffer-diagnostics :wk "buffer errors")
+;;     "e l" '(consult-flymake :wk "list errors")
+;;     "e p" '(flymake-show-project-diagnostics :wk "project errors")
+;;     "g d" '(xref-find-definitions :wk "xref find definition")
+;;     "g D" '(eglot-find-declaration :wk "eglot find declaration")
+;;     "g i" '(eglot-find-implementation :wk "eglot find implementation")
+;;     "g r" '(xref-find-references :wk "xref find references")
+;;     "g t" '(eglot-find-typeDefinition :wk "eglot find type definition")
+;;     "r" '(eglot-rename :wk "rename")
+;;     "= b" '(eglot-format-buffer :wk "format buffer")
+;;     )
+;;   ;; other config stuff
+;;   (setq js-indent-level 2)
+;;   )
 
 (use-package flymake
   :defer t
@@ -1521,12 +1516,27 @@
              lsp-mode-map
              lsp-describe-thing-at-point)
   :hook 
-  ((web-mode
+  ((js-mode
+    js-jsx-mode
+    typescript-mode
+    typescript-tsx-mode
+    rustic-mode
+    lua-mode
+    scss-mode
+    css-mode
+    less-css-mode
+    html-mode
+    ;; html+
+    ;; html+js
+    elixir-mode
+    gdscript-mode
+    python-mode
+    ;; web-mode
+    sh-mode
     svelte-mode
     csharp-mode
     ) . lsp-deferred)
   (lsp-mode . lsp-enable-which-key-integration)
-  (lsp-mode . lsp-mode)
   :bind
   (:map lsp-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
@@ -1552,14 +1562,14 @@
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :wk "find definition")
     "g G" '(lsp-goto-implementation :wk "goto definition")
-    "g R" '(lsp-ui-peek-find-references :wk "peek references")
+    ;; "g R" '(lsp-ui-peek-find-references :wk "peek references")
     "g r" '(lsp-find-references :wk "find references")
     "g t" '(lsp-goto-type-definition :wk "goto type definition")
     "h" '(:ignore t :wk "help")
-    "h g" '(lsp-ui-doc-glance :wk "glance symbol")
+    ;; "h g" '(lsp-ui-doc-glance :wk "glance symbol")
     "h d" '(lsp-describe-thing-at-point :wk "describe symbol")
     "h s" '(lsp-signature-activate :wk "show signature")
-    "o" '(lsp-ui-imenu :wk "overview")
+    ;; "o" '(lsp-ui-imenu :wk "overview")
     "r" '(:ignore t :wk "refactor")
     "r r" '(lsp-rename :wk "rename")
     "=" '(:ignore t :wk "format")
@@ -1575,17 +1585,17 @@
 ;;   )
 
 ;; prettier lsp
-(use-package lsp-ui
-  :defer t
-  :config
-  (setq lsp-ui-doc-enable nil
-        lsp-ui-doc-position 'top
-        lsp-ui-doc-show-with-cursor t
-        lsp-ui-doc-delay 1.0
-        lsp-ui-sideline-enable t
-        lsp-ui-sideline-delay 1.0
-        )
-  )
+;; (use-package lsp-ui
+;;   :defer t
+;;   :config
+;;   (setq lsp-ui-doc-enable nil
+;;         lsp-ui-doc-position 'top
+;;         lsp-ui-doc-show-with-cursor t
+;;         lsp-ui-doc-delay 1.0
+;;         lsp-ui-sideline-enable t
+;;         lsp-ui-sideline-delay 1.0
+;;         )
+;;   )
 
 ;; error checking
 (use-package flycheck
@@ -1593,14 +1603,16 @@
   :hook
   (lsp-mode . flycheck-mode)
   :config
-  ;; (setq flycheck-disabled-checkers
-  ;;       (append flycheck-disabled-checkers
-  ;;               '(javascript-jshint)))
+  (setq flycheck-disabled-checkers
+        (append flycheck-disabled-checkers
+                '(javascript-jshint)))
   (setq flycheck-temp-prefix ".flycheck")
+  (flycheck-add-mode 'javascript-eslint 'js-mode)
+  (flycheck-add-mode 'javascript-eslint 'js-jsx-mode)
   ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
   ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/local-leader-key
     :keymaps '(lsp-mode-map
                ;; js2-mode-map
