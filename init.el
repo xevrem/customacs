@@ -1158,8 +1158,7 @@
   :defer t
   :after tree-sitter-langs
   :hook
-  ((lsp-mode
-    eglot-managed-mode) . (lambda ()
+  (lsp-mode . (lambda ()
     (tree-sitter-mode)
     (tree-sitter-hl-mode)
     (rainbow-identifiers-mode)
@@ -1175,36 +1174,34 @@
   :defer t
   :commands (tree-sitter-require)
   :hook
-  (custo/after-init-hook
+  (after-init
    .
    (lambda ()
      (tree-sitter-require 'tsx)
      (tree-sitter-require 'html)
+     (tree-sitter-require 'javascript)
      (tree-sitter-require 'json)
      (tree-sitter-require 'css)
+     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(js-jsx-mode . tsx))
      (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
      (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
-     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
-     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
-     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
-     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(css-mode . css))
-     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(less-css-mode . css))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(css-mode . css))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(less-css-mode . css))
      )))
 
 
-;; better javascript mode
-;; (use-package js2-mode
-;;   :defer t
-;;   :mode ("\\.js\\'" "\\.cjs\\'")
-;;   :config
-;;   (setq js-indent-level 2)
-;;   )
+(defun custo/js-mode-customize ()
+  "Customize js and jsx modes."
+  (setq js-indent-level 2)
+  )
+(add-hook 'js-mode-hook
+  (custo/js-mode-customize))
+;; (add-hook 'js-jsx-mode-hook
+;;   (custo/js-mode-customize))
 
-;; teach js2-mode how to jsx
-;; (use-package rjsx-mode
-;;   :defer t
-;;   :mode ("components\\/.*\\.js\\'" "\\.jsx\\'")
-;;   )
 
 (use-package svelte-mode
   :defer t
@@ -1265,14 +1262,14 @@
   (setq css-indent-offset 2)
   )
 
-;; (use-package web-mode
-;;   :defer t
-;;   :mode "\\.html\\'"
-;;   :config
-;;   (setq web-mode-css-indent-offset 2
-;;         web-mode-markup-indent-offset 2
-;;         web-mode-code-indent-offset 2)
-;;   )
+(use-package web-mode
+  :defer t
+  :mode "\\.html\\'"
+  :config
+  (setq web-mode-css-indent-offset 2
+        web-mode-markup-indent-offset 2
+        web-mode-code-indent-offset 2)
+  )
 
 (use-package typescript-mode
   :defer t
@@ -1525,13 +1522,13 @@
     scss-mode
     css-mode
     less-css-mode
-    html-mode
+    ;; html-mode
     ;; html+
     ;; html+js
     elixir-mode
     gdscript-mode
     python-mode
-    ;; web-mode
+    web-mode
     sh-mode
     svelte-mode
     csharp-mode
