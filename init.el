@@ -1532,7 +1532,7 @@
     sh-mode
     svelte-mode
     csharp-mode
-    ) . lsp-deferred)
+    ) . lsp)
   (lsp-mode . lsp-enable-which-key-integration)
   :bind
   (:map lsp-mode-map
@@ -1540,7 +1540,8 @@
         ([remap evil-lookup] . lsp-describe-thing-at-point)
         )
   :config
-  (setq lsp-completion-provider :none
+  (setq lsp-keymap-prefix "C-c l"
+        lsp-completion-provider :none
         ;; lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         lsp-lens-enable nil
@@ -1555,7 +1556,26 @@
         lsp-keymap-prefix "<super>-l"
         )
   (custo/local-leader-key
-    :keymaps 'lsp-mode-map
+    :keymaps '(js-mode-map
+               js-jsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               lua-mode-map
+               scss-mode-map
+               css-mode-map
+               less-css-mode-map
+               ;; html-mode-map
+               ;; html+-map
+               ;; html+js-map
+               elixir-mode-map
+               gdscript-mode-map
+               python-mode-map
+               web-mode-map
+               sh-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               )
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :wk "find definition")
     "g G" '(lsp-goto-implementation :wk "goto definition")
@@ -1611,22 +1631,25 @@
   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/local-leader-key
-    :keymaps '(lsp-mode-map
-               ;; js2-mode-map
-               ;; rjsx-mode-map
-               ;; typescript-mode-map
-               ;; typescript-tsx-mode-map
-               ;; rustic-mode-map
-               ;; elixir-modemap
-               ;; yaml-mode-map
-               ;; json-mode-map
-               ;; scss-mode-map
-               ;; web-mode-map
-               ;; go-mode-map
-               ;; gdscript-mode-map
-               ;; svelte-mode-map
-               ;; csharp-mode-map
-               ;; python-mode-map
+    :keymaps '(js-mode-map
+               js-jsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               lua-mode-map
+               scss-mode-map
+               css-mode-map
+               less-css-mode-map
+               ;; html-mode-map
+               ;; html+-map
+               ;; html+js-map
+               elixir-mode-map
+               gdscript-mode-map
+               python-mode-map
+               web-mode-map
+               sh-mode-map
+               svelte-mode-map
+               csharp-mode-map
                )
     "e" '(:ignore t :wk "errors")
     "e l" '(consult-flycheck :wk "list errors")
