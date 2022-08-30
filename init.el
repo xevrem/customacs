@@ -1125,6 +1125,11 @@
                                   "g g" '(magit-status :wk "magit status")
                                   "g s" '(hydra-smerge/body :wk "smerge")
                                   "g z" '(magit-stash :wk "magit stash")
+                                  :keymaps 'magit-mode-map
+                                  "SPC" '(execute-extended-command :wk "M-x") 
+                                  "TAB" '(evil-switch-to-windows-last-buffer :wk "switch to previous buffer")
+                                  ":" '(execute-extended-command :wk "M-x")
+                                  "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
                                   )
                                 )
                             )
