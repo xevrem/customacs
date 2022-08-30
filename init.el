@@ -1130,6 +1130,22 @@
                                   "TAB" '(evil-switch-to-windows-last-buffer :wk "switch to previous buffer")
                                   ":" '(execute-extended-command :wk "M-x")
                                   "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
+                                  "b" '(:ignore t :wk "buffer")
+                                  "b b" '(consult-buffer :wk "switch buffers")
+                                  "b d" '(kill-current-buffer :wk "destroy buffer")
+                                  "b i" '(ibuffer :wk "ibuffer")
+                                  "b r" '(revert-buffer-quick :wk "revert buffer")
+                                  "w" '(:ignore t :wk "window")
+                                  "w b" '(balance-windows :ignore t :wk "balance windows")
+                                  "w d" '(delete-window :wk "delete window")
+                                  "w h" '(evil-window-vsplit :wk "add window horizontally")
+                                  "w o" '(delete-other-windows :wk "delete other windows")
+                                  "w v" '(evil-window-split :wk "add window vertically")
+                                  "w w" '(other-window :wk "other window")
+                                  "<right>" '(evil-window-right :wk "->")
+                                  "<left>" '(evil-window-left :wk "<-")
+                                  "<up>" '(evil-window-up :wk "^")
+                                  "<down>" '(evil-window-down :wk "v")
                                   )
                                 )
                             )
@@ -1164,11 +1180,11 @@
   :after tree-sitter-langs
   :hook
   (lsp-mode . (lambda ()
-    (tree-sitter-mode)
-    (tree-sitter-hl-mode)
-    (rainbow-identifiers-mode)
-    )
-    )
+                (tree-sitter-mode)
+                (tree-sitter-hl-mode)
+                (rainbow-identifiers-mode)
+                )
+            )
   )
 
 (use-package tree-sitter-langs
@@ -1201,7 +1217,7 @@
   (setq js-indent-level 2)
   )
 (add-hook 'js-mode-hook
-  (custo/js-mode-customize))
+          (custo/js-mode-customize))
 ;; (add-hook 'js-jsx-mode-hook
 ;;   (custo/js-mode-customize))
 
