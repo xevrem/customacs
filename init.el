@@ -1179,13 +1179,11 @@
    (lambda ()
      (tree-sitter-require 'tsx)
      (tree-sitter-require 'html)
-     (tree-sitter-require 'javascript)
      (tree-sitter-require 'json)
      (tree-sitter-require 'css)
-     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(js-jsx-mode . tsx))
      (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
      (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
-     (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
+     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
      (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
      (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
      (add-to-list 'tree-sitter-major-mode-language-alist '(css-mode . css))
@@ -1246,7 +1244,8 @@
                                                         typescript-mode-map
                                                         typescript-tsx-mode-map
                                                         svelte-mode-map
-                                                        web-mode-map)
+                                                        ;; web-mode-map
+                                                        )
                                              "= =" '((lambda ()
                                                        (interactive)
                                                        (prettier-prettify)
@@ -1262,14 +1261,14 @@
   (setq css-indent-offset 2)
   )
 
-(use-package web-mode
-  :defer t
-  :mode "\\.html\\'"
-  :config
-  (setq web-mode-css-indent-offset 2
-        web-mode-markup-indent-offset 2
-        web-mode-code-indent-offset 2)
-  )
+;; (use-package web-mode
+;;   :defer t
+;;   :mode "\\.html\\'"
+;;   :config
+;;   (setq web-mode-css-indent-offset 2
+;;         web-mode-markup-indent-offset 2
+;;         web-mode-code-indent-offset 2)
+;;   )
 
 (use-package typescript-mode
   :defer t
@@ -1528,7 +1527,7 @@
     elixir-mode
     gdscript-mode
     python-mode
-    web-mode
+    ;; web-mode
     sh-mode
     svelte-mode
     csharp-mode
@@ -1571,7 +1570,7 @@
                elixir-mode-map
                gdscript-mode-map
                python-mode-map
-               web-mode-map
+               ;; web-mode-map
                sh-mode-map
                svelte-mode-map
                csharp-mode-map
@@ -1626,8 +1625,6 @@
   (setq flycheck-temp-prefix ".flycheck")
   (flycheck-add-mode 'javascript-eslint 'js-mode)
   (flycheck-add-mode 'javascript-eslint 'js-jsx-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (custo/local-leader-key
@@ -1646,7 +1643,7 @@
                elixir-mode-map
                gdscript-mode-map
                python-mode-map
-               web-mode-map
+               ;; web-mode-map
                sh-mode-map
                svelte-mode-map
                csharp-mode-map
