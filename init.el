@@ -28,6 +28,7 @@
               custo/variable-font "Arial"
               custo/mode-line-font "Monospace" 
               custo/mode-line-size 18
+              custo/theme 'doom-tomorrow-night
               ;; ;; Resizing the Emacs frame can be a terribly expensive part of changing the
               ;; ;; font. By inhibiting this, we halve startup times, particularly when we use
               ;; ;; fonts that are larger than the system default (which would resize the frame).
@@ -238,7 +239,8 @@
       custo/mode-line-font \"Monospace\" 
       custo/mode-line-size 18
       custo/width 120
-      custo/height 35)")
+      custo/height 35
+      custo/theme 'doom-tomorrow-night)")
     (message "writing private file...")
     (write-file private-file)
     (message "private file written...")
@@ -292,12 +294,6 @@
 			  )
 			)
 		    )
-  ;; (server-after-make-frame . (lambda ()
-  ;;                              (message "setup env vars for daemon")
-  ;;                              (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
-  ;;                              (exec-path-from-shell-initialize)
-  ;;                              )
-  ;;                          )
   )
 
 
@@ -469,7 +465,6 @@
   (custo/after-general-load . (lambda ()
                                 (custo/leader-key
                                   "b b" '(consult-buffer :wk "switch buffers")
-                                  "f r" '(consult-recent-file :wk "recent files")
                                   "s i" '(consult-imenu :wk "imenu")
                                   "s p" '(consult-ripgrep :wk "search project")
                                   "s s" '(consult-line :wk "search buffer")
@@ -618,15 +613,21 @@
         )
   )
 
+(use-package highlight-quoted
+  :defer t
+  :hook
+  (emacs-lisp-mode . highlight-quoted-mode))
+
 
 ;; show recently used files
-(use-package recentf
+(use-package frecentf
   :defer t
   :commands recentf-open-files
   :hook
   (custo/after-general-load . (lambda ()
                                 (custo/leader-key
-                                  "f R" '(recentf-open-files :wk "full recentf files")
+                                  "f r" '(frecentf-pick-file :wk "frecent files")
+                                  "f D" '(frecentf-pick-dir :wk "frecent dirs")
                                   )
                                 )
                             )
@@ -661,6 +662,7 @@
   (doom-modeline-refresh-font-width-cache)
   )
 
+(use-package color-theme-sanityinc-tomorrow)
 
 (use-package doom-themes
   :defer t
@@ -668,10 +670,7 @@
   (doom-modeline-mode . (lambda ()
                           (setq doom-themes-enable-bold t
                                 doom-themes-enable-italic t)
-                          ;; (setq doom-challenger-deep-brighter-comments t
-                          ;;       doom-challenger-deep-comment-bg t)
-                          ;; (consult-theme 'doom-challenger-deep)
-                          (consult-theme 'doom-moonlight)
+                          (consult-theme custo/theme)
                           )
                       )
   )
@@ -718,19 +717,6 @@
         )
   )
 
-
-(use-package rainbow-identifiers
-  :defer t
-  :hook
-  ((emacs-lisp-mode
-  ;;   ;; prog-mode
-  ;;   ;; conf-mode
-    ) . rainbow-identifiers-mode)
-  :config
-  (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
-        rainbow-identifiers-cie-l*a*b*-lightness 75
-        rainbow-identifiers-cie-l*a*b*-saturation 50)
-  )
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
@@ -790,27 +776,6 @@
     server-after-make-frame) . xclip-mode)
   )
 
-;; ;; ensure that these are added to all the appropriat modes
-;; (dolist (calling-hook '(after-init-hook
-;;                         server-after-make-frame-hook)
-;;                       )
-;;   (add-hook calling-hook (lambda ()
-;;                            (unless (display-graphic-p)
-;;                              (dolist (mode '(prog-mode-hook
-;;                                              conf-mode-hook
-;;                                              text-mode-hook
-;;                                              ))
-;;                                (add-hook mode 'xclip-mode)
-;;                                (add-hook mode 'clipetty-mode)
-;;                                )
-;;                              )
-;;                            )
-;;             )
-;;   )
-
-
-
-
 ;; better help menus
 (use-package helpful
   :defer t
@@ -831,7 +796,8 @@
              helpful-function
              helpful-key
              helpful-variable
-             helpful-symbol)
+             helpful-symbol
+             helpful-mode)
   :bind
   ([remap describe-callable] . helpful-callable)
   ([remap describe-function] . helpful-function)
@@ -1182,7 +1148,7 @@
   (lsp-mode . (lambda ()
                 (tree-sitter-mode)
                 (tree-sitter-hl-mode)
-                (rainbow-identifiers-mode)
+                ;; (rainbow-identifiers-mode)
                 )
             )
   )
@@ -1218,8 +1184,6 @@
   )
 (add-hook 'js-mode-hook
           (custo/js-mode-customize))
-;; (add-hook 'js-jsx-mode-hook
-;;   (custo/js-mode-customize))
 
 
 (use-package svelte-mode
@@ -1556,8 +1520,10 @@
   (lsp-mode . lsp-enable-which-key-integration)
   :bind
   (:map lsp-mode-map
-        ([remap xref-goto-xref] . custo/xref-goto-xref)
         ([remap evil-lookup] . lsp-describe-thing-at-point)
+        ([remap evil-goto-definition] . lsp-find-definition)
+        ("g r" . lsp-find-references)
+        ("g t" . lsp-goto-type-definition)
         )
   :config
   (setq lsp-keymap-prefix "C-c l"
