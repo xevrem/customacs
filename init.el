@@ -756,6 +756,14 @@
         blink-matching-paren t)
   )
 
+(use-package hl-indent-scope
+  :defer t
+  :config
+  (custo/leader-key
+    "t h" '(hl-indent-scope-mode :wk "toggle indent highlights")
+    )
+  )
+
 
 (use-package clipetty
   :defer t
@@ -1091,6 +1099,8 @@
                                   "g g" '(magit-status :wk "magit status")
                                   "g s" '(hydra-smerge/body :wk "smerge")
                                   "g z" '(magit-stash :wk "magit stash")
+                                  )
+                                (custo/leader-key
                                   :keymaps 'magit-mode-map
                                   "SPC" '(execute-extended-command :wk "M-x") 
                                   "TAB" '(evil-switch-to-windows-last-buffer :wk "switch to previous buffer")
