@@ -28,12 +28,13 @@ RUN pacman -S --noconfirm emacs \
     && emacs -Q --script ~/.emacs.d/docker-init.el
 
 FROM build5 as build6
-RUN pacman -S --noconfirm fish
-WORKDIR ~/.config
-RUN git clone https://github.com/xevrem/fish-config.git ~/.config/fish
+RUN pacman -S --noconfirm fish xclip
+# WORKDIR ~/.config
+# RUN git clone https://github.com/xevrem/fish-config.git ~/.config/fish
 RUN fish \
     && set TERM xterm-256color \
-    && set COLORTERM truecolor
+    && set COLORTERM truecolor \
+    && set LSP_USER_PLISTS true 
 RUN chsh -s /usr/bin/fish root
 
 
