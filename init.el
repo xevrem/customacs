@@ -719,18 +719,18 @@
   )
 
 
-(use-package rainbow-identifiers
-  :defer t
-  :hook
-  ((emacs-lisp-mode
-  ;;   ;; prog-mode
-  ;;   ;; conf-mode
-    ) . rainbow-identifiers-mode)
-  :config
-  (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
-        rainbow-identifiers-cie-l*a*b*-lightness 75
-        rainbow-identifiers-cie-l*a*b*-saturation 50)
-  )
+;; (use-package rainbow-identifiers
+;;   :defer t
+;;   :hook
+;;   ((emacs-lisp-mode
+;;   ;;   ;; prog-mode
+;;   ;;   ;; conf-mode
+;;     ) . rainbow-identifiers-mode)
+;;   :config
+;;   (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
+;;         rainbow-identifiers-cie-l*a*b*-lightness 75
+;;         rainbow-identifiers-cie-l*a*b*-saturation 50)
+;;   )
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
@@ -768,6 +768,14 @@
         show-paren-when-point-inside-paren t
         show-paren-when-point-in-periphery t
         blink-matching-paren t)
+  )
+
+(use-package hl-indent-scope
+  :defer t
+  :config
+  (custo/leader-key
+    "t h" '(hl-indent-scope-mode :wk "toggle indent highlights")
+    )
   )
 
 
@@ -1125,6 +1133,8 @@
                                   "g g" '(magit-status :wk "magit status")
                                   "g s" '(hydra-smerge/body :wk "smerge")
                                   "g z" '(magit-stash :wk "magit stash")
+                                  )
+                                (custo/leader-key
                                   :keymaps 'magit-mode-map
                                   "SPC" '(execute-extended-command :wk "M-x") 
                                   "TAB" '(evil-switch-to-windows-last-buffer :wk "switch to previous buffer")
@@ -1182,7 +1192,7 @@
   (lsp-mode . (lambda ()
                 (tree-sitter-mode)
                 (tree-sitter-hl-mode)
-                (rainbow-identifiers-mode)
+                ;; (rainbow-identifiers-mode)
                 )
             )
   )
@@ -1554,11 +1564,12 @@
     csharp-mode
     ) . lsp)
   (lsp-mode . lsp-enable-which-key-integration)
-  :bind
-  (:map lsp-mode-map
-        ([remap xref-goto-xref] . custo/xref-goto-xref)
-        ([remap evil-lookup] . lsp-describe-thing-at-point)
-        )
+  :bind (:map lsp-mode-map
+              ;; ([remap xref-goto-xref] . custo/xref-goto-xref)
+              ([remap evil-lookup] . lsp-describe-thing-at-point)
+         :map evil-motion-state-map
+              ("g t" . lsp-goto-type-definition)
+              ("g r" . lsp-find-references))
   :config
   (setq lsp-keymap-prefix "C-c l"
         lsp-completion-provider :none
