@@ -54,6 +54,7 @@
               ;; scratch buffer anyway.
               initial-major-mode 'fundamental-mode
               initial-scratch-message nil
+              help-window-select t
               )
 
 ;; adjust the startup size and position of emacs
@@ -381,6 +382,7 @@
                              "j" '(:ignore t :wk "jump")
                              "j f" '(evil-jump-forward :wk "jump forward")
                              "j b" '(evil-jump-backward :wk "jump forward")
+                             "k" '(evil-lookup :wk "lookup thing at point")
                              "m" '(:ignore t :wk "local-leader")
                              "o" '(:ignore t :wk "org")
                              "p" '(projectile-command-map :wk "projectile")
@@ -621,16 +623,17 @@
 
 ;; show recently used files
 (use-package frecentf
-  :defer t
-  :commands recentf-open-files
+  :commands (frecentf-pick-file
+             frecentf-pick-dir
+             frecentf-mode)
   :hook
-  (custo/after-general-load . (lambda ()
-                                (custo/leader-key
-                                  "f r" '(frecentf-pick-file :wk "frecent files")
-                                  "f D" '(frecentf-pick-dir :wk "frecent dirs")
-                                  )
-                                )
-                            )
+  (custo/after-load . (lambda ()
+                        (frecentf-mode t)
+                        (custo/leader-key
+                          "f r" '(frecentf-pick-file :wk "frecent files")
+                          "f D" '(frecentf-pick-dir :wk "frecent dirs")
+                          )
+                        ))
   )
 
 
@@ -756,13 +759,13 @@
         blink-matching-paren t)
   )
 
-(use-package hl-indent-scope
-  :defer t
-  :config
-  (custo/leader-key
-    "t h" '(hl-indent-scope-mode :wk "toggle indent highlights")
-    )
-  )
+;; (use-package hl-indent-scope
+;;   :defer t
+;;   :config
+;;   (custo/leader-key
+;;     "t h" '(hl-indent-scope-mode :wk "toggle indent highlights")
+;;     )
+;;   )
 
 
 (use-package clipetty
@@ -1498,6 +1501,13 @@
              flymake-show-project-diagnostics)
   )
 
+;; (defun custo/lsp-describe ()
+;;   "Describe thing at point, and move to window."
+;;   (interactive)
+;;   (lsp-describe-thing-at-point)
+;;   (other-window)
+;;   )
+
 ;; lsp-mode
 (use-package lsp-mode
   :defer t
@@ -1532,6 +1542,7 @@
   (:map lsp-mode-map
         ([remap evil-lookup] . lsp-describe-thing-at-point)
         ([remap evil-goto-definition] . lsp-find-definition)
+        :map evil-normal-state-map
         ("g r" . lsp-find-references)
         ("g t" . lsp-goto-type-definition)
         )
@@ -1945,7 +1956,7 @@
                                   "a v" '((lambda ()
                                             (interactive)
                                             (vterm t)
-                                            (evil-emacs-state t)
+                                            ;; (evil-emacs-state t)
                                             ) :wk "vterm")
                                   )
                                 )
