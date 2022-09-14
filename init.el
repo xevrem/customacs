@@ -1183,7 +1183,7 @@
      (tree-sitter-require 'css)
      (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
      (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
-     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
      (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
      (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
      (add-to-list 'tree-sitter-major-mode-language-alist '(css-mode . css))
@@ -1242,7 +1242,7 @@
                                                         typescript-mode-map
                                                         typescript-tsx-mode-map
                                                         svelte-mode-map
-                                                        ;; web-mode-map
+                                                        web-mode-map
                                                         )
                                              "= =" '((lambda ()
                                                        (interactive)
@@ -1259,14 +1259,14 @@
   (setq css-indent-offset 2)
   )
 
-;; (use-package web-mode
-;;   :defer t
-;;   :mode "\\.html\\'"
-;;   :config
-;;   (setq web-mode-css-indent-offset 2
-;;         web-mode-markup-indent-offset 2
-;;         web-mode-code-indent-offset 2)
-;;   )
+(use-package web-mode
+  :defer t
+  :mode "\\.html\\'"
+  :config
+  (setq web-mode-css-indent-offset 2
+        web-mode-markup-indent-offset 2
+        web-mode-code-indent-offset 2)
+  )
 
 (use-package typescript-mode
   :defer t
@@ -1526,13 +1526,9 @@
     scss-mode
     css-mode
     less-css-mode
-    ;; html-mode
-    ;; html+
-    ;; html+js
     elixir-mode
     gdscript-mode
-    python-mode
-    ;; web-mode
+    web-mode
     sh-mode
     svelte-mode
     csharp-mode
@@ -1549,9 +1545,9 @@
   :config
   (setq lsp-keymap-prefix "C-c l"
         lsp-completion-provider :none
-        ;; lsp-file-watch-threshold 100
+        lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
-        lsp-lens-enable nil
+        lsp-lens-enable t
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
         lsp-idle-delay 1.0
         lsp-log-io nil
@@ -1559,8 +1555,11 @@
         lsp-modeline-diagnostics-enable nil;; disable warnings that usually get in the way
         lsp-lense-debounce-interval 0.5 ;; set it to a more sane value
         lsp-lense-place-position 'above-line
+        lsp-signature-auto-activate nil ;; prevent the documentation window from automatically showing
         lsp-use-plists t
         lsp-keymap-prefix "<super>-l"
+        ;; config built-in modes
+       
         )
   (custo/local-leader-key
     :keymaps '(js-mode-map
@@ -1572,13 +1571,10 @@
                scss-mode-map
                css-mode-map
                less-css-mode-map
-               ;; html-mode-map
-               ;; html+-map
-               ;; html+js-map
                elixir-mode-map
                gdscript-mode-map
                python-mode-map
-               ;; web-mode-map
+               web-mode-map
                sh-mode-map
                svelte-mode-map
                csharp-mode-map
@@ -1586,14 +1582,14 @@
     "a" '(lsp-execute-code-action :wk "excute code action")
     "g g" '(lsp-find-definition :wk "find definition")
     "g G" '(lsp-goto-implementation :wk "goto definition")
-    ;; "g R" '(lsp-ui-peek-find-references :wk "peek references")
+    "g R" '(lsp-ui-peek-find-references :wk "peek references")
     "g r" '(lsp-find-references :wk "find references")
     "g t" '(lsp-goto-type-definition :wk "goto type definition")
     "h" '(:ignore t :wk "help")
-    ;; "h g" '(lsp-ui-doc-glance :wk "glance symbol")
+    "h g" '(lsp-ui-doc-glance :wk "glance symbol")
     "h d" '(lsp-describe-thing-at-point :wk "describe symbol")
     "h s" '(lsp-signature-activate :wk "show signature")
-    ;; "o" '(lsp-ui-imenu :wk "overview")
+    "o" '(lsp-ui-imenu :wk "overview")
     "r" '(:ignore t :wk "refactor")
     "r r" '(lsp-rename :wk "rename")
     "=" '(:ignore t :wk "format")
@@ -1601,25 +1597,28 @@
     )
   )
 
-;; (use-package lsp-pyright
-;;   :defer t
-;;   :hook (python-mode . (lambda ()
-;;                          (require 'lsp-pyright)
-;;                          (lsp-deferred)))
-;;   )
+(use-package lsp-pyright
+  :defer t
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp)))
+  )
 
 ;; prettier lsp
-;; (use-package lsp-ui
-;;   :defer t
-;;   :config
-;;   (setq lsp-ui-doc-enable nil
-;;         lsp-ui-doc-position 'top
-;;         lsp-ui-doc-show-with-cursor t
-;;         lsp-ui-doc-delay 1.0
-;;         lsp-ui-sideline-enable t
-;;         lsp-ui-sideline-delay 1.0
-;;         )
-;;   )
+(use-package lsp-ui
+  :defer t
+  :commands (lsp-ui-peek-find-references
+             lsp-ui-doc-glance
+             lsp-ui-imenu)
+  :config
+  (setq lsp-ui-doc-enable nil
+        lsp-ui-doc-position 'top
+        lsp-ui-doc-show-with-cursor t
+        lsp-ui-doc-delay 1.0
+        lsp-ui-sideline-enable t
+        lsp-ui-sideline-delay 1.0
+        )
+  )
 
 ;; error checking
 (use-package flycheck
@@ -1651,7 +1650,7 @@
                elixir-mode-map
                gdscript-mode-map
                python-mode-map
-               ;; web-mode-map
+               web-mode-map
                sh-mode-map
                svelte-mode-map
                csharp-mode-map
