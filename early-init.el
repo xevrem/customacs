@@ -51,12 +51,15 @@
 (defvar custo/after-startup-hook nil
   "Hook called after emacs has started.")
 
+(defvar custo/after-window-hook nil
+  "Hook called after emacs has setup a window.")
+
 ;; And then finally a hook to reset everything.
-(add-hook 'emacs-startup-hook
+(add-hook 'custo/after-window-hook
           (lambda (&rest _)
             ;; (message "startup hook was fired")
             (setq-default 
-	      gc-cons-threshold default-gc-cons-threshold
+    	      gc-cons-threshold default-gc-cons-threshold
               gc-cons-percentage default-gc-cons-percentage
               file-name-handler-alist default-file-name-handler-alist)
 
@@ -107,8 +110,6 @@
   (load file nil 'nomessage))
 
 
-(defvar custo/after-window-hook nil
-  "Hook called after emacs has setup a window.")
 
 (add-hook 'window-setup-hook
           (lambda ()
