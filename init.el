@@ -230,10 +230,10 @@
   (with-temp-buffer
     (message "creating private file...")
     (insert "
-(setq private/circe-nick nil
-      private/circe-pass nil
-      private/libera-nick nil
-      private/libera-pass nil
+(setq private/circe-nick \"\" 
+      private/circe-pass \"\" 
+      private/libera-nick \"\"
+      private/libera-pass \"\"
       custo/font \"Monospace\"
       custo/font-size 16
       custo/variable-font \"Arial\"
@@ -325,10 +325,23 @@
 ;; based on the current mode, set pop-up delay to 0.1s
 (use-package which-key
   :defer t
+  :commands (which-key-C-h-dispatch)
   :hook (after-init . (lambda ()
                         (which-key-mode)
                         )
                     )
+  :bind (:map which-key-mode-map 
+        ("C-<down>" . which-key-C-h-dispatch)
+        ("C-<right>" . which-key-show-next-page-cycle)
+        ("C-<left>" . which-key-show-previous-page-cycle)
+        :map help-map
+        ("C-<down>" . which-key-C-h-dispatch)
+        ("C-<right>" . which-key-show-next-page-cycle)
+        ("C-<left>" . which-key-show-previous-page-cycle)
+        :map which-key-C-h-map
+        ("<right>" . which-key-show-next-page-cycle)
+        ("<left>" . which-key-show-previous-page-cycle)
+        )
   :config
   (setq which-key-idle-delay 0.1)
   (message "wk hook")
@@ -1158,7 +1171,7 @@
   :defer t
   :after tree-sitter-langs
   :hook
-  (lsp-mode . (lambda ()
+  ((lsp-mode eglot-managed-mode) . (lambda ()
                 (tree-sitter-mode)
                 (tree-sitter-hl-mode)
                 ;; (rainbow-identifiers-mode)
@@ -1443,12 +1456,20 @@
 (use-package pcase)
 (use-package compile) ; for some faces
 (use-package warnings)
-(use-package flymake)
+(use-package flymake
+  :commands (flymake-show-buffer-diagnostics
+             flymake-show-project-diagnostics)
+  )
 (use-package xref)
 (use-package jsonrpc)
 (use-package filenotify)
 (use-package ert)
 (use-package array)
+(use-package js
+  :config
+  ;; other config stuff
+  (setq js-indent-level 2)
+  )
 
 (use-package eglot
   :defer t
@@ -1462,9 +1483,8 @@
     scss-mode
     css-mode
     less-css-mode
-    html-mode
-    html+
-    html+js
+    json-mode
+    web-mode
     elixir-mode
     gdscript-mode
     python-mode
@@ -1488,11 +1508,45 @@
   :config
   (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
   (custo/leader-key
-    :keymaps 'eglot-mode-map
+    :keymaps '(js-mode-map
+               js-jsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               lua-mode-map
+               scss-mode-map
+               css-mode-map
+               less-css-mode-map
+               json-mode
+               elixir-mode-map
+               gdscript-mode-map
+               python-mode-map
+               web-mode-map
+               sh-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               )
     "e l" '(consult-flymake :wk "list errors")
     )
   (custo/local-leader-key
-    :keymaps 'eglot-mode-map
+    :keymaps '(js-mode-map
+               js-jsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               lua-mode-map
+               scss-mode-map
+               css-mode-map
+               less-css-mode-map
+               json-mode
+               elixir-mode-map
+               gdscript-mode-map
+               python-mode-map
+               web-mode-map
+               sh-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               )
     "a" '(:ignore t :wk "quick actions")
     "a a" '(eglot-code-actions :wk "quick actions")
     "e" '(:ignore t :wk "errors")
@@ -1507,14 +1561,6 @@
     "r" '(eglot-rename :wk "rename")
     "= b" '(eglot-format-buffer :wk "format buffer")
     )
-  ;; other config stuff
-  (setq js-indent-level 2)
-  )
-
-(use-package flymake
-  :defer t
-  :commands (flymake-show-buffer-diagnostics
-             flymake-show-project-diagnostics)
   )
 
 ;; (defun custo/lsp-describe ()
