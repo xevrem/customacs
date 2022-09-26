@@ -40,12 +40,12 @@
 
 ;; native comp insanity
 ;; if native comp is used, cache compiled code
-;; (when (boundp 'native-comp-eln-load-path)
-;;   (setcar native-comp-eln-load-path
-;;           (expand-file-name "eln-cache/" user-emacs-directory)))
-
 (when (boundp 'native-comp-eln-load-path)
-  (startup-redirect-eln-cache (expand-file-name "eln-cache" user-emacs-directory)))
+  (setcar native-comp-eln-load-path
+          (expand-file-name "eln-cache/" user-emacs-directory)))
+
+;; (when (boundp 'native-comp-eln-load-path)
+;;   (startup-redirect-eln-cache (expand-file-name "eln-cache" user-emacs-directory)))
 
 
 (defvar custo/after-startup-hook nil

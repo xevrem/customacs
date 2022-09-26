@@ -1281,13 +1281,13 @@
   :defer t
   :config
   (setq indent-tabs-mode nil
-        rustic-lsp-client 'lsp
+        rustic-lsp-client 'eglot
         ;; lsp-rust-server 'rust-analyzer
         ;; rustic-lsp-server 'rust-analyzer
-        lsp-rust-analyzer-proc-macro-enable t
+        ;; lsp-rust-analyzer-proc-macro-enable t
         ;; lsp-rust-analyzer-display-parameter-hints t
-        lsp-rust-analyzer-server-display-inlay-hints t
-        lsp-rust-analyzer-inlay-hints-mode t
+        ;; lsp-rust-analyzer-server-display-inlay-hints t
+        ;; lsp-rust-analyzer-inlay-hints-mode t
         rustic-indent-offset 4
         rustic-format-on-save nil)
   (custo/local-leader-key
@@ -1299,8 +1299,8 @@
     "c c" '(rustic-cargo-clippy :wk "cargo clippy")
     "c r" '(rustic-cargo-run :wk "cargo run")
     "c t" '(rustic-cargo-test :wk "cargo test")
-    "t" '(:ignore t :wk "toggles")
-    "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+    ;; "t" '(:ignore t :wk "toggles")
+    ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
     )
   )
 
@@ -1429,71 +1429,87 @@
   :mode ("\\.wgsl\\'")
   )
 
-;; (defun custo/eldoc ()
-;;   (interactive)
-;;   (eldoc)
-;;   (other-window)
-;;   )
+(defun custo/eldoc ()
+  (interactive)
+  (eldoc)
+  (other-window)
+  )
+
+;; packages used by eglot
+;; we try to pull new ones if they exist
+(use-package imenu)
+(use-package cl-lib)
+(use-package project)
+(use-package pcase)
+(use-package compile) ; for some faces
+(use-package warnings)
+(use-package flymake)
+(use-package xref)
+(use-package jsonrpc)
+(use-package filenotify)
+(use-package ert)
+(use-package array)
 
 (use-package eglot
-  :defer t)
-;; (use-package eglot
-;;   :defer t
-;;   :hook
-;;   ((js-mode
-;;     js-jsx-mode
-;;     typescript-mode
-;;     typescript-tsx-mode
-;;     rustic-mode
-;;     lua-mode
-;;     scss-mode
-;;     css-mode
-;;     less-css-mode
-;;     html-mode
-;;     html+
-;;     html+js
-;;     elixir-mode
-;;     gdscript-mode
-;;     python-mode
-;;     sh-mode               
-;;     ) . eglot-ensure)
-;;   :commands (eglot-find-declaration
-;;              eglot-find-implementation
-;;              eglot-find-typeDefinition
-;;              eglot-rename
-;;              eglot-format-buffer
-;;              eglot-lsp-server
-;;              )
-;;   :bind
-;;   (:map eglot-mode-map
-;;         ([remap xref-goto-xref] . custo/xref-goto-xref)
-;;         ([remap evil-lookup] . custo/eldoc)
-;;         )
-;;   :config
-;;   (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
-;;   (custo/leader-key
-;;     :keymaps 'eglot-mode-map
-;;     "e l" '(consult-flymake :wk "list errors")
-;;     )
-;;   (custo/local-leader-key
-;;     :keymaps 'eglot-mode-map
-;;     "a" '(:ignore t :wk "quick actions")
-;;     "a a" '(eglot-code-actions :wk "quick actions")
-;;     "e" '(:ignore t :wk "errors")
-;;     "e b" '(flymake-show-buffer-diagnostics :wk "buffer errors")
-;;     "e l" '(consult-flymake :wk "list errors")
-;;     "e p" '(flymake-show-project-diagnostics :wk "project errors")
-;;     "g d" '(xref-find-definitions :wk "xref find definition")
-;;     "g D" '(eglot-find-declaration :wk "eglot find declaration")
-;;     "g i" '(eglot-find-implementation :wk "eglot find implementation")
-;;     "g r" '(xref-find-references :wk "xref find references")
-;;     "g t" '(eglot-find-typeDefinition :wk "eglot find type definition")
-;;     "r" '(eglot-rename :wk "rename")
-;;     "= b" '(eglot-format-buffer :wk "format buffer")
-;;     )
-;;   ;; other config stuff
-;;   (setq js-indent-level 2)
-;;   )
+  :defer t
+  :hook
+  ((js-mode
+    js-jsx-mode
+    typescript-mode
+    typescript-tsx-mode
+    rustic-mode
+    lua-mode
+    scss-mode
+    css-mode
+    less-css-mode
+    html-mode
+    html+
+    html+js
+    elixir-mode
+    gdscript-mode
+    python-mode
+    sh-mode               
+    ) . eglot-ensure)
+  :commands (eglot-find-declaration
+             eglot-find-implementation
+             eglot-find-typeDefinition
+             eglot-rename
+             eglot-format-buffer
+             eglot-lsp-server
+             )
+  :bind
+  (:map eglot-mode-map
+        ([remap xref-goto-xref] . custo/xref-goto-xref)
+        ([remap evil-lookup] . custo/eldoc)
+        :map evil-normal-state-map
+        ("g r" . xref-find-references)
+        ("g t" . eglot-find-typeDefinition)
+        )
+  :config
+  (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
+  (custo/leader-key
+    :keymaps 'eglot-mode-map
+    "e l" '(consult-flymake :wk "list errors")
+    )
+  (custo/local-leader-key
+    :keymaps 'eglot-mode-map
+    "a" '(:ignore t :wk "quick actions")
+    "a a" '(eglot-code-actions :wk "quick actions")
+    "e" '(:ignore t :wk "errors")
+    "e b" '(flymake-show-buffer-diagnostics :wk "buffer errors")
+    "e l" '(consult-flymake :wk "list errors")
+    "e p" '(flymake-show-project-diagnostics :wk "project errors")
+    "g g" '(xref-find-definitions :wk "xref find definition")
+    "g d" '(eglot-find-declaration :wk "eglot find declaration")
+    "g i" '(eglot-find-implementation :wk "eglot find implementation")
+    "g r" '(xref-find-references :wk "xref find references")
+    "g t" '(eglot-find-typeDefinition :wk "eglot find type definition")
+    "r" '(eglot-rename :wk "rename")
+    "= b" '(eglot-format-buffer :wk "format buffer")
+    )
+  ;; other config stuff
+  (setq js-indent-level 2)
+  )
 
 (use-package flymake
   :defer t
@@ -1517,22 +1533,22 @@
              lsp-mode-map
              lsp-describe-thing-at-point)
   :hook 
-  ((js-mode
-    js-jsx-mode
-    typescript-mode
-    typescript-tsx-mode
-    rustic-mode
-    lua-mode
-    scss-mode
-    css-mode
-    less-css-mode
-    elixir-mode
-    gdscript-mode
-    web-mode
-    sh-mode
-    svelte-mode
-    csharp-mode
-    ) . lsp)
+  ;; ((js-mode
+  ;;   js-jsx-mode
+  ;;   typescript-mode
+  ;;   typescript-tsx-mode
+  ;;   rustic-mode
+  ;;   lua-mode
+  ;;   scss-mode
+  ;;   css-mode
+  ;;   less-css-mode
+  ;;   elixir-mode
+  ;;   gdscript-mode
+  ;;   web-mode
+  ;;   sh-mode
+  ;;   svelte-mode
+  ;;   csharp-mode
+  ;;   ) . lsp)
   (lsp-mode . lsp-enable-which-key-integration)
   :bind
   (:map lsp-mode-map
@@ -1597,28 +1613,28 @@
     )
   )
 
-(use-package lsp-pyright
-  :defer t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp)))
-  )
+;; (use-package lsp-pyright
+;;   :defer t
+;;   :hook (python-mode . (lambda ()
+;;                          (require 'lsp-pyright)
+;;                          (lsp)))
+;;   )
 
-;; prettier lsp
-(use-package lsp-ui
-  :defer t
-  :commands (lsp-ui-peek-find-references
-             lsp-ui-doc-glance
-             lsp-ui-imenu)
-  :config
-  (setq lsp-ui-doc-enable nil
-        lsp-ui-doc-position 'top
-        lsp-ui-doc-show-with-cursor t
-        lsp-ui-doc-delay 1.0
-        lsp-ui-sideline-enable t
-        lsp-ui-sideline-delay 1.0
-        )
-  )
+;; ;; prettier lsp
+;; (use-package lsp-ui
+;;   :defer t
+;;   :commands (lsp-ui-peek-find-references
+;;              lsp-ui-doc-glance
+;;              lsp-ui-imenu)
+;;   :config
+;;   (setq lsp-ui-doc-enable nil
+;;         lsp-ui-doc-position 'top
+;;         lsp-ui-doc-show-with-cursor t
+;;         lsp-ui-doc-delay 1.0
+;;         lsp-ui-sideline-enable t
+;;         lsp-ui-sideline-delay 1.0
+;;         )
+;;   )
 
 ;; error checking
 (use-package flycheck
@@ -1634,30 +1650,30 @@
   (flycheck-add-mode 'javascript-eslint 'js-jsx-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
-  (custo/local-leader-key
-    :keymaps '(js-mode-map
-               js-jsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
-               lua-mode-map
-               scss-mode-map
-               css-mode-map
-               less-css-mode-map
-               ;; html-mode-map
-               ;; html+-map
-               ;; html+js-map
-               elixir-mode-map
-               gdscript-mode-map
-               python-mode-map
-               web-mode-map
-               sh-mode-map
-               svelte-mode-map
-               csharp-mode-map
-               )
-    "e" '(:ignore t :wk "errors")
-    "e l" '(consult-flycheck :wk "list errors")
-    )
+  ;; (custo/local-leader-key
+  ;;   :keymaps '(js-mode-map
+  ;;              js-jsx-mode-map
+  ;;              typescript-mode-map
+  ;;              typescript-tsx-mode-map
+  ;;              rustic-mode-map
+  ;;              lua-mode-map
+  ;;              scss-mode-map
+  ;;              css-mode-map
+  ;;              less-css-mode-map
+  ;;              ;; html-mode-map
+  ;;              ;; html+-map
+  ;;              ;; html+js-map
+  ;;              elixir-mode-map
+  ;;              gdscript-mode-map
+  ;;              python-mode-map
+  ;;              web-mode-map
+  ;;              sh-mode-map
+  ;;              svelte-mode-map
+  ;;              csharp-mode-map
+  ;;              )
+  ;;   "e" '(:ignore t :wk "errors")
+  ;;   "e l" '(consult-flycheck :wk "list errors")
+  ;;   )
   )
 
 
