@@ -30,8 +30,8 @@
 (push '(vertical-scroll-bars) default-frame-alist)
 
 ;; set user emacs directory
-;;(make-directory "~/.cache/emacs")
-;;(setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
+;; (make-directory "~/.cache/emacs")
+;; (setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
 ;; set user caching directory
 (unless (file-directory-p (expand-file-name "~/.cache/emacs" user-emacs-directory))
   (make-directory (expand-file-name "~/.cache/emacs" user-emacs-directory))
@@ -40,12 +40,12 @@
 
 ;; native comp insanity
 ;; if native comp is used, cache compiled code
-;; (when (boundp 'native-comp-eln-load-path)
-;;   (setcar native-comp-eln-load-path
-;;           (expand-file-name "eln-cache/" user-emacs-directory)))
-
 (when (boundp 'native-comp-eln-load-path)
-  (startup-redirect-eln-cache (expand-file-name "eln-cache" user-emacs-directory)))
+  (setcar native-comp-eln-load-path
+          (expand-file-name "eln-cache/" user-emacs-directory)))
+
+;; (when (boundp 'native-comp-eln-load-path)
+;;   (startup-redirect-eln-cache (expand-file-name "eln-cache" user-emacs-directory)))
 
 
 (defvar custo/after-startup-hook nil
