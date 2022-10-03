@@ -17,7 +17,8 @@
               ring-bell-function 'ignore ;; disable all visual and audible bells
               indent-tabs-mode nil ;; uses spaces and not tabs
               create-lockfiles nil ;; do not create lockfiles
-              truncate-lines 0 ;; truncate lines by default
+              truncate-lines 1 ;; truncate lines by default
+              truncate-partial-width-windows nil
               ;; disable until we actually call it
               recentf-auto-cleanup 'never
               ;; custo globals
