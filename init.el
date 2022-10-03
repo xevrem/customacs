@@ -1444,8 +1444,8 @@
 
 (defun custo/eldoc ()
   (interactive)
-  (eldoc)
-  (other-window)
+  (eldoc-doc-buffer)
+  (other-window 1)
   )
 
 ;; packages used by eglot
