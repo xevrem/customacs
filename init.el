@@ -1501,6 +1501,7 @@
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
         ([remap evil-lookup] . custo/eldoc)
+        ([remap eldoc-doc-buffer] . custo/eldoc)
         :map evil-normal-state-map
         ("g r" . xref-find-references)
         ("g t" . eglot-find-typeDefinition)
