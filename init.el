@@ -17,7 +17,8 @@
               ring-bell-function 'ignore ;; disable all visual and audible bells
               indent-tabs-mode nil ;; uses spaces and not tabs
               create-lockfiles nil ;; do not create lockfiles
-              truncate-lines 0 ;; truncate lines by default
+              truncate-lines 1 ;; truncate lines by default
+              truncate-partial-width-windows nil
               ;; disable until we actually call it
               recentf-auto-cleanup 'never
               ;; custo globals
@@ -406,6 +407,7 @@
                              "s" '(:ignore t :wk "search")
                              "t" '(:ignore t :wk "toggles")
                              "t f" '(toggle-frame-maximized :wk "toggle fullscreent")
+                             "t i" '(rainbow-identifiers-mode :wk "toggle rainbow identifiers")
                              "t l" '(display-line-numbers-mode :wk "toggle line numbers")
                              "t m" '((lambda ()
                                        (interactive)
@@ -678,7 +680,26 @@
   (doom-modeline-refresh-font-width-cache)
   )
 
-(use-package color-theme-sanityinc-tomorrow)
+
+
+(straight-use-package
+ 'spacemacs-theme)
+(straight-use-package
+ 'color-theme-sanityinc-tomorrow)
+(straight-use-package
+ '(challenger-deep-theme
+             :local-repo "challenger-deep-theme"
+             :type git
+             :host github
+             :repo "challenger-deep-theme/emacs"
+             :file "challenger-deep-theme.el"))
+(straight-use-package
+ '(catppuccin-theme
+   :local-repo "catppuccin-theme"
+   :type git
+   :host github
+   :repo "catppuccin/emacs"
+   :file "catppuccin-theme.el"))
 
 (use-package doom-themes
   :defer t
@@ -733,6 +754,13 @@
         )
   )
 
+(use-package rainbow-identifiers
+ :config
+ (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
+       rainbow-identifiers-cie-l*a*b*-lightness 75
+       rainbow-identifiers-cie-l*a*b*-saturation 40
+       rainbow-identifiers-cie-l*a*b*-color-count 255)
+ )
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
@@ -1174,7 +1202,6 @@
   ((lsp-mode eglot-managed-mode) . (lambda ()
                 (tree-sitter-mode)
                 (tree-sitter-hl-mode)
-                ;; (rainbow-identifiers-mode)
                 )
             )
   )
@@ -1444,8 +1471,8 @@
 
 (defun custo/eldoc ()
   (interactive)
-  (eldoc)
-  (other-window)
+  (eldoc-doc-buffer)
+  (other-window 1)
   )
 
 ;; packages used by eglot
@@ -1501,11 +1528,13 @@
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
         ([remap evil-lookup] . custo/eldoc)
+        ([remap eldoc-doc-buffer] . custo/eldoc)
         :map evil-normal-state-map
         ("g r" . xref-find-references)
         ("g t" . eglot-find-typeDefinition)
         )
   :config
+  ;; (setq eldoc-echo-area-use-multiline-p 5)
   (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
   (custo/leader-key
     :keymaps '(js-mode-map
