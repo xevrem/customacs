@@ -242,7 +242,8 @@
       custo/mode-line-size 18
       custo/width 120
       custo/height 35
-      custo/theme 'doom-tomorrow-night)")
+      custo/theme 'doom-tomorrow-night
+      custo/term \"bash\")")
     (message "writing private file...")
     (write-file private-file)
     (message "private file written...")
@@ -2053,7 +2054,7 @@
                             )
   :config
   (setq vterm-timer-delay 0.032
-        vterm-shell "nu")
+        vterm-shell custo/term)
   )
 
 (use-package prodigy
@@ -2092,9 +2093,10 @@
     )
   (prodigy-define-service
     :name "screen saver"
-    :command "mpv"
-    :cwd "~/Movies/Kaptures"
-    :args '("--window-scale=0.5" "--loop-file" "textured-lines.mp4")
+    :command "caffeinate"
+    :args '("-di")
+    ;; :cwd "~/Movies/Kaptures"
+    ;; :args '("--window-scale=0.5" "--loop-file" "textured-lines.mp4")
     :stop-signal 'sigterm
     )
   (prodigy-define-service
