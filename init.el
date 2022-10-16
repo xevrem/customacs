@@ -860,6 +860,18 @@
   ([remap describe-symbol] . helpful-symbol)
   )
 
+(use-package avy
+  :defer t
+  :commands avy-goto-char-2
+  :hook
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "s a" '(avy-goto-char-2 :wk "avy jump")
+                                  )
+                                )
+                            )
+  )
+
 ;; the very best mode
 (use-package evil
   :defer t
