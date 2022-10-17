@@ -30,6 +30,7 @@
               custo/mode-line-font "Monospace" 
               custo/mode-line-size 18
               custo/theme 'doom-tomorrow-night
+              custo/term "bash"
               ;; ;; Resizing the Emacs frame can be a terribly expensive part of changing the
               ;; ;; font. By inhibiting this, we halve startup times, particularly when we use
               ;; ;; fonts that are larger than the system default (which would resize the frame).
@@ -61,8 +62,8 @@
 ;; adjust the startup size and position of emacs
 (dolist
     (items
-     '((width . custo/width) ;; chars
-       (height . custo/height) ;; lines
+     '((width . 120);'custo/width) ;; chars
+       (height . 35);'custo/height) ;; lines
        (left . 0)
        (top . 0)))
   (push items default-frame-alist)
@@ -113,6 +114,7 @@
 (defun custo/setup-font-faces ()
   "Setup all customacs font faces."
   (message "setup font faces")
+  (load private-file)
   ;; because emacs enables them by default
   ;; re-disable GUI stuff we don't care about
   (push '(menu-bar-lines . 0) default-frame-alist)
@@ -416,7 +418,6 @@
                                      :wk "toggle menu bar")
                              "t r" '((lambda ()
                                        (interactive)
-                                       (load private-file)
                                        (custo/setup-font-faces))
                                      :wk "reset font-faces")
                              "t t" '(toggle-truncate-lines :wk "toggle truncate lines")
@@ -858,6 +859,18 @@
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key)
   ([remap describe-symbol] . helpful-symbol)
+  )
+
+(use-package avy
+  :defer t
+  :commands avy-goto-char-2
+  :hook
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "s a" '(avy-goto-char-2 :wk "avy jump")
+                                  )
+                                )
+                            )
   )
 
 ;; the very best mode
