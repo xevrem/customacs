@@ -2059,7 +2059,7 @@
 
 (use-package prodigy
   :defer t
-  :commands prodigy
+  :commands (prodigy prodigy-define-service)
   :hook
   (custo/after-general-load . (lambda ()
                                 (custo/leader-key
