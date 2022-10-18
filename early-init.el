@@ -116,8 +116,8 @@
             ;; reset redisplay 
             (setq-default inhibit-redisplay nil
                           inhibit-message nil
-                          frame-inhibit-implied-resize nil
-                          idle-update-delay 0.5
+                          ;; frame-inhibit-implied-resize nil
+                          ;; idle-update-delay 0.5
                           )
             ;; Undo our `load-file' advice above, to limit the scope of any edge cases it
             ;; may introduce down the road.
