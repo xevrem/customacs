@@ -2089,35 +2089,13 @@
                                 )
                             )
   :config
-  (prodigy-define-service
-    :name "Megalith"
-    :command "yarn"
-    :cwd "~/repos/megalith"
-    :args '("start")
-    :stop-signal 'sigterm
-    ;; :kill-process-buffer-on-stop t
-    )
-  (prodigy-define-service
-    :name "Vaerydian"
-    :command "yarn"
-    :cwd "~/repos/vaerydian-engine"
-    :args '("start")
-    :stop-signal 'sigterm
-    ;; :kill-process-buffer-on-stop t
-    )
-  (prodigy-define-service
-    :name "Nucleo"
-    :command "docker"
-    :cwd "~/repos/nucleo"
-    :args '("compose" "up")
-    :stop-signal 'sigterm
+  (when (functionp 'custo/prodigy-services)
+    (custo/prodigy-services)
     )
   (prodigy-define-service
     :name "screen saver"
     :command "caffeinate"
     :args '("-di")
-    ;; :cwd "~/Movies/Kaptures"
-    ;; :args '("--window-scale=0.5" "--loop-file" "textured-lines.mp4")
     :stop-signal 'sigterm
     )
   (prodigy-define-service
