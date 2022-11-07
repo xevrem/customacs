@@ -1656,7 +1656,7 @@
         lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-        lsp-diagnostics-provider :none
+        lsp-diagnostics-provider :flycheck
         lsp-lens-enable nil
         lsp-idle-delay 1.0
         lsp-log-io nil
@@ -1735,8 +1735,8 @@
 ;; error checking
 (use-package flycheck
   :defer t
-  ;; :hook
-  ;; (lsp-mode . flycheck-mode)
+  :hook
+  (lsp-mode . flycheck-mode)
   :config
   (setq flycheck-disabled-checkers
         (append flycheck-disabled-checkers
@@ -1746,30 +1746,30 @@
   (flycheck-add-mode 'javascript-eslint 'js-jsx-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
-  ;; (custo/local-leader-key
-  ;;   :keymaps '(js-mode-map
-  ;;              js-jsx-mode-map
-  ;;              typescript-mode-map
-  ;;              typescript-tsx-mode-map
-  ;;              rustic-mode-map
-  ;;              lua-mode-map
-  ;;              scss-mode-map
-  ;;              css-mode-map
-  ;;              less-css-mode-map
-  ;;              ;; html-mode-map
-  ;;              ;; html+-map
-  ;;              ;; html+js-map
-  ;;              elixir-mode-map
-  ;;              gdscript-mode-map
-  ;;              python-mode-map
-  ;;              web-mode-map
-  ;;              sh-mode-map
-  ;;              svelte-mode-map
-  ;;              csharp-mode-map
-  ;;              )
-  ;;   "e" '(:ignore t :wk "errors")
-  ;;   "e l" '(consult-flycheck :wk "list errors")
-  ;;   )
+  (custo/local-leader-key
+    :keymaps '(js-mode-map
+               js-jsx-mode-map
+               typescript-mode-map
+               typescript-tsx-mode-map
+               rustic-mode-map
+               lua-mode-map
+               scss-mode-map
+               css-mode-map
+               less-css-mode-map
+               ;; html-mode-map
+               ;; html+-map
+               ;; html+js-map
+               elixir-mode-map
+               gdscript-mode-map
+               python-mode-map
+               web-mode-map
+               sh-mode-map
+               svelte-mode-map
+               csharp-mode-map
+               )
+    "e" '(:ignore t :wk "errors")
+    "e l" '(consult-flycheck :wk "list errors")
+    )
   )
 
 
