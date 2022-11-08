@@ -335,11 +335,11 @@
                         )
                     )
   :bind (:map which-key-mode-map 
-        ("C-<down>" . which-key-C-h-dispatch)
+        ("M-<down>" . which-key-C-h-dispatch)
         ("C-<right>" . which-key-show-next-page-cycle)
         ("C-<left>" . which-key-show-previous-page-cycle)
         :map help-map
-        ("C-<down>" . which-key-C-h-dispatch)
+        ("M-<down>" . which-key-C-h-dispatch)
         ("C-<right>" . which-key-show-next-page-cycle)
         ("C-<left>" . which-key-show-previous-page-cycle)
         :map which-key-C-h-map
