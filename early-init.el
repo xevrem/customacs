@@ -1,8 +1,3 @@
-;;; based on this post: 
-
-;; https://www.reddit.com/r/emacs/comments/jw19dy/emacs_271_earlyinit_file/gcno7i8?utm_source=share&utm_medium=web2x&context=3
-
-
 ;;Then some speed up tips from doom
 (defvar default-gc-cons-threshold gc-cons-threshold)
 (defvar default-gc-cons-percentage gc-cons-percentage)
@@ -16,7 +11,7 @@
 (setq-default gc-cons-threshold  most-positive-fixnum
               gc-cons-percentage 0.6)
 
-;;(setq-default read-process-output-max (* 1024 1024)) ;; 1mb
+(setq-default read-process-output-max (* 1024 1024)) ;; 1mb
 
 ;;Disabling some annoying GUI stuff emacs has enabled by default.
 ;; Prevent the glimpse of un-styled Emacs by disabling these UI elements early.
@@ -35,13 +30,17 @@
 
 ;; native comp insanity
 ;; if native comp is used, cache compiled code
-;; (when (boundp 'native-comp-eln-load-path)
-;;   (setcar native-comp-eln-load-path
-;;           (expand-file-name "eln-cache/" user-emacs-directory)))
 
-(when (boundp 'native-comp-eln-load-path)
-  (startup-redirect-eln-cache (expand-file-name "eln-cache/" user-emacs-directory)))
-
+(when (version= emacs-version "28")
+  (when (boundp 'native-comp-eln-load-path)
+    (setcar native-comp-eln-load-path
+            (expand-file-name "eln-cache/" user-emacs-directory)))
+  )
+(when (version= emacs-version "29")
+  (when (boundp 'native-comp-eln-load-path)
+    (startup-redirect-eln-cache
+     (expand-file-name "eln-cache/" user-emacs-directory)))
+  )
 
 (defvar custo/after-startup-hook nil
   "Hook called after emacs has started.")
