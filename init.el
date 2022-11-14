@@ -294,6 +294,7 @@
 			  (when (memq window-system '(mac ns x))
 			    (message "setup env vars")
 			    (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
+                            (exec-path-from-shell-copy-env "JSON_ALLOW_NUL")
 			    (exec-path-from-shell-initialize)
 			    )
 			  )
@@ -1502,6 +1503,8 @@
 (use-package flymake
   :commands (flymake-show-buffer-diagnostics
              flymake-show-project-diagnostics)
+  ;; :hook
+  ;; ((eglot-managed-mode lsp-mode) . flymake-mode)
   )
 (use-package xref)
 (use-package jsonrpc)
@@ -1615,6 +1618,21 @@
 ;;   (other-window)
 ;;   )
 
+;; HACK: fixes null characters in json inputs
+;; same definition as mentioned earlier
+(advice-add 'json-parse-string :around
+            (lambda (orig string &rest rest)
+              (apply orig (s-replace "\\u0000" "" string)
+                     rest)))
+;; HACK: fixes null characters in json inputs
+;; minor changes: saves excursion and uses search-forward instead of re-search-forward
+(advice-add 'json-parse-buffer :around
+            (lambda (oldfn &rest args)
+	      (save-excursion 
+                (while (search-forward "\\u0000" nil t)
+                  (replace-match "" nil t)))
+		(apply oldfn args)))
+
 ;; lsp-mode
 (use-package lsp-mode
   :defer t
@@ -1654,7 +1672,7 @@
         lsp-completion-provider :none
         lsp-completion-show-detail t
         lsp-completion-show-kind t
-        lsp-file-watch-threshold 100
+        ;; lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
         lsp-diagnostics-provider :flycheck
@@ -1691,6 +1709,10 @@
                csharp-mode-map
                )
     "a" '(lsp-execute-code-action :wk "excute code action")
+    ;; "e" '(:ignore t :wk "errors")
+    ;; "e b" '(flymake-show-buffer-diagnostics :wk "buffer errors")
+    ;; "e l" '(consult-flymake :wk "list errors")
+    ;; "e p" '(flymake-show-project-diagnostics :wk "project errors")
     "g g" '(lsp-find-definition :wk "find definition")
     "g G" '(lsp-goto-implementation :wk "goto definition")
     "g R" '(lsp-ui-peek-find-references :wk "peek references")
@@ -1733,7 +1755,6 @@
         )
   )
 
-;; error checking
 (use-package flycheck
   :defer t
   :hook
@@ -1757,9 +1778,6 @@
                scss-mode-map
                css-mode-map
                less-css-mode-map
-               ;; html-mode-map
-               ;; html+-map
-               ;; html+js-map
                elixir-mode-map
                gdscript-mode-map
                python-mode-map
