@@ -1,13 +1,3 @@
-;;; based on this post: 
-
-;; https://www.reddit.com/r/emacs/comments/jw19dy/emacs_271_earlyinit_file/gcno7i8?utm_source=share&utm_medium=web2x&context=3
-
-;; Firstly I put this in my init.el to make sure the early init file is always loaded.
-(when (version< emacs-version "27")
-  (load (concat user-emacs-directory "early-init.el")
-        )
-  )
-
 ;;Then some speed up tips from doom
 (defvar default-gc-cons-threshold gc-cons-threshold)
 (defvar default-gc-cons-percentage gc-cons-percentage)
@@ -40,13 +30,17 @@
 
 ;; native comp insanity
 ;; if native comp is used, cache compiled code
-(when (boundp 'native-comp-eln-load-path)
-  (setcar native-comp-eln-load-path
-          (expand-file-name "eln-cache/" user-emacs-directory)))
 
-;; (when (boundp 'native-comp-eln-load-path)
-;;   (startup-redirect-eln-cache (expand-file-name "eln-cache" user-emacs-directory)))
-
+(when (version= emacs-version "28")
+  (when (boundp 'native-comp-eln-load-path)
+    (setcar native-comp-eln-load-path
+            (expand-file-name "eln-cache/" user-emacs-directory)))
+  )
+(when (version= emacs-version "29")
+  (when (boundp 'native-comp-eln-load-path)
+    (startup-redirect-eln-cache
+     (expand-file-name "eln-cache/" user-emacs-directory)))
+  )
 
 (defvar custo/after-startup-hook nil
   "Hook called after emacs has started.")
@@ -54,20 +48,6 @@
 (defvar custo/after-window-hook nil
   "Hook called after emacs has setup a window.")
 
-;; And then finally a hook to reset everything.
-(add-hook 'custo/after-window-hook
-          (lambda (&rest _)
-            ;; (message "startup hook was fired")
-            (setq-default 
-    	      gc-cons-threshold default-gc-cons-threshold
-              gc-cons-percentage default-gc-cons-percentage
-              file-name-handler-alist default-file-name-handler-alist)
-
-            ;; delete no longer necessary startup variable
-            (makunbound 'default-file-name-handler-alist)
-            (run-hooks 'custo/after-startup-hook)
-            )
-          )
 
 (setq-default
  ;; Resizing the Emacs frame can be a terribly expensive part of changing the
@@ -88,6 +68,21 @@
  ;; dont report async compile warnings
  native-comp-async-report-warnings-errors nil
  )
+
+;; And then finally a hook to reset everything.
+(add-hook 'custo/after-window-hook
+          (lambda (&rest _)
+            ;; (message "startup hook was fired")
+            (setq-default 
+             gc-cons-threshold default-gc-cons-threshold
+             gc-cons-percentage default-gc-cons-percentage
+             file-name-handler-alist default-file-name-handler-alist)
+
+            ;; delete no longer necessary startup variable
+            (makunbound 'default-file-name-handler-alist)
+            (run-hooks 'custo/after-startup-hook)
+            )
+          )
 
 (set-language-environment "UTF-8")
 
@@ -110,14 +105,13 @@
   (load file nil 'nomessage))
 
 
-
 (add-hook 'window-setup-hook
           (lambda ()
             ;; reset redisplay 
             (setq-default inhibit-redisplay nil
                           inhibit-message nil
-                          ;; frame-inhibit-implied-resize nil
-                          ;; idle-update-delay 0.5
+                          frame-inhibit-implied-resize nil
+                          idle-update-delay 0.5
                           )
             ;; Undo our `load-file' advice above, to limit the scope of any edge cases it
             ;; may introduce down the road.
@@ -127,3 +121,14 @@
             )
           )
 
+
+;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some
+;;      reason; inexplicably doubling startup time for terminal Emacs. Keeping
+;;      it disabled will have nasty side-effects, so we simply delay it instead,
+;;      and invoke it later, at which point it runs quickly; how mysterious!
+(unless (daemonp)
+  (advice-add #'tty-run-terminal-initialization :override #'ignore)
+  (add-hook 'window-setup-hook
+            (defun custo-init-tty-h ()
+              (advice-remove #'tty-run-terminal-initialization #'ignore)
+              (tty-run-terminal-initialization (selected-frame) nil t))))

@@ -3,6 +3,12 @@
 ;;; Commentary:
 ;;; Code:
 
+;; Firstly I put this in my init.el to make sure the early init file is always loaded.
+(when (version< emacs-version "27")
+  (load (concat "early-init.el")
+        )
+  )
+
 ;; lets us know how long it takes to startup
 (defun custo/display-startup-time ()
   "Display the startup time for customacs."
@@ -158,18 +164,6 @@
     )
   )
 
-;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some
-;;      reason; inexplicably doubling startup time for terminal Emacs. Keeping
-;;      it disabled will have nasty side-effects, so we simply delay it instead,
-;;      and invoke it later, at which point it runs quickly; how mysterious!
-(unless (daemonp)
-  (advice-add #'tty-run-terminal-initialization :override #'ignore)
-  (add-hook 'window-setup-hook
-            (defun custo-init-tty-h ()
-              (advice-remove #'tty-run-terminal-initialization #'ignore)
-              (tty-run-terminal-initialization (selected-frame) nil t))))
-
-
 
 ;; setup straight for package management, its much better than use-package
 (setq straight-use-package-by-default t
@@ -219,13 +213,15 @@
 (defvar custo/after-init-hook nil
   "Hook called after init or server frame")
 
-(defun custo/run-after-init-hooks ()
+(defun custo/run-init-hooks ()
   "Run all custo-after-init hooks."
   (run-hooks 'custo/after-init-hook)
+  (run-hooks 'custo/after-load-hook)
   )
 
-(add-hook 'after-init-hook 'custo/run-after-init-hooks)
-(add-hook 'server-after-make-frame-hook 'custo/run-after-init-hooks)
+(add-hook 'custo/after-startup-hook 'custo/run-init-hooks)
+;;(add-hook 'after-init-hook 'custo/run-after-init-hooks)
+;;(add-hook 'server-after-make-frame-hook 'custo/run-after-init-hooks)
 
 ;; creates a private config file to store custom locals used by this config
 (defconst private-file (expand-file-name "~/.private.el"))
@@ -245,7 +241,9 @@
       custo/width 120
       custo/height 35
       custo/theme 'doom-tomorrow-night
-      custo/term \"bash\")")
+      custo/term \"bash\")
+(defun custo/prodigy-services ()
+  )")
     (message "writing private file...")
     (write-file private-file)
     (message "private file written...")
@@ -283,6 +281,9 @@
 ;; PACKAGE CONFIGURATION
 ;;
 
+;; add bug-hunter package for finding init.el bugs
+(use-package bug-hunter)
+
 ;; get shell variables
 (use-package exec-path-from-shell
   :defer t
@@ -299,31 +300,30 @@
 			    )
 			  )
 			)
-		    )
   )
 
 
 ;; restart
 (use-package restart-emacs
-	     :defer t
-	     :commands restart-emacs
-	     :hook
-	     (custo/after-general-load . (lambda ()
-					   (custo/leader-key
-					     "q r" '(restart-emacs :wk "restart emacs")
-					     )
-					   )
-				       )
+  :defer t
+  :commands restart-emacs
+  :hook
+  (custo/after-general-load . (lambda ()
+                                (custo/leader-key
+                                  "q r" '(restart-emacs :wk "restart emacs")
+                                  )
+                                )
+                            )
   )
 
 
 (use-package savehist
   :defer t
   :hook
-  (after-init . (lambda ()
-                  (savehist-mode t)
-                  )
-              )
+  (custo/after-init . (lambda ()
+                        (savehist-mode t)
+                        )
+                    )
   )
 
 ;; setup a special menu that tells us what keys are available
@@ -331,11 +331,12 @@
 (use-package which-key
   :defer t
   :commands (which-key-C-h-dispatch)
-  :hook (after-init . (lambda ()
-                        (which-key-mode)
-                        )
-                    )
+  :hook (custo/after-init . (lambda ()
+                              (which-key-mode)
+                              )
+                          )
   :bind (:map which-key-mode-map 
+<<<<<<< HEAD
         ("M-<down>" . which-key-C-h-dispatch)
         ("C-<right>" . which-key-show-next-page-cycle)
         ("C-<left>" . which-key-show-previous-page-cycle)
@@ -347,6 +348,31 @@
         ("<right>" . which-key-show-next-page-cycle)
         ("<left>" . which-key-show-previous-page-cycle)
         )
+||||||| de2135f
+        ("C-<down>" . which-key-C-h-dispatch)
+        ("C-<right>" . which-key-show-next-page-cycle)
+        ("C-<left>" . which-key-show-previous-page-cycle)
+        :map help-map
+        ("C-<down>" . which-key-C-h-dispatch)
+        ("C-<right>" . which-key-show-next-page-cycle)
+        ("C-<left>" . which-key-show-previous-page-cycle)
+        :map which-key-C-h-map
+        ("<right>" . which-key-show-next-page-cycle)
+        ("<left>" . which-key-show-previous-page-cycle)
+        )
+=======
+              ("C-<down>" . which-key-C-h-dispatch)
+              ("C-<right>" . which-key-show-next-page-cycle)
+              ("C-<left>" . which-key-show-previous-page-cycle)
+              :map help-map
+              ("C-<down>" . which-key-C-h-dispatch)
+              ("C-<right>" . which-key-show-next-page-cycle)
+              ("C-<left>" . which-key-show-previous-page-cycle)
+              :map which-key-C-h-map
+              ("<right>" . which-key-show-next-page-cycle)
+              ("<left>" . which-key-show-previous-page-cycle)
+              )
+>>>>>>> b23f081fcf8d55185e4fc1b5ee12aabf62128408
   :config
   (setq which-key-idle-delay 0.1)
   (message "wk hook")
@@ -444,7 +470,7 @@
                              )
                            (message "general hook")
                            (run-hooks 'custo/after-general-load-hook)
-                           (run-hooks 'custo/after-load-hook)
+                           ;; (run-hooks 'custo/after-load-hook)
                            )
                        )
   )
@@ -457,10 +483,10 @@
                     :branch "main")
   :defer t
   :hook
-  (custo/after-general-load . (lambda ()
-                                (vertico-mode 1)
-                                )
-                            )
+  (custo/after-init . (lambda ()
+                        (vertico-mode)
+                        )
+                    )
   :config
   (setq vertico-cycle t
         completion-in-region-function #'consult-completion-in-region)
@@ -544,18 +570,18 @@
 (use-package orderless
   :defer t
   :hook
-  (after-init . (lambda ()
-                  (setq completion-styles '(orderless partial-completion basic)
-                        completion-category-defaults nil
-                        completion-category-overrides '((file (styles orderless partial-completion))
-                                                        (command (styles orderless))
-                                                        (symbol (styles orderless))
-                                                        (variable (styles orderless)))
-                        orderless-component-separator #'orderless-escapable-split-on-space ;; allow escaping space with backslash!
+  (custo/after-init . (lambda ()
+                        (setq completion-styles '(orderless partial-completion basic)
+                              completion-category-defaults nil
+                              completion-category-overrides '((file (styles orderless partial-completion))
+                                                              (command (styles orderless))
+                                                              (symbol (styles orderless))
+                                                              (variable (styles orderless)))
+                              orderless-component-separator #'orderless-escapable-split-on-space ;; allow escaping space with backslash!
+                              )
+                        (run-hooks 'custo/after-orderless-init-hook)
                         )
-                  (run-hooks 'custo/after-orderless-init-hook)
-                  )
-              )
+                    )
   )
 
 (use-package embark
@@ -607,20 +633,20 @@
   )
 
 (use-package cape
-    :straight (:type git
-                     :host github
-                     :repo "minad/cape")
-    :defer t
-    :commands (cape-file cape-dabbref cape-keyword cape-symbol)
-    :hook
-    (custo/after-orderless-init . (lambda ()
-                                          (add-to-list 'completion-at-point-functions #'cape-file)
-                                          (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-                                          (add-to-list 'completion-at-point-functions #'cape-keyword)
-                                          (add-to-list 'completion-at-point-functions #'cape-symbol)
-                                          )
-                                )
-    )
+  :straight (:type git
+                   :host github
+                   :repo "minad/cape")
+  :defer t
+  :commands (cape-file cape-dabbref cape-keyword cape-symbol)
+  :hook
+  (custo/after-orderless-init . (lambda ()
+                                  (add-to-list 'completion-at-point-functions #'cape-file)
+                                  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+                                  (add-to-list 'completion-at-point-functions #'cape-keyword)
+                                  (add-to-list 'completion-at-point-functions #'cape-symbol)
+                                  )
+                              )
+  )
 
 (use-package emacs
   :init
@@ -683,19 +709,17 @@
   (doom-modeline-refresh-font-width-cache)
   )
 
-
-
 (straight-use-package
  'spacemacs-theme)
 (straight-use-package
  'color-theme-sanityinc-tomorrow)
 (straight-use-package
  '(challenger-deep-theme
-             :local-repo "challenger-deep-theme"
-             :type git
-             :host github
-             :repo "challenger-deep-theme/emacs"
-             :file "challenger-deep-theme.el"))
+   :local-repo "challenger-deep-theme"
+   :type git
+   :host github
+   :repo "challenger-deep-theme/emacs"
+   :file "challenger-deep-theme.el"))
 (straight-use-package
  '(catppuccin-theme
    :local-repo "catppuccin-theme"
@@ -715,6 +739,10 @@
                       )
   )
 
+;; highlight the current column
+(use-package hl-line
+  :hook
+  (prog-mode . hl-line-mode))
 
 ;; for certian versions of emacs, we need to change the backgroun
 (add-hook 'tty-setup-hook
@@ -738,9 +766,17 @@
 ;; nice dashboard
 (use-package dashboard
   :defer t
+  :commands (dashboard-insert-startupify-lists)
   :hook
-  (after-init . dashboard-setup-startup-hook)
-  (server-after-make-frame . dashboard-setup-startup-hook)
+  (custo/after-load . (lambda ()
+                        (dashboard-insert-startupify-lists)
+                        (switch-to-buffer dashboard-buffer-name)
+                        (goto-char (point-min))
+                        (redisplay)
+                        (run-hooks 'dashboard-after-initialize-hook)
+                        )
+                    )
+  ;; (server-after-make-frame . dashboard-setup-startup-hook)
   (dashboard-after-initialize . (lambda ()
                                   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
                                   )
@@ -758,12 +794,14 @@
   )
 
 (use-package rainbow-identifiers
- :config
- (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
-       rainbow-identifiers-cie-l*a*b*-lightness 75
-       rainbow-identifiers-cie-l*a*b*-saturation 40
-       rainbow-identifiers-cie-l*a*b*-color-count 255)
- )
+  :defer t
+  :commands (rainbow-identifiers-mode)
+  :config
+  (setq rainbow-identifiers-choose-face-function 'rainbow-identifiers-cie-l*a*b*-choose-face
+        rainbow-identifiers-cie-l*a*b*-lightness 75
+        rainbow-identifiers-cie-l*a*b*-saturation 40
+        rainbow-identifiers-cie-l*a*b*-color-count 255)
+  )
 
 ;; make it easier to keep track of parens and braces
 (use-package rainbow-delimiters
@@ -791,17 +829,18 @@
 
 
 ;; highlight matching delimiters
-(use-package paren
-  :defer t
-  :hook
-  ((prog-mode conf-mode) . show-paren-mode)
-  :config
-  (setq show-paren-delay 0.1
-        show-paren-highlight-openparen t
-        show-paren-when-point-inside-paren t
-        show-paren-when-point-in-periphery t
-        blink-matching-paren t)
-  )
+;; (use-package paren
+;;   :defer t
+;;   :hook
+;;   ((prog-mode conf-mode) . show-paren-mode)
+;;   :config
+;;   (setq show-paren-delay 0.1
+;;         show-paren-highlight-openparen t
+;;         show-paren-when-point-inside-paren t
+;;         show-paren-when-point-in-periphery t
+;;         ;; blink-matching-paren t
+;;         )
+;;   )
 
 ;; (use-package hl-indent-scope
 ;;   :defer t
@@ -817,7 +856,7 @@
   :commands clipetty-mode
   :unless (display-graphic-p)
   :hook
-  ((after-init
+  ((custo/after-init
     server-after-make-frame) . clipetty-mode)
   )
 
@@ -827,7 +866,7 @@
   ;;:unless ((memq window-system '(mac ns x)));;
   :unless (display-graphic-p)
   :hook
-  ((after-init
+  ((custo/after-init
     server-after-make-frame) . xclip-mode)
   )
 
@@ -878,13 +917,13 @@
 (use-package evil
   :defer t
   :hook
-  (after-init . (lambda ()
-                  (setq evil-want-integration t
-                        evil-want-keybinding nil
-                        evil-want-C-u-scroll t
-                        evil-want-C-d-scroll t)
-                  (evil-mode)
-                  ))
+  (custo/after-init . (lambda ()
+                        (setq evil-want-integration t
+                              evil-want-keybinding nil
+                              evil-want-C-u-scroll t
+                              evil-want-C-d-scroll t)
+                        (evil-mode)
+                        ))
   :custom
   (evil-undo-system 'undo-fu)
   :bind
@@ -1207,29 +1246,29 @@
 
 ;;enable super syntax highlighting
 (use-package tree-sitter
-  :straight (:type git :host github
-                   :repo "emacs-tree-sitter/elisp-tree-sitter"
-                   :branch "release"
-                   )
+  ;; :straight (:type git :host github
+  ;;                  :repo "emacs-tree-sitter/elisp-tree-sitter"
+  ;;                  :branch "release"
+  ;;                  )
   :defer t
-  :after tree-sitter-langs
+  ;;:after tree-sitter-langs
   :hook
   ((lsp-mode eglot-managed-mode) . (lambda ()
-                (tree-sitter-mode)
-                (tree-sitter-hl-mode)
-                )
-            )
+                                     (tree-sitter-mode)
+                                     (tree-sitter-hl-mode)
+                                     )
+   )
   )
 
 (use-package tree-sitter-langs
-  :straight (:type git :host github
-                   :repo "emacs-tree-sitter/tree-sitter-langs"
-                   :branch "release"
-                   )
+  ;; :straight (:type git :host github
+  ;;                  :repo "emacs-tree-sitter/tree-sitter-langs"
+  ;;                  :branch "release"
+  ;;                  )
   :defer t
   :commands (tree-sitter-require)
   :hook
-  (after-init
+  (custo/after-init
    .
    (lambda ()
      (tree-sitter-require 'tsx)
@@ -1243,7 +1282,9 @@
      (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
      (add-to-list 'tree-sitter-major-mode-language-alist '(css-mode . css))
      (add-to-list 'tree-sitter-major-mode-language-alist '(less-css-mode . css))
-     )))
+     )
+   )
+  )
 
 
 (defun custo/js-mode-customize ()
@@ -1674,6 +1715,7 @@
         lsp-completion-show-kind t
         ;; lsp-file-watch-threshold 100
         lsp-headerline-breadcrumb-enable nil
+        lsp-enable-symbol-highlighting nil
         ;; lsp-headerline-breadcrumb-segments '(project file symbols)
         lsp-diagnostics-provider :flycheck
         lsp-lens-enable nil
@@ -1688,7 +1730,7 @@
         lsp-use-plists t
         lsp-keymap-prefix "<super>-l"
         ;; config built-in modes
-       
+        
         )
   (custo/local-leader-key
     :keymaps '(js-mode-map
@@ -2153,7 +2195,7 @@
 
 (use-package gcmh
   :defer t
-  :hook (after-init . gcmh-mode)
+  :hook (custo/after-init . gcmh-mode)
   :config
   (setq-default gcmh-idle-delay 'auto  ; default is 15s
                 gcmh-auto-idle-delay-factor 10
@@ -2161,6 +2203,8 @@
                 ;; gcmh-verbose t
                 )
   )
+
+;; (custo/run-after-init-hooks)
 
 (provide 'init)
 ;;; init ends here
