@@ -300,6 +300,7 @@
 			    )
 			  )
 			)
+                    )
   )
 
 
@@ -336,7 +337,6 @@
                               )
                           )
   :bind (:map which-key-mode-map 
-<<<<<<< HEAD
         ("M-<down>" . which-key-C-h-dispatch)
         ("C-<right>" . which-key-show-next-page-cycle)
         ("C-<left>" . which-key-show-previous-page-cycle)
@@ -348,31 +348,6 @@
         ("<right>" . which-key-show-next-page-cycle)
         ("<left>" . which-key-show-previous-page-cycle)
         )
-||||||| de2135f
-        ("C-<down>" . which-key-C-h-dispatch)
-        ("C-<right>" . which-key-show-next-page-cycle)
-        ("C-<left>" . which-key-show-previous-page-cycle)
-        :map help-map
-        ("C-<down>" . which-key-C-h-dispatch)
-        ("C-<right>" . which-key-show-next-page-cycle)
-        ("C-<left>" . which-key-show-previous-page-cycle)
-        :map which-key-C-h-map
-        ("<right>" . which-key-show-next-page-cycle)
-        ("<left>" . which-key-show-previous-page-cycle)
-        )
-=======
-              ("C-<down>" . which-key-C-h-dispatch)
-              ("C-<right>" . which-key-show-next-page-cycle)
-              ("C-<left>" . which-key-show-previous-page-cycle)
-              :map help-map
-              ("C-<down>" . which-key-C-h-dispatch)
-              ("C-<right>" . which-key-show-next-page-cycle)
-              ("C-<left>" . which-key-show-previous-page-cycle)
-              :map which-key-C-h-map
-              ("<right>" . which-key-show-next-page-cycle)
-              ("<left>" . which-key-show-previous-page-cycle)
-              )
->>>>>>> b23f081fcf8d55185e4fc1b5ee12aabf62128408
   :config
   (setq which-key-idle-delay 0.1)
   (message "wk hook")
@@ -386,6 +361,7 @@
              general-create-definer)
   :hook
   (custo/after-wk-load . (lambda ()
+                           (setq general-use-package-emit-autoloads t)
                            (general-auto-unbind-keys)
                            (general-create-definer custo/leader-key
                              :states '(normal insert visual emacs)
@@ -1704,10 +1680,12 @@
   (:map lsp-mode-map
         ([remap evil-lookup] . lsp-describe-thing-at-point)
         ([remap evil-goto-definition] . lsp-find-definition)
-        :map evil-normal-state-map
-        ("g r" . lsp-find-references)
-        ("g t" . lsp-goto-type-definition)
         )
+  :general
+  (:states 'normal
+           "g r" 'lsp-find-references
+           "g t" 'lsp-goto-type-definition
+           )
   :config
   (setq lsp-keymap-prefix "C-c l"
         lsp-completion-provider :none
