@@ -1322,6 +1322,12 @@
                                                        (lsp-eslint-apply-all-fixes )
                                                        ;; (eslint-fix)
                                                        ) :wk "format with prettier and eslint")
+                                             :keymaps '(css-mode-map
+                                                        scss-mode-map)
+                                             "= =" '((lambda ()
+                                                       (interactive)
+                                                       (prettier-prettify)
+                                                       ) :wk "format with prettier and eslint")
                                              )
                                            )
           )
