@@ -1262,7 +1262,6 @@
    )
   )
 
-
 (defun custo/js-mode-customize ()
   "Customize js and jsx modes."
   (setq js-indent-level 2)
@@ -1351,17 +1350,17 @@
   :defer t
   :config
   (setq typescript-indent-level 2)
+  (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
   )
 
-(define-derived-mode typescript-tsx-mode typescript-mode "tsx")
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
 
 (use-package rustic
   :defer t
   :config
   (setq indent-tabs-mode nil
-        ;; rustic-lsp-client 'eglot
-        rustic-lsp-client 'lsp
+        rustic-lsp-client 'eglot
+        ;; rustic-lsp-client 'lsp
         ;; lsp-rust-server 'rust-analyzer
         ;; rustic-lsp-server 'rust-analyzer
         ;; lsp-rust-analyzer-proc-macro-enable t
@@ -1432,21 +1431,21 @@
     )
   )
 
-(use-package pyenv-mode
-  :straight (:type git :host github
-                   :repo "pythonic-emacs/pyenv-mode"
-                   :branch "master"
-                   )
-  :defer t
-  :hook (python-mode . pyenv-mode)
-  :config
-  (custo/local-leader-key
-    :keymaps '(python-mode-map)
-    "p" '(:ignore t :wk "pyenv")
-    "p s" '(pyenv-mode-set :wk "set pyenv environment")
-    "p u" '(pyenv-mode-unset :wk "unset pyenv environment")
-    )
-  )
+;; (use-package pyenv-mode
+;;   :straight (:type git :host github
+;;                    :repo "pythonic-emacs/pyenv-mode"
+;;                    :branch "master"
+;;                    )
+;;   :defer t
+;;   :hook (python-mode . pyenv-mode)
+;;   :config
+;;   (custo/local-leader-key
+;;     :keymaps '(python-mode-map)
+;;     "p" '(:ignore t :wk "pyenv")
+;;     "p s" '(pyenv-mode-set :wk "set pyenv environment")
+;;     "p u" '(pyenv-mode-unset :wk "unset pyenv environment")
+;;     )
+;;   )
 
 
 (use-package json-mode
@@ -1526,39 +1525,39 @@
 (use-package flymake
   :commands (flymake-show-buffer-diagnostics
              flymake-show-project-diagnostics)
-  ;; :hook
-  ;; ((eglot-managed-mode lsp-mode) . flymake-mode)
+  :hook
+  ((eglot-managed-mode lsp-mode) . flymake-mode)
   )
 (use-package xref)
 (use-package jsonrpc)
 (use-package filenotify)
 (use-package ert)
 (use-package array)
-(use-package js
-  :config
-  ;; other config stuff
-  (setq js-indent-level 2)
-  )
+;; (use-package js
+;;   ;; :defer t
+;;   :config
+;;   ;; other config stuff
+;;   (setq js-indent-level 2)
+;;   )
 
 (use-package eglot
   :defer t
-  ;; :hook
-  ;; ((js-mode
-  ;;   js-jsx-mode
-  ;;   typescript-mode
-  ;;   typescript-tsx-mode
-  ;;   rustic-mode
-  ;;   lua-mode
-  ;;   scss-mode
-  ;;   css-mode
-  ;;   less-css-mode
-  ;;   json-mode
-  ;;   web-mode
-  ;;   elixir-mode
-  ;;   gdscript-mode
-  ;;   python-mode
-  ;;   sh-mode               
-  ;;   ) . eglot-ensure)
+  :hook
+  ((js2-mode
+    typescript-mode
+    typescript-tsx-mode
+    rustic-mode
+    lua-mode
+    scss-mode
+    css-mode
+    less-css-mode
+    json-mode
+    web-mode
+    elixir-mode
+    gdscript-mode
+    python-mode
+    sh-mode               
+    ) . eglot-ensure)
   :commands (eglot-find-declaration
              eglot-find-implementation
              eglot-find-typeDefinition
@@ -1566,21 +1565,25 @@
              eglot-format-buffer
              eglot-lsp-server
              )
-  ;; :bind
-  ;; (:map eglot-mode-map
-  ;;       ([remap xref-goto-xref] . custo/xref-goto-xref)
-  ;;       ([remap evil-lookup] . custo/eldoc)
-  ;;       ([remap eldoc-doc-buffer] . custo/eldoc)
-  ;;       :map evil-normal-state-map
-  ;;       ("g r" . xref-find-references)
-  ;;       ("g t" . eglot-find-typeDefinition)
-  ;;       )
+  :bind
+  (:map eglot-mode-map
+        ([remap xref-goto-xref] . custo/xref-goto-xref)
+        ([remap evil-lookup] . custo/eldoc)
+        ([remap eldoc-doc-buffer] . custo/eldoc)
+        ;; :map evil-normal-state-map
+        ;; ("g r" . xref-find-references)
+        ;; ("g t" . eglot-find-typeDefinition)
+        )
+  :general
+  (:states 'normal
+           "g r" 'xref-find-references
+           "g t" 'eglot-find-typeDefinition
+           )
   :config
   ;; (setq eldoc-echo-area-use-multiline-p 5)
   (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
   (custo/leader-key
-    :keymaps '(js-mode-map
-               js-jsx-mode-map
+    :keymaps '(js2-mode-map
                typescript-mode-map
                typescript-tsx-mode-map
                rustic-mode-map
@@ -1664,34 +1667,34 @@
              lsp-deferred
              lsp-mode-map
              lsp-describe-thing-at-point)
-  :hook 
-  ((js-mode
-    js-jsx-mode
-    typescript-mode
-    typescript-tsx-mode
-    rustic-mode
-    lua-mode
-    scss-mode
-    css-mode
-    less-css-mode
-    elixir-mode
-    gdscript-mode
-    web-mode
-    sh-mode
-    svelte-mode
-    csharp-mode
-    ) . lsp-deferred)
-  (lsp-mode . lsp-enable-which-key-integration)
-  :bind
-  (:map lsp-mode-map
-        ([remap evil-lookup] . lsp-describe-thing-at-point)
-        ([remap evil-goto-definition] . lsp-find-definition)
-        )
-  :general
-  (:states 'normal
-           "g r" 'lsp-find-references
-           "g t" 'lsp-goto-type-definition
-           )
+  ;; :hook 
+  ;; ((js-mode
+  ;;   js-jsx-mode
+  ;;   typescript-mode
+  ;;   typescript-tsx-mode
+  ;;   rustic-mode
+  ;;   lua-mode
+  ;;   scss-mode
+  ;;   css-mode
+  ;;   less-css-mode
+  ;;   elixir-mode
+  ;;   gdscript-mode
+  ;;   web-mode
+  ;;   sh-mode
+  ;;   svelte-mode
+  ;;   csharp-mode
+  ;;   ) . lsp-deferred)
+  ;; (lsp-mode . lsp-enable-which-key-integration)
+  ;; :bind
+  ;; (:map lsp-mode-map
+  ;;       ([remap evil-lookup] . lsp-describe-thing-at-point)
+  ;;       ([remap evil-goto-definition] . lsp-find-definition)
+  ;;       )
+  ;; :general
+  ;; (:states 'normal
+  ;;          "g r" 'lsp-find-references
+  ;;          "g t" 'lsp-goto-type-definition
+  ;;          )
   :config
   (setq lsp-keymap-prefix "C-c l"
         lsp-completion-provider :none
@@ -1756,30 +1759,30 @@
     )
   )
 
-(use-package lsp-pyright
-  :defer t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp)))
-  )
+;; (use-package lsp-pyright
+;;   :defer t
+;;   :hook (python-mode . (lambda ()
+;;                          (require 'lsp-pyright)
+;;                          (lsp)))
+;;   )
 
 ;; ;; prettier lsp
-(use-package lsp-ui
-  :defer t
-  :commands (lsp-ui-peek-find-references
-             lsp-ui-doc-glance
-             lsp-ui-imenu)
-  :config
-  (setq lsp-ui-doc-enable nil
-        lsp-ui-doc-position 'top
-        lsp-ui-doc-show-with-cursor t
-        lsp-ui-doc-delay 1.0
-        lsp-ui-sideline-enable t
-        lsp-ui-sideline-show-hover t
-        lsp-ui-sideline-delay 1.0
-        lsp-ui-sideline-show-diagnostics t
-        )
-  )
+;; (use-package lsp-ui
+;;   :defer t
+;;   :commands (lsp-ui-peek-find-references
+;;              lsp-ui-doc-glance
+;;              lsp-ui-imenu)
+;;   :config
+;;   (setq lsp-ui-doc-enable nil
+;;         lsp-ui-doc-position 'top
+;;         lsp-ui-doc-show-with-cursor t
+;;         lsp-ui-doc-delay 1.0
+;;         lsp-ui-sideline-enable t
+;;         lsp-ui-sideline-show-hover t
+;;         lsp-ui-sideline-delay 1.0
+;;         lsp-ui-sideline-show-diagnostics t
+;;         )
+;;   )
 
 (use-package flycheck
   :defer t
