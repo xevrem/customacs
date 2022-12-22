@@ -1509,13 +1509,21 @@
   )
 
 (defun custo/eldoc ()
+  "Customacs goto call eldoc and goto buffer."
   (interactive)
-  (eldoc-doc-buffer)
+  (call-interactively 'eldoc-doc-buffer)
   (other-window 1)
+  )
+
+(defun custo/xref-goto-xref ()
+  "Customacs goto xref and quit xref buffer."
+  (interactive)
+  (xref-goto-xref t)
   )
 
 ;; packages used by eglot
 ;; we try to pull new ones if they exist
+(use-package eldoc)
 (use-package imenu)
 (use-package cl-lib)
 (use-package project)
@@ -1533,17 +1541,18 @@
 (use-package filenotify)
 (use-package ert)
 (use-package array)
-;; (use-package js
-;;   ;; :defer t
-;;   :config
-;;   ;; other config stuff
-;;   (setq js-indent-level 2)
-;;   )
+(use-package treesit)
+(use-package js
+  :config
+  ;; other config stuff
+  (setq js-indent-level 2)
+  )
 
 (use-package eglot
   :defer t
   :hook
-  ((js2-mode
+  ((js-mode
+    js-jsx-mode
     typescript-mode
     typescript-tsx-mode
     rustic-mode
@@ -1583,7 +1592,8 @@
   ;; (setq eldoc-echo-area-use-multiline-p 5)
   (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
   (custo/leader-key
-    :keymaps '(js2-mode-map
+    :keymaps '(js-mode-map
+               js-jsx-mode-map
                typescript-mode-map
                typescript-tsx-mode-map
                rustic-mode-map
