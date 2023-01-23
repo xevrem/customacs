@@ -1271,9 +1271,9 @@
      (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
      (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
      (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
-     (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
+     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
      (add-to-list 'tree-sitter-major-mode-language-alist '(css-mode . css))
-     (add-to-list 'tree-sitter-major-mode-language-alist '(less-css-mode . css))
+     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(less-css-mode . css))
      )
    )
   )
@@ -1348,8 +1348,9 @@
                                            )
           )
 
-(use-package scss-mode
+(use-package css-mode
   :defer t
+  :mode ("\\.css\\'" "\\.scss\\'")
   :config
   (setq css-indent-offset 2)
   )
@@ -1619,10 +1620,10 @@
     tsx-ts-mode
     rustic-mode
     lua-mode
-    scss-mode
+    ;; scss-mode
     css-mode
     css-ts-mode
-    less-css-mode
+    ;; less-css-mode
     json-mode
     json-ts-mode
     web-mode
@@ -1656,7 +1657,8 @@
   :config
   ;; (setq eldoc-echo-area-use-multiline-p 5)
   (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
-  ;; (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(json-ts-mode . ("vscode-json-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(css-ts-mode . ("vscode-css-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '((js-ts-mode typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio")))
   
   (custo/leader-key
@@ -1666,9 +1668,9 @@
                tsx-ts-mode-map
                rustic-mode-map
                lua-mode-map
-               scss-mode-map
+               ;; scss-mode-map
                css-mode-map
-               less-css-mode-map
+               ;; less-css-mode-map
                json-mode
                elixir-mode-map
                gdscript-mode-map
@@ -1687,9 +1689,9 @@
                tsx-ts-mode-map
                rustic-mode-map
                lua-mode-map
-               scss-mode-map
+               ;; scss-mode-map
                css-mode-map
-               less-css-mode-map
+               ;; less-css-mode-map
                json-mode
                elixir-mode-map
                gdscript-mode-map
