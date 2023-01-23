@@ -522,19 +522,19 @@
   (run-hooks 'custo/after-consult-load-hook)
   )
 
-(use-package consult-flycheck
-  :defer t
-  :commands consult-flycheck
-  :config
-  (custo/leader-key
-    :keymaps 'lsp-mode-map
-    "e l" '(consult-flycheck :wk "list errors")
-    )
-  (custo/local-leader-key
-    :keymaps 'lsp-mode-map
-    "e l" '(consult-flycheck :wk "list errors")
-    )
-  )
+;; (use-package consult-flycheck
+;;   :defer t
+;;   :commands consult-flycheck
+;;   :config
+;;   (custo/leader-key
+;;     :keymaps 'lsp-mode-map
+;;     "e l" '(consult-flycheck :wk "list errors")
+;;     )
+;;   (custo/local-leader-key
+;;     :keymaps 'lsp-mode-map
+;;     "e l" '(consult-flycheck :wk "list errors")
+;;     )
+;;   )
 
 (use-package marginalia
   :defer t
@@ -609,7 +609,7 @@
   )
 
 (use-package cape
-  :straight (:type git
+  :straight '(:type git
                    :host github
                    :repo "minad/cape")
   :defer t
@@ -685,24 +685,38 @@
   (doom-modeline-refresh-font-width-cache)
   )
 
+(unless (file-directory-p (expand-file-name "themes/" user-emacs-directory))
+  (make-directory (expand-file-name "themes/" user-emacs-directory))
+  )
+(setq customacs-theme-directory (expand-file-name "themes/" user-emacs-directory))
 (straight-use-package
  'spacemacs-theme)
 (straight-use-package
  'color-theme-sanityinc-tomorrow)
-(straight-use-package
- '(challenger-deep-theme
-   :local-repo "challenger-deep-theme"
-   :type git
-   :host github
-   :repo "challenger-deep-theme/emacs"
-   :file "challenger-deep-theme.el"))
-(straight-use-package
- '(catppuccin-theme
-   :local-repo "catppuccin-theme"
-   :type git
-   :host github
-   :repo "catppuccin/emacs"
-   :file "catppuccin-theme.el"))
+(use-package challenger-deep-theme
+  :straight '(:local-repo "challenger-deep-theme"
+              :type git
+              :host github
+              :repo "challenger-deep-theme/emacs"
+              :file "challenger-deep-theme.el")
+  :demand t
+  )
+
+(use-package autothemer
+  :demand t)
+(use-package catppuccin-theme
+  :straight '(
+              :local-repo "catppuccin-theme"
+              :type git :host github
+              :repo "catppuccin/emacs"
+              :branch "main"
+              :file "catppuccin-theme.el"
+                   )
+  :after autothemer
+  :demand t
+  :config
+  (setq catppuccin-flavor 'mocha)
+  )
 
 (use-package doom-themes
   :defer t
@@ -999,7 +1013,7 @@
 
 (use-package vundo
   :defer t
-  :straight (:type git :host github
+  :straight '(:type git :host github
                    :repo "casouri/vundo"
                    :branch "master"
                    :file "vundo.el"
@@ -1222,18 +1236,19 @@
 
 ;;enable super syntax highlighting
 (use-package tree-sitter
-  ;; :straight (:type git :host github
-  ;;                  :repo "emacs-tree-sitter/elisp-tree-sitter"
-  ;;                  :branch "release"
-  ;;                  )
   :defer t
-  ;;:after tree-sitter-langs
+  :after tree-sitter-langs
   :hook
-  ((lsp-mode eglot-managed-mode) . (lambda ()
-                                     (tree-sitter-mode)
-                                     (tree-sitter-hl-mode)
-                                     )
-   )
+  ((
+    js-mode
+    js-jsx-mode
+    ;; lsp-mode
+    ;; eglot-managed-mode
+    ) . (lambda ()
+    (tree-sitter-mode)
+    (tree-sitter-hl-mode)
+    )
+      )
   )
 
 (use-package tree-sitter-langs
@@ -1251,7 +1266,8 @@
      (tree-sitter-require 'html)
      (tree-sitter-require 'json)
      (tree-sitter-require 'css)
-     (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-ts-mode . typescript))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(tsx-ts-mode . tsx))
      (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
      (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
      (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
@@ -1262,12 +1278,13 @@
    )
   )
 
-(defun custo/js-mode-customize ()
-  "Customize js and jsx modes."
-  (setq js-indent-level 2)
-  )
-(add-hook 'js-mode-hook
-          (custo/js-mode-customize))
+
+;; (defun custo/js-mode-customize ()
+;;   "Customize js and jsx modes."
+;;   (setq js-indent-level 2)
+;;   )
+;; (add-hook 'js-mode-hook
+;;           (custo/js-mode-customize))
 
 
 (use-package svelte-mode
@@ -1284,8 +1301,8 @@
                                 (custo/local-leader-key
                                   :keymaps '(js-mode-map
                                              js-jsx-mode-map
-                                             typescript-mode-map
-                                             typescript-tsx-mode-map
+                                             typescript-ts-mode-map
+                                             tsx-ts-mode-map
                                              svelte-mode-map
                                              )
                                   "d" '(:ignore t :wk "jsdoc")
@@ -1310,8 +1327,8 @@
                                            (custo/local-leader-key
                                              :keymaps '(js-mode-map
                                                         js-jsx-mode-map
-                                                        typescript-mode-map
-                                                        typescript-tsx-mode-map
+                                                        typescript-ts-mode-map
+                                                        tsx-ts-mode-map
                                                         svelte-mode-map
                                                         web-mode-map
                                                         )
@@ -1346,12 +1363,13 @@
         web-mode-code-indent-offset 2)
   )
 
-(use-package typescript-mode
+(use-package typescript-ts-mode
   :defer t
+  :mode "\\.ts\\'"
   :config
-  (setq typescript-indent-level 2)
-  (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
+  (setq typescript-ts-mode-intent-offset 2)
+  ;; (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
   )
 
 
@@ -1360,7 +1378,7 @@
   :config
   (setq indent-tabs-mode nil
         rustic-lsp-client 'eglot
-        ;; rustic-lsp-client 'lsp
+        ;; rustic-lsp-client 'lsp-mode
         ;; lsp-rust-server 'rust-analyzer
         ;; rustic-lsp-server 'rust-analyzer
         ;; lsp-rust-analyzer-proc-macro-enable t
@@ -1541,11 +1559,54 @@
 (use-package filenotify)
 (use-package ert)
 (use-package array)
-(use-package treesit)
 (use-package js
+  ;; :defer t
+  ;; :mode ((("\\.js\\'"
+  ;;          "\\.cjs\\'"
+  ;;          "\\.mjs\\'" ) . js-mode)
+  ;;        ("\\.jsx\\'" . js-jsx-mode))
   :config
-  ;; other config stuff
   (setq js-indent-level 2)
+  )
+
+;; enable treesit
+(when (treesit-available-p)
+  (require 'treesit)
+  ;; (setq treesit-language-source-alist
+  ;;       '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+  ;;         (c "https://github.com/tree-sitter/tree-sitter-c")
+  ;;         (cmake "https://github.com/uyha/tree-sitter-cmake")
+  ;;         (common-lisp "https://github.com/theHamsta/tree-sitter-commonlisp")
+  ;;         (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+  ;;         (css "https://github.com/tree-sitter/tree-sitter-css")
+  ;;         (csharp "https://github.com/tree-sitter/tree-sitter-c-sharp")
+  ;;         (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+  ;;         (go "https://github.com/tree-sitter/tree-sitter-go")
+  ;;         (go-mod "https://github.com/camdencheek/tree-sitter-go-mod")
+  ;;         (html "https://github.com/tree-sitter/tree-sitter-html")
+  ;;         (js . ("https://github.com/tree-sitter/tree-sitter-javascript" "rust-0.20.0" "src"))
+  ;;         (json "https://github.com/tree-sitter/tree-sitter-json")
+  ;;         (lua "https://github.com/Azganoth/tree-sitter-lua")
+  ;;         (make "https://github.com/alemuller/tree-sitter-make")
+  ;;         (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+  ;;         (python "https://github.com/tree-sitter/tree-sitter-python")
+  ;;         (r "https://github.com/r-lib/tree-sitter-r")
+  ;;         (rust "https://github.com/tree-sitter/tree-sitter-rust")
+  ;;         (toml "https://github.com/tree-sitter/tree-sitter-toml")
+  ;;         (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
+  ;;         (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
+  ;;         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+  (use-package treesit-auto
+    :straight '(
+                :local-repo "treesit-auto"
+                            :type git
+                            :host github
+                            :repo "renzmann/treesit-auto"
+                            :file "treesit/auto.el"
+                            )
+    :demand t
+    )
   )
 
 (use-package eglot
@@ -1553,18 +1614,22 @@
   :hook
   ((js-mode
     js-jsx-mode
-    typescript-mode
-    typescript-tsx-mode
+    js-ts-mode
+    typescript-ts-mode
+    tsx-ts-mode
     rustic-mode
     lua-mode
     scss-mode
     css-mode
+    css-ts-mode
     less-css-mode
     json-mode
+    json-ts-mode
     web-mode
     elixir-mode
     gdscript-mode
     python-mode
+    python-ts-mode
     sh-mode               
     ) . eglot-ensure)
   :commands (eglot-find-declaration
@@ -1591,11 +1656,14 @@
   :config
   ;; (setq eldoc-echo-area-use-multiline-p 5)
   (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
+  ;; (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '((js-ts-mode typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio")))
+  
   (custo/leader-key
     :keymaps '(js-mode-map
                js-jsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
+               typescript-ts-mode-map
+               tsx-ts-mode-map
                rustic-mode-map
                lua-mode-map
                scss-mode-map
@@ -1615,8 +1683,8 @@
   (custo/local-leader-key
     :keymaps '(js-mode-map
                js-jsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
+               typescript-ts-mode-map
+               tsx-ts-mode-map
                rustic-mode-map
                lua-mode-map
                scss-mode-map
@@ -1705,68 +1773,68 @@
   ;;          "g r" 'lsp-find-references
   ;;          "g t" 'lsp-goto-type-definition
   ;;          )
-  :config
-  (setq lsp-keymap-prefix "C-c l"
-        lsp-completion-provider :none
-        lsp-completion-show-detail t
-        lsp-completion-show-kind t
-        ;; lsp-file-watch-threshold 100
-        lsp-headerline-breadcrumb-enable nil
-        lsp-enable-symbol-highlighting nil
-        ;; lsp-headerline-breadcrumb-segments '(project file symbols)
-        lsp-diagnostics-provider :flycheck
-        lsp-lens-enable nil
-        lsp-idle-delay 1.0
-        lsp-log-io nil
-        lsp-enable-snippet nil ;; disable snippet completion as it causes more problems than it helps
-        lsp-modeline-diagnostics-enable nil;; disable warnings that usually get in the way
-        lsp-lense-debounce-interval 0.5 ;; set it to a more sane value
-        lsp-lense-place-position 'above-line
-        lsp-signature-auto-activate t;; prevent the documentation window from automatically showing
-        lsp-signature-render-documentation nil
-        lsp-use-plists t
-        lsp-keymap-prefix "<super>-l"
-        ;; config built-in modes
+  ;; :config
+  ;; (setq lsp-keymap-prefix "C-c l"
+  ;;       lsp-completion-provider :none
+  ;;       lsp-completion-show-detail t
+  ;;       lsp-completion-show-kind t
+  ;;       ;; lsp-file-watch-threshold 100
+  ;;       lsp-headerline-breadcrumb-enable nil
+  ;;       lsp-enable-symbol-highlighting nil
+  ;;       ;; lsp-headerline-breadcrumb-segments '(project file symbols)
+  ;;       lsp-diagnostics-provider :flycheck
+  ;;       lsp-lens-enable nil
+  ;;       lsp-idle-delay 1.0
+  ;;       lsp-log-io nil
+  ;;       lsp-enable-snippet nil ;; disable snippet completion as it causes more problems than it helps
+  ;;       lsp-modeline-diagnostics-enable nil;; disable warnings that usually get in the way
+  ;;       lsp-lense-debounce-interval 0.5 ;; set it to a more sane value
+  ;;       lsp-lense-place-position 'above-line
+  ;;       lsp-signature-auto-activate t;; prevent the documentation window from automatically showing
+  ;;       lsp-signature-render-documentation nil
+  ;;       lsp-use-plists t
+  ;;       lsp-keymap-prefix "<super>-l"
+  ;;       ;; config built-in modes
         
-        )
-  (custo/local-leader-key
-    :keymaps '(js-mode-map
-               js-jsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
-               lua-mode-map
-               scss-mode-map
-               css-mode-map
-               less-css-mode-map
-               elixir-mode-map
-               gdscript-mode-map
-               python-mode-map
-               web-mode-map
-               sh-mode-map
-               svelte-mode-map
-               csharp-mode-map
-               )
-    "a" '(lsp-execute-code-action :wk "excute code action")
-    ;; "e" '(:ignore t :wk "errors")
-    ;; "e b" '(flymake-show-buffer-diagnostics :wk "buffer errors")
-    ;; "e l" '(consult-flymake :wk "list errors")
-    ;; "e p" '(flymake-show-project-diagnostics :wk "project errors")
-    "g g" '(lsp-find-definition :wk "find definition")
-    "g G" '(lsp-goto-implementation :wk "goto definition")
-    "g R" '(lsp-ui-peek-find-references :wk "peek references")
-    "g r" '(lsp-find-references :wk "find references")
-    "g t" '(lsp-goto-type-definition :wk "goto type definition")
-    "h" '(:ignore t :wk "help")
-    "h g" '(lsp-ui-doc-glance :wk "glance symbol")
-    "h d" '(lsp-describe-thing-at-point :wk "describe symbol")
-    "h s" '(lsp-signature-activate :wk "show signature")
-    "o" '(lsp-ui-imenu :wk "overview")
-    "r" '(:ignore t :wk "refactor")
-    "r r" '(lsp-rename :wk "rename")
-    "=" '(:ignore t :wk "format")
-    "= l" '(lsp-format-buffer :wk "format with lsp")
-    )
+  ;;       )
+  ;; (custo/local-leader-key
+  ;;   :keymaps '(js-mode-map
+  ;;              js-jsx-mode-map
+  ;;              typescript-mode-map
+  ;;              typescript-tsx-mode-map
+  ;;              rustic-mode-map
+  ;;              lua-mode-map
+  ;;              scss-mode-map
+  ;;              css-mode-map
+  ;;              less-css-mode-map
+  ;;              elixir-mode-map
+  ;;              gdscript-mode-map
+  ;;              python-mode-map
+  ;;              web-mode-map
+  ;;              sh-mode-map
+  ;;              svelte-mode-map
+  ;;              csharp-mode-map
+  ;;              )
+  ;;   "a" '(lsp-execute-code-action :wk "excute code action")
+  ;;   ;; "e" '(:ignore t :wk "errors")
+  ;;   ;; "e b" '(flymake-show-buffer-diagnostics :wk "buffer errors")
+  ;;   ;; "e l" '(consult-flymake :wk "list errors")
+  ;;   ;; "e p" '(flymake-show-project-diagnostics :wk "project errors")
+  ;;   "g g" '(lsp-find-definition :wk "find definition")
+  ;;   "g G" '(lsp-goto-implementation :wk "goto definition")
+  ;;   "g R" '(lsp-ui-peek-find-references :wk "peek references")
+  ;;   "g r" '(lsp-find-references :wk "find references")
+  ;;   "g t" '(lsp-goto-type-definition :wk "goto type definition")
+  ;;   "h" '(:ignore t :wk "help")
+  ;;   "h g" '(lsp-ui-doc-glance :wk "glance symbol")
+  ;;   "h d" '(lsp-describe-thing-at-point :wk "describe symbol")
+  ;;   "h s" '(lsp-signature-activate :wk "show signature")
+  ;;   "o" '(lsp-ui-imenu :wk "overview")
+  ;;   "r" '(:ignore t :wk "refactor")
+  ;;   "r r" '(lsp-rename :wk "rename")
+  ;;   "=" '(:ignore t :wk "format")
+  ;;   "= l" '(lsp-format-buffer :wk "format with lsp")
+  ;;   )
   )
 
 ;; (use-package lsp-pyright
@@ -1794,41 +1862,41 @@
 ;;         )
 ;;   )
 
-(use-package flycheck
-  :defer t
-  :hook
-  (lsp-mode . flycheck-mode)
-  :config
-  (setq flycheck-disabled-checkers
-        (append flycheck-disabled-checkers
-                '(javascript-jshint)))
-  (setq flycheck-temp-prefix ".flycheck")
-  (flycheck-add-mode 'javascript-eslint 'js-mode)
-  (flycheck-add-mode 'javascript-eslint 'js-jsx-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
-  (custo/local-leader-key
-    :keymaps '(js-mode-map
-               js-jsx-mode-map
-               typescript-mode-map
-               typescript-tsx-mode-map
-               rustic-mode-map
-               lua-mode-map
-               scss-mode-map
-               css-mode-map
-               less-css-mode-map
-               elixir-mode-map
-               gdscript-mode-map
-               python-mode-map
-               web-mode-map
-               sh-mode-map
-               svelte-mode-map
-               csharp-mode-map
-               )
-    "e" '(:ignore t :wk "errors")
-    "e l" '(consult-flycheck :wk "list errors")
-    )
-  )
+;; (use-package flycheck
+;;   :defer t
+;;   :hook
+;;   (lsp-mode . flycheck-mode)
+;;   :config
+;;   (setq flycheck-disabled-checkers
+;;         (append flycheck-disabled-checkers
+;;                 '(javascript-jshint)))
+;;   (setq flycheck-temp-prefix ".flycheck")
+;;   (flycheck-add-mode 'javascript-eslint 'js-mode)
+;;   (flycheck-add-mode 'javascript-eslint 'js-jsx-mode)
+;;   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+;;   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
+;;   (custo/local-leader-key
+;;     :keymaps '(js-mode-map
+;;                js-jsx-mode-map
+;;                typescript-mode-map
+;;                typescript-tsx-mode-map
+;;                rustic-mode-map
+;;                lua-mode-map
+;;                scss-mode-map
+;;                css-mode-map
+;;                less-css-mode-map
+;;                elixir-mode-map
+;;                gdscript-mode-map
+;;                python-mode-map
+;;                web-mode-map
+;;                sh-mode-map
+;;                svelte-mode-map
+;;                csharp-mode-map
+;;                )
+;;     "e" '(:ignore t :wk "errors")
+;;     "e l" '(consult-flycheck :wk "list errors")
+;;     )
+;;   )
 
 
 (use-package hl-todo
