@@ -1237,25 +1237,21 @@
 ;;enable super syntax highlighting
 (use-package tree-sitter
   :defer t
-  :after tree-sitter-langs
   :hook
-  ((
-    js-mode
-    js-jsx-mode
-    ;; lsp-mode
-    ;; eglot-managed-mode
-    ) . (lambda ()
-    (tree-sitter-mode)
-    (tree-sitter-hl-mode)
-    )
-      )
+  (custo/after-load . (lambda () (custo/leader-key
+                                   "t I" '((lambda ()
+                                             (interactive)
+                                             (tree-sitter-mode)
+                                             (tree-sitter-hl-mode)
+                                             )
+                                           :wk
+                                           "enable tree-sitter"
+                                           )
+                                   ))
+                    )
   )
 
 (use-package tree-sitter-langs
-  ;; :straight (:type git :host github
-  ;;                  :repo "emacs-tree-sitter/tree-sitter-langs"
-  ;;                  :branch "release"
-  ;;                  )
   :defer t
   :commands (tree-sitter-require)
   :hook
@@ -1279,14 +1275,6 @@
   )
 
 
-;; (defun custo/js-mode-customize ()
-;;   "Customize js and jsx modes."
-;;   (setq js-indent-level 2)
-;;   )
-;; (add-hook 'js-mode-hook
-;;           (custo/js-mode-customize))
-
-
 (use-package svelte-mode
   :defer t
   :mode ("\\.svelte\\'")
@@ -1299,8 +1287,8 @@
   :hook
   (custo/after-general-load . (lambda ()
                                 (custo/local-leader-key
-                                  :keymaps '(js-mode-map
-                                             js-jsx-mode-map
+                                  :keymaps '(js-ts-mode-map
+                                             ;; js-jsx-mode-map
                                              typescript-ts-mode-map
                                              tsx-ts-mode-map
                                              svelte-mode-map
@@ -1325,8 +1313,8 @@
 
 (add-hook 'custo/after-general-load-hook (lambda ()
                                            (custo/local-leader-key
-                                             :keymaps '(js-mode-map
-                                                        js-jsx-mode-map
+                                             :keymaps '(js-ts-mode-map
+                                                        ;; js-jsx-mode-map
                                                         typescript-ts-mode-map
                                                         tsx-ts-mode-map
                                                         svelte-mode-map
@@ -1374,32 +1362,32 @@
   )
 
 
-(use-package rustic
+(use-package rust-ts-mode
   :defer t
-  :config
-  (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
-        ;; rustic-lsp-client 'lsp-mode
-        ;; lsp-rust-server 'rust-analyzer
-        ;; rustic-lsp-server 'rust-analyzer
-        ;; lsp-rust-analyzer-proc-macro-enable t
-        ;; lsp-rust-analyzer-display-parameter-hints t
-        ;; lsp-rust-analyzer-server-display-inlay-hints t
-        ;; lsp-rust-analyzer-inlay-hints-mode t
-        rustic-indent-offset 4
-        rustic-format-on-save nil)
-  (custo/local-leader-key
-    :keymaps 'rustic-mode-map
-    "= =" '(rustic-format-buffer :wk "format with rustfmt")
-    "c" '(:ignore t :wk "cargo commands")
-    "c b" '(rustic-cargo-build :wk "cargo build")
-    "c C" '(rustic-cargo-check :wk "cargo check")
-    "c c" '(rustic-cargo-clippy :wk "cargo clippy")
-    "c r" '(rustic-cargo-run :wk "cargo run")
-    "c t" '(rustic-cargo-test :wk "cargo test")
-    ;; "t" '(:ignore t :wk "toggles")
-    ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
-    )
+  ;; :config
+  ;; (setq indent-tabs-mode nil
+  ;;       rustic-lsp-client 'eglot
+  ;;       ;; rustic-lsp-client 'lsp-mode
+  ;;       ;; lsp-rust-server 'rust-analyzer
+  ;;       ;; rustic-lsp-server 'rust-analyzer
+  ;;       ;; lsp-rust-analyzer-proc-macro-enable t
+  ;;       ;; lsp-rust-analyzer-display-parameter-hints t
+  ;;       ;; lsp-rust-analyzer-server-display-inlay-hints t
+  ;;       ;; lsp-rust-analyzer-inlay-hints-mode t
+  ;;       rustic-indent-offset 4
+  ;;       rustic-format-on-save nil)
+  ;; (custo/local-leader-key
+  ;;   :keymaps 'rustic-mode-map
+  ;;   "= =" '(rustic-format-buffer :wk "format with rustfmt")
+  ;;   "c" '(:ignore t :wk "cargo commands")
+  ;;   "c b" '(rustic-cargo-build :wk "cargo build")
+  ;;   "c C" '(rustic-cargo-check :wk "cargo check")
+  ;;   "c c" '(rustic-cargo-clippy :wk "cargo clippy")
+  ;;   "c r" '(rustic-cargo-run :wk "cargo run")
+  ;;   "c t" '(rustic-cargo-test :wk "cargo test")
+  ;;   ;; "t" '(:ignore t :wk "toggles")
+  ;;   ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+  ;;   )
   )
 
 (use-package csharp-mode
@@ -1561,75 +1549,93 @@
 (use-package ert)
 (use-package array)
 (use-package js
-  ;; :defer t
-  ;; :mode ((("\\.js\\'"
-  ;;          "\\.cjs\\'"
-  ;;          "\\.mjs\\'" ) . js-mode)
-  ;;        ("\\.jsx\\'" . js-jsx-mode))
+  :defer t
+  :commands (js-ts-mode)
   :config
+  (dolist (item '(("\\.js\\'" . js-ts-mode)
+                  ("\\.jsx\\'" . js-ts-mode)
+                  ("\\.cjs\\'" . js-ts-mode)
+                  ("\\.mjs\\'" . js-ts-mode)))
+    (add-to-list 'auto-mode-alist item)
+    )
+  ;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+  ;; (define-derived-mode js-ts-mode javascript-ts-mode "JavaScript[JSX]")
   (setq js-indent-level 2)
   )
 
 ;; enable treesit
 (when (treesit-available-p)
   (require 'treesit)
-  ;; (setq treesit-language-source-alist
-  ;;       '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-  ;;         (c "https://github.com/tree-sitter/tree-sitter-c")
-  ;;         (cmake "https://github.com/uyha/tree-sitter-cmake")
-  ;;         (common-lisp "https://github.com/theHamsta/tree-sitter-commonlisp")
-  ;;         (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-  ;;         (css "https://github.com/tree-sitter/tree-sitter-css")
-  ;;         (csharp "https://github.com/tree-sitter/tree-sitter-c-sharp")
-  ;;         (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-  ;;         (go "https://github.com/tree-sitter/tree-sitter-go")
-  ;;         (go-mod "https://github.com/camdencheek/tree-sitter-go-mod")
-  ;;         (html "https://github.com/tree-sitter/tree-sitter-html")
-  ;;         (js . ("https://github.com/tree-sitter/tree-sitter-javascript" "rust-0.20.0" "src"))
-  ;;         (json "https://github.com/tree-sitter/tree-sitter-json")
-  ;;         (lua "https://github.com/Azganoth/tree-sitter-lua")
-  ;;         (make "https://github.com/alemuller/tree-sitter-make")
-  ;;         (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-  ;;         (python "https://github.com/tree-sitter/tree-sitter-python")
-  ;;         (r "https://github.com/r-lib/tree-sitter-r")
-  ;;         (rust "https://github.com/tree-sitter/tree-sitter-rust")
-  ;;         (toml "https://github.com/tree-sitter/tree-sitter-toml")
-  ;;         (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
-  ;;         (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
-  ;;         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-
+  (setq treesit-language-source-alist
+        '(
+          (bash "https://github.com/tree-sitter/tree-sitter-bash")
+          (c "https://github.com/tree-sitter/tree-sitter-c")
+          (cmake "https://github.com/uyha/tree-sitter-cmake")
+          (common-lisp "https://github.com/theHamsta/tree-sitter-commonlisp")
+          (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+          (css "https://github.com/tree-sitter/tree-sitter-css")
+          (csharp "https://github.com/tree-sitter/tree-sitter-c-sharp")
+          (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+          (go "https://github.com/tree-sitter/tree-sitter-go")
+          (go-mod "https://github.com/camdencheek/tree-sitter-go-mod")
+          (html "https://github.com/tree-sitter/tree-sitter-html")
+          ;; (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.19.0" "src"))
+          (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
+          (json "https://github.com/tree-sitter/tree-sitter-json")
+          (lua "https://github.com/Azganoth/tree-sitter-lua")
+          (make "https://github.com/alemuller/tree-sitter-make")
+          (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+          (python "https://github.com/tree-sitter/tree-sitter-python")
+          (r "https://github.com/r-lib/tree-sitter-r")
+          (rust "https://github.com/tree-sitter/tree-sitter-rust")
+          (toml "https://github.com/tree-sitter/tree-sitter-toml")
+          (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
+          (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
+          (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+          )
+        )
+  ;; ensures treesit-auto auto-applies the remap after install
+  (advice-add 'treesit-install-language-grammar
+              :after (lambda (&rest _r) (treesit-auto-apply-remap)))
+  
   (use-package treesit-auto
     :straight '(
                 :local-repo "treesit-auto"
-                            :type git
-                            :host github
-                            :repo "renzmann/treesit-auto"
-                            :file "treesit/auto.el"
-                            )
+                :type git
+                :host github
+                :repo "renzmann/treesit-auto"
+                :file "treesit/auto.el"
+                )
     :demand t
+    :config
+    (treesit-auto-apply-remap)
     )
   )
 
 (use-package eglot
   :defer t
   :hook
-  ((js-mode
-    js-jsx-mode
+  ((
+    ;;js-mode
+    ;;js-jsx-mode
     js-ts-mode
     typescript-ts-mode
     tsx-ts-mode
-    rustic-mode
+    ;; rustic-mode
+    rust-ts-mode
     lua-mode
     ;; scss-mode
-    css-mode
+    ;;css-mode
     css-ts-mode
     ;; less-css-mode
-    json-mode
+    ;;json-mode
     json-ts-mode
-    web-mode
+    html
+    mhtml
+    ;; web-mode
     elixir-mode
     gdscript-mode
-    python-mode
+    ;; python-mode
     python-ts-mode
     sh-mode               
     ) . eglot-ensure)
@@ -1662,8 +1668,8 @@
   (add-to-list 'eglot-server-programs '((js-ts-mode typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio")))
   
   (custo/leader-key
-    :keymaps '(js-mode-map
-               js-jsx-mode-map
+    :keymaps '(js-ts-mode-map
+               ;; js-jsx-mode-map
                typescript-ts-mode-map
                tsx-ts-mode-map
                rustic-mode-map
@@ -1683,8 +1689,8 @@
     "e l" '(consult-flymake :wk "list errors")
     )
   (custo/local-leader-key
-    :keymaps '(js-mode-map
-               js-jsx-mode-map
+    :keymaps '(js-ts-mode-map
+               ;; js-jsx-mode-map
                typescript-ts-mode-map
                tsx-ts-mode-map
                rustic-mode-map
