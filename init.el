@@ -1369,8 +1369,8 @@
   )
 
 
-(use-package rust-ts-mode
-  :defer t
+;; (use-package rust-ts-mode
+  ;; :defer t
   ;; :config
   ;; (setq indent-tabs-mode nil
   ;;       rustic-lsp-client 'eglot
@@ -1395,7 +1395,7 @@
   ;;   ;; "t" '(:ignore t :wk "toggles")
   ;;   ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
   ;;   )
-  )
+  ;; )
 
 (use-package csharp-mode
   :defer t
@@ -1682,16 +1682,19 @@
   (add-to-list 'eglot-server-programs '(mhtml-mode . ("vscode-html-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(json-ts-mode . ("vscode-json-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(css-ts-mode . ("vscode-css-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer")))
   (add-to-list 'eglot-server-programs '((js-ts-mode typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(python-ts-mode
                                         . ,(eglot-alternatives
                                             '("pylsp" "pyls" ("pyright-langserver" "--stdio") "jedi-language-server"))))
   (custo/leader-key
-    :keymaps '(js-ts-mode-map
+    :keymaps '(js-mode-map
+               js-ts-mode-map
                ;; js-jsx-mode-map
                typescript-ts-mode-map
                tsx-ts-mode-map
-               rustic-mode-map
+               rust-mode-map
+               rust-ts-mode-map
                lua-mode-map
                scss-mode-map
                css-mode-map
@@ -1713,11 +1716,13 @@
     "e l" '(consult-flymake :wk "list errors")
     )
   (custo/local-leader-key
-    :keymaps '(js-ts-mode-map
+    :keymaps '(js-mode-map
+               js-ts-mode-map
                ;; js-jsx-mode-map
                typescript-ts-mode-map
                tsx-ts-mode-map
-               rustic-mode-map
+               rust-mode-map
+               rust-ts-mode-map
                lua-mode-map
                scss-mode-map
                css-mode-map
