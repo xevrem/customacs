@@ -1262,14 +1262,19 @@
      (tree-sitter-require 'html)
      (tree-sitter-require 'json)
      (tree-sitter-require 'css)
+     (tree-sitter-require 'typescript)
+     (tree-sitter-require 'javascript)
+     (add-to-list 'tree-sitter-major-mode-language-alist '(js-ts-mode . javascript))
      (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-ts-mode . typescript))
      (add-to-list 'tree-sitter-major-mode-language-alist '(tsx-ts-mode . tsx))
      (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
      (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(mhtml-mode . html))
      (add-to-list 'tree-sitter-major-mode-language-alist '(json-mode . json))
-     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
-     (add-to-list 'tree-sitter-major-mode-language-alist '(css-mode . css))
-     ;; (add-to-list 'tree-sitter-major-mode-language-alist '(less-css-mode . css))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(json-ts-mode . json))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(scss-mode . css))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(css-ts-mode . css))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(less-css-mode . css))
      )
    )
   )
@@ -1287,7 +1292,8 @@
   :hook
   (custo/after-general-load . (lambda ()
                                 (custo/local-leader-key
-                                  :keymaps '(js-ts-mode-map
+                                  :keymaps '(js-mode-map
+                                             js-ts-mode-map
                                              ;; js-jsx-mode-map
                                              typescript-ts-mode-map
                                              tsx-ts-mode-map
@@ -1313,7 +1319,8 @@
 
 (add-hook 'custo/after-general-load-hook (lambda ()
                                            (custo/local-leader-key
-                                             :keymaps '(js-ts-mode-map
+                                             :keymaps '(js-mode-map
+                                                        js-ts-mode-map
                                                         ;; js-jsx-mode-map
                                                         typescript-ts-mode-map
                                                         tsx-ts-mode-map
@@ -1362,8 +1369,8 @@
   )
 
 
-(use-package rust-ts-mode
-  :defer t
+;; (use-package rust-ts-mode
+  ;; :defer t
   ;; :config
   ;; (setq indent-tabs-mode nil
   ;;       rustic-lsp-client 'eglot
@@ -1388,7 +1395,7 @@
   ;;   ;; "t" '(:ignore t :wk "toggles")
   ;;   ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
   ;;   )
-  )
+  ;; )
 
 (use-package csharp-mode
   :defer t
@@ -1549,93 +1556,102 @@
 (use-package ert)
 (use-package array)
 (use-package js
-  :defer t
-  :commands (js-ts-mode)
+  :mode (("\\.js\\'" . js-ts-mode)
+         ("\\.cjs\\'" . js-ts-mode)
+         ("\\.mjs\\'" . js-ts-mode)
+         )
   :config
-  (dolist (item '(("\\.js\\'" . js-ts-mode)
-                  ("\\.jsx\\'" . js-ts-mode)
-                  ("\\.cjs\\'" . js-ts-mode)
-                  ("\\.mjs\\'" . js-ts-mode)))
-    (add-to-list 'auto-mode-alist item)
-    )
+  ;; (dolist (item '(("\\.js\\'" . js-ts-mode)
+  ;;                 ("\\.jsx\\'" . js-ts-mode)
+  ;;                 ("\\.cjs\\'" . js-ts-mode)
+  ;;                 ("\\.mjs\\'" . js-ts-mode)))
+  ;; (add-to-list 'auto-mode-alist item)
+  ;;   )
   ;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-  ;; (define-derived-mode js-ts-mode javascript-ts-mode "JavaScript[JSX]")
+  (define-derived-mode javascript-ts-mode js-ts-mode "JavaScript[JSX]")
+  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . javascript-ts-mode))
   (setq js-indent-level 2)
   )
+;; enable treesit if it is available
+(add-hook 'custo/after-load-hook (lambda ()
+                                   (when (treesit-available-p)
+                                     (require 'treesit)
+                                     (setq treesit-language-source-alist
+                                           '(
+                                             (bash "https://github.com/tree-sitter/tree-sitter-bash")
+                                             (c "https://github.com/tree-sitter/tree-sitter-c")
+                                             (cmake "https://github.com/uyha/tree-sitter-cmake")
+                                             (common-lisp "https://github.com/theHamsta/tree-sitter-commonlisp")
+                                             (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+                                             (css "https://github.com/tree-sitter/tree-sitter-css")
+                                             (csharp "https://github.com/tree-sitter/tree-sitter-c-sharp")
+                                             (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+                                             (go "https://github.com/tree-sitter/tree-sitter-go")
+                                             (go-mod "https://github.com/camdencheek/tree-sitter-go-mod")
+                                             (html "https://github.com/tree-sitter/tree-sitter-html")
+                                             ;; (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.19.0" "src"))
+                                             (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
+                                             (json "https://github.com/tree-sitter/tree-sitter-json")
+                                             (lua "https://github.com/Azganoth/tree-sitter-lua")
+                                             (make "https://github.com/alemuller/tree-sitter-make")
+                                             (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+                                             (python "https://github.com/tree-sitter/tree-sitter-python")
+                                             (r "https://github.com/r-lib/tree-sitter-r")
+                                             (rust "https://github.com/tree-sitter/tree-sitter-rust")
+                                             (toml "https://github.com/tree-sitter/tree-sitter-toml")
+                                             (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
+                                             (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
+                                             (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+                                             )
+                                           )
+                                     ;; ensures treesit-auto auto-applies the remap after install
+                                     ;; (advice-add 'treesit-install-language-grammar
+                                     ;;             :after (lambda (&rest _r) (treesit-auto-apply-remap)))
+                                     
+                                     ;; (use-package treesit-auto
+                                     ;;   :if (treesit-available-p)
+                                     ;;   :straight '(
+                                     ;;               :local-repo "treesit-auto"
+                                     ;;               :type git
+                                     ;;               :host github
+                                     ;;               :repo "renzmann/treesit-auto"
+                                     ;;               :file "treesit/auto.el"
+                                     ;;               )
+                                     ;;   :demand t
+                                     ;;   ;; :config
+                                     ;;   ;; (treesit-auto-apply-remap)
+                                     ;;   )
+                                     )
+                                   ;; ensure that javascript is properly setup
+                                   )
 
-;; enable treesit
-(when (treesit-available-p)
-  (require 'treesit)
-  (setq treesit-language-source-alist
-        '(
-          (bash "https://github.com/tree-sitter/tree-sitter-bash")
-          (c "https://github.com/tree-sitter/tree-sitter-c")
-          (cmake "https://github.com/uyha/tree-sitter-cmake")
-          (common-lisp "https://github.com/theHamsta/tree-sitter-commonlisp")
-          (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-          (css "https://github.com/tree-sitter/tree-sitter-css")
-          (csharp "https://github.com/tree-sitter/tree-sitter-c-sharp")
-          (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-          (go "https://github.com/tree-sitter/tree-sitter-go")
-          (go-mod "https://github.com/camdencheek/tree-sitter-go-mod")
-          (html "https://github.com/tree-sitter/tree-sitter-html")
-          ;; (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.19.0" "src"))
-          (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
-          (json "https://github.com/tree-sitter/tree-sitter-json")
-          (lua "https://github.com/Azganoth/tree-sitter-lua")
-          (make "https://github.com/alemuller/tree-sitter-make")
-          (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-          (python "https://github.com/tree-sitter/tree-sitter-python")
-          (r "https://github.com/r-lib/tree-sitter-r")
-          (rust "https://github.com/tree-sitter/tree-sitter-rust")
-          (toml "https://github.com/tree-sitter/tree-sitter-toml")
-          (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
-          (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
-          (yaml "https://github.com/ikatyang/tree-sitter-yaml")
           )
-        )
-  ;; ensures treesit-auto auto-applies the remap after install
-  (advice-add 'treesit-install-language-grammar
-              :after (lambda (&rest _r) (treesit-auto-apply-remap)))
-  
-  (use-package treesit-auto
-    :straight '(
-                :local-repo "treesit-auto"
-                :type git
-                :host github
-                :repo "renzmann/treesit-auto"
-                :file "treesit/auto.el"
-                )
-    :demand t
-    :config
-    (treesit-auto-apply-remap)
-    )
-  )
 
 (use-package eglot
   :defer t
   :hook
   ((
-    ;;js-mode
+    js-mode
     ;;js-jsx-mode
     js-ts-mode
     typescript-ts-mode
     tsx-ts-mode
     ;; rustic-mode
+    rust-mode
     rust-ts-mode
     lua-mode
-    ;; scss-mode
-    ;;css-mode
+    scss-mode
+    css-mode
     css-ts-mode
-    ;; less-css-mode
-    ;;json-mode
+    less-css-mode
+    json-mode
     json-ts-mode
     html
     mhtml
     ;; web-mode
     elixir-mode
     gdscript-mode
-    ;; python-mode
+    python-mode
     python-ts-mode
     sh-mode               
     ) . eglot-ensure)
@@ -1662,50 +1678,68 @@
            )
   :config
   ;; (setq eldoc-echo-area-use-multiline-p 5)
-  (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
+  ;; (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(mhtml-mode . ("vscode-html-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(json-ts-mode . ("vscode-json-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(css-ts-mode . ("vscode-css-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer")))
   (add-to-list 'eglot-server-programs '((js-ts-mode typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio")))
-  
+  (add-to-list 'eglot-server-programs '(python-ts-mode
+                                        . ,(eglot-alternatives
+                                            '("pylsp" "pyls" ("pyright-langserver" "--stdio") "jedi-language-server"))))
   (custo/leader-key
-    :keymaps '(js-ts-mode-map
+    :keymaps '(js-mode-map
+               js-ts-mode-map
                ;; js-jsx-mode-map
                typescript-ts-mode-map
                tsx-ts-mode-map
-               rustic-mode-map
+               rust-mode-map
+               rust-ts-mode-map
                lua-mode-map
-               ;; scss-mode-map
+               scss-mode-map
                css-mode-map
-               ;; less-css-mode-map
+               less-css-mode-map
                json-mode
+               json-ts-mode
                elixir-mode-map
                gdscript-mode-map
+               html-mode-map
+               mhtml-mode-map
                python-mode-map
+               python-ts-mode-map
                web-mode-map
                sh-mode-map
                svelte-mode-map
                csharp-mode-map
+               csharp-ts-mode-map
                )
     "e l" '(consult-flymake :wk "list errors")
     )
   (custo/local-leader-key
-    :keymaps '(js-ts-mode-map
+    :keymaps '(js-mode-map
+               js-ts-mode-map
                ;; js-jsx-mode-map
                typescript-ts-mode-map
                tsx-ts-mode-map
-               rustic-mode-map
+               rust-mode-map
+               rust-ts-mode-map
                lua-mode-map
-               ;; scss-mode-map
+               scss-mode-map
                css-mode-map
-               ;; less-css-mode-map
+               less-css-mode-map
                json-mode
+               json-ts-mode
                elixir-mode-map
                gdscript-mode-map
+               html-mode-map
+               mhtml-mode-map
                python-mode-map
+               python-ts-mode-map
                web-mode-map
                sh-mode-map
                svelte-mode-map
                csharp-mode-map
+               csharp-ts-mode-map
                )
     "a" '(:ignore t :wk "quick actions")
     "a a" '(eglot-code-actions :wk "quick actions")
@@ -1740,10 +1774,10 @@
 ;; minor changes: saves excursion and uses search-forward instead of re-search-forward
 (advice-add 'json-parse-buffer :around
             (lambda (oldfn &rest args)
-	      (save-excursion 
+              (save-excursion 
                 (while (search-forward "\\u0000" nil t)
                   (replace-match "" nil t)))
-		(apply oldfn args)))
+              (apply oldfn args)))
 
 ;; lsp-mode
 (use-package lsp-mode
@@ -1803,7 +1837,7 @@
   ;;       lsp-use-plists t
   ;;       lsp-keymap-prefix "<super>-l"
   ;;       ;; config built-in modes
-        
+  
   ;;       )
   ;; (custo/local-leader-key
   ;;   :keymaps '(js-mode-map
