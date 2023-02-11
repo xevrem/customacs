@@ -853,8 +853,8 @@
 (use-package xclip
   :defer t
   :commands xclip-mode
-  ;;:unless ((memq window-system '(mac ns x)));;
-  :unless (display-graphic-p)
+  :if (eq window-system '(mac ns x));;
+  ;; :if (display-graphic-p)
   :hook
   ((custo/after-init
     server-after-make-frame) . xclip-mode)
