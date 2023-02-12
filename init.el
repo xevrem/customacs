@@ -229,11 +229,7 @@
   (with-temp-buffer
     (message "creating private file...")
     (insert "
-(setq private/circe-nick \"\" 
-      private/circe-pass \"\" 
-      private/libera-nick \"\"
-      private/libera-pass \"\"
-      custo/font \"Monospace\"
+(setq custo/font \"Monospace\"
       custo/font-size 16
       custo/variable-font \"Arial\"
       custo/mode-line-font \"Monospace\" 
@@ -243,7 +239,17 @@
       custo/theme 'doom-tomorrow-night
       custo/term \"bash\")
 (defun custo/prodigy-services ()
-  )")
+  )
+(setq custo/circe-networks
+      '((\"irc.libera.chat\"
+         :tls t
+         :port 6697
+         :nick \"nickname\"
+         :pass \"password\"
+         )
+        )
+      )
+")
     (message "writing private file...")
     (write-file private-file)
     (message "private file written...")
@@ -414,6 +420,14 @@
                              "t" '(:ignore t :wk "toggles")
                              "t f" '(toggle-frame-maximized :wk "toggle fullscreent")
                              "t i" '(rainbow-identifiers-mode :wk "toggle rainbow identifiers")
+                             "t I" '((lambda ()
+                                       (interactive)
+                                       ;; (tree-sitter-mode 'toggle)
+                                       (tree-sitter-hl-mode 'toggle)
+                                       )
+                                     :wk
+                                     "toggle tree-sitter"
+                                     )
                              "t l" '(display-line-numbers-mode :wk "toggle line numbers")
                              "t m" '((lambda ()
                                        (interactive)
@@ -705,13 +719,12 @@
 (use-package autothemer
   :demand t)
 (use-package catppuccin-theme
-  :straight '(
-              :local-repo "catppuccin-theme"
-              :type git :host github
-              :repo "catppuccin/emacs"
-              :branch "main"
-              :file "catppuccin-theme.el"
-                   )
+  :straight '(catppuccin-theme
+    :type git :host github
+    :repo "catppuccin/emacs"
+    :branch "main"
+    :file "catppuccin-theme.el"
+    )
   :after autothemer
   :demand t
   :config
@@ -728,6 +741,19 @@
                           )
                       )
   )
+
+(straight-use-package
+ '(doom-catppuccin
+   :local-repo "doom-catppuccin"
+   :type git
+   :host github
+   :repo "mangkoran/themes"
+   :branch "doom-catppuccin"
+   :file "doom-catppuccin-theme.el"
+   :config
+   (setq doom-catppuccin-dark-variant "mocha")
+   )
+ )
 
 ;; highlight the current column
 (use-package hl-line
@@ -1236,23 +1262,25 @@
 
 ;;enable super syntax highlighting
 (use-package tree-sitter
-  :defer t
-  :hook
-  (custo/after-load . (lambda () (custo/leader-key
-                                   "t I" '((lambda ()
-                                             (interactive)
-                                             (tree-sitter-mode)
-                                             (tree-sitter-hl-mode)
-                                             )
-                                           :wk
-                                           "enable tree-sitter"
-                                           )
-                                   ))
-                    )
+  :demand t
+  :after tree-sitter-langs
+  ;; :hook
+  ;; (custo/after-load . (lambda () (custo/leader-key
+  ;;                                  "t I" '((lambda ()
+  ;;                                            (interactive)
+  ;;                                            ;; (tree-sitter-mode 'toggle)
+  ;;                                            (tree-sitter-hl-mode 'toggle)
+  ;;                                            )
+  ;;                                          :wk
+  ;;                                          "toggle tree-sitter"
+  ;;                                          )
+  ;;                                  )
+  ;;                       )
+  ;;                   )
   )
 
 (use-package tree-sitter-langs
-  :defer t
+  :demand t
   :commands (tree-sitter-require)
   :hook
   (custo/after-init
@@ -2205,24 +2233,11 @@
                                 )
                             )
   :config
-  (setq circe-network-options
-        '(("irc.chat.twitch.tv"
-           :tls t
-           :port 6697
-           :nick ,private/circe-nick
-           :pass ,private/circe-pass
-           )
-          ("irc.libera.chat"
-           :tls t
-           :port 6697
-           :nick ,private/libera-nick
-           :pass ,private/libera-pass
-           )
-          )
-        )
   (require 'circe-color-nicks)
   (setq circe-color-nicks-min-constrast-ratio 4.5
-        circe-color-nicks-everywhere t)
+        circe-color-nicks-everywhere t
+        circe-network-options custo/circe-networks
+        )
   )
 
 
