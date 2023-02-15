@@ -1262,6 +1262,29 @@
                                 (custo/leader-key
                                   "f d" '(ranger :wk "file directory")
                                   )
+                                (custo/leader-key
+                                  :keymaps 'ranger-mode-map
+                                  "SPC" '(execute-extended-command :wk "M-x") 
+                                  "TAB" '(evil-switch-to-windows-last-buffer :wk "switch to previous buffer")
+                                  ":" '(execute-extended-command :wk "M-x")
+                                  "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
+                                  "b" '(:ignore t :wk "buffer")
+                                  "b b" '(consult-buffer :wk "switch buffers")
+                                  "b d" '(kill-current-buffer :wk "destroy buffer")
+                                  "b i" '(ibuffer :wk "ibuffer")
+                                  "b r" '(revert-buffer-quick :wk "revert buffer")
+                                  "w" '(:ignore t :wk "window")
+                                  "w b" '(balance-windows :ignore t :wk "balance windows")
+                                  "w d" '(delete-window :wk "delete window")
+                                  "w h" '(evil-window-vsplit :wk "add window horizontally")
+                                  "w o" '(delete-other-windows :wk "delete other windows")
+                                  "w v" '(evil-window-split :wk "add window vertically")
+                                  "w w" '(other-window :wk "other window")
+                                  "<right>" '(evil-window-right :wk "->")
+                                  "<left>" '(evil-window-left :wk "<-")
+                                  "<up>" '(evil-window-up :wk "^")
+                                  "<down>" '(evil-window-down :wk "v")
+                                  )
                                 )
                             )
   :config
@@ -1516,7 +1539,8 @@
   )
 
 
-;; (use-package rust-ts-mode
+(use-package rust-ts-mode
+  :mode "\\.rs\\'"
   ;; :defer t
   ;; :config
   ;; (setq indent-tabs-mode nil
@@ -1542,7 +1566,7 @@
   ;;   ;; "t" '(:ignore t :wk "toggles")
   ;;   ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
   ;;   )
-  ;; )
+  )
 
 (use-package csharp-mode
   :defer t
