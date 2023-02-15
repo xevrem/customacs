@@ -360,18 +360,39 @@
   (run-hooks 'custo/after-wk-load-hook)
   )
 
+(defun custo/enable-evil ()
+  "Disable meow, enable evil."
+  (interactive)
+  (meow-global-mode 1)
+  (evil-mode 1)
+  (evil-commentary-mode 1)
+  (evil-mc-mode 1)
+  )
+
+(defun custo/enable-meow ()
+  "Disable evil, enable meow."
+  (interactive)
+  (evil-mode -1)
+  (evil-commentary-mode 0)
+  (evil-mc-mode 0)
+  (meow-global-mode 1)
+  )
+
 (use-package meow
   :config
-  (defun meow-setup ()
+  (defun custo/setup-meow-keybinds ()
+    "Sets up all customacs keybinds."
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
      '("j" . meow-next)
      '("k" . meow-prev)
-     '("<escape>" . ignore))
+     '("<escape>" . ignore)
+     )
     (meow-leader-define-key
      ;; SPC j/k will run the original command in MOTION state.
      '("j" . "H-j")
      '("k" . "H-k")
+     '("q e" . custo/enable-evil)
      ;; Use SPC (0-9) for digit arguments.
      '("1" . meow-digit-argument)
      '("2" . meow-digit-argument)
@@ -384,7 +405,9 @@
      '("9" . meow-digit-argument)
      '("0" . meow-digit-argument)
      '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet))
+     '("?" . meow-cheatsheet)
+     '(":" . execute-extended-command)
+     )
     (meow-normal-define-key
      '("0" . meow-expand-0)
      '("9" . meow-expand-9)
@@ -446,10 +469,12 @@
      '("Y" . meow-sync-grab)
      '("z" . meow-pop-selection)
      '("'" . repeat)
-     '("<escape>" . ignore)))
-  (meow-setup)
-  ;;(meow-global-mode 1)
+     '("<escape>" . ignore)
+     )
+    )
+  (custo/setup-meow-keybinds)
   )
+
 
 ;; better key binding
 (use-package general
@@ -505,6 +530,7 @@
                              "p" '(projectile-command-map :wk "projectile")
                              "q" '(:ignore t :wk "quit")
                              "q f" '(delete-frame :wk "delete frame")
+                             "q m" '(custo/enable-meow :wk "disable evil, enable meow")
                              "q q" '(save-buffers-kill-emacs :wk "save and quit")
                              "q Q" '(kill-emacs :wk "quit no-save")
                              "s" '(:ignore t :wk "search")
