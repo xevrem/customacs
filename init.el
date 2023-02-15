@@ -363,7 +363,7 @@
 (defun custo/enable-evil ()
   "Disable meow, enable evil."
   (interactive)
-  (meow-global-mode 1)
+  (meow-global-mode -1)
   (evil-mode 1)
   (evil-commentary-mode 1)
   (evil-mc-mode 1)
