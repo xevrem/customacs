@@ -19,6 +19,27 @@
            gcs-done))
 (add-hook 'emacs-startup-hook #'custo/display-startup-time)
 
+;;;
+;;; CUSTOM VARS
+;;;
+
+(defvar custo-leader-key "SPC"
+  "The leader prefix key for Evil users.")
+
+(defvar custo-leader-alt-key "M-SPC"
+  "An alternative leader prefix key, used for Insert and Emacs states, and for
+non-evil users.")
+
+(defvar custo-local-leader-key "SPC m"
+  "The localleader prefix key, for major-mode specific commands.")
+
+(defvar custo-local-leader-alt-key "M-SPC m"
+  "The localleader prefix key, for major-mode specific commands. Used for Insert
+and Emacs states, and for non-evil users.")
+
+;;;
+;;; INITIAL SETTINGS
+;;;
 (setq-default inhibit-startup-message t ;; dont show startup message
               ring-bell-function 'ignore ;; disable all visual and audible bells
               indent-tabs-mode nil ;; uses spaces and not tabs
@@ -379,7 +400,28 @@
   )
 
 (use-package meow
+  :defer t
+  ;; :bind
+  ;; (:map meow-normal-state-keymap
+  ;;       (custo-leader-key . custo-leader-map)
+  ;;  :map meow-motion-state-keymap
+  ;;       (custo-leader-key . custo-leader-map)
+  ;;  :map meow-becon-state-keymap
+  ;;       (custo-leader-key . custo-leader-map)
+  ;;       )
   :config
+  (general-define-key
+   :keymaps '(meow-normal-state-keymap meow-motion-state-keymap)
+   :major-modes t
+   :prefix custo-local-leader-key
+   ,@args
+   )
+  (general-define-key
+   :keymaps 'meow-insert-state-keymap
+   :major-modes t
+   :prefix custo-local-leader-alt-key
+   ,@args
+   )
   (defun custo/setup-meow-keybinds ()
     "Sets up all customacs keybinds."
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -472,7 +514,7 @@
      '("<escape>" . ignore)
      )
     )
-  (custo/setup-meow-keybinds)
+  ;; (custo/setup-meow-keybinds)
   )
 
 
@@ -487,12 +529,16 @@
                            (general-auto-unbind-keys)
                            (general-create-definer custo/leader-key
                              :states '(normal insert visual emacs)
-                             :prefix "SPC"
-                             :global-prefix "C-SPC")
+                             :prefix custo-leader-key
+                             :prefix-name "leader"
+                             :prefix-map 'custo-leader-map
+                             :global-prefix custo-leader-alt-key)
                            (general-create-definer custo/local-leader-key
                              :states '(normal insert visual emacs)
-                             :prefix "SPC m"
-                             :global-prefix "C-SPC m")
+                             :prefix custo-local-leader-key
+                             :prefix-name "local leader"
+                             :prefix-map 'custo-local-leader-map
+                             :global-prefix custo-local-leader-alt-key)
                            ;; define default keybinds
                            (custo/leader-key
                              "SPC" '(execute-extended-command :wk "M-x") 
