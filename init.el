@@ -531,13 +531,13 @@ and Emacs states, and for non-evil users.")
                              :states '(normal insert visual emacs)
                              :prefix custo-leader-key
                              :prefix-name "leader"
-                             :prefix-map 'custo-leader-map
+                             ;; :prefix-map 'custo-leader-map
                              :global-prefix custo-leader-alt-key)
                            (general-create-definer custo/local-leader-key
                              :states '(normal insert visual emacs)
                              :prefix custo-local-leader-key
                              :prefix-name "local leader"
-                             :prefix-map 'custo-local-leader-map
+                             ;; :prefix-map 'custo-local-leader-map
                              :global-prefix custo-local-leader-alt-key)
                            ;; define default keybinds
                            (custo/leader-key
