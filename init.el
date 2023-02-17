@@ -8,6 +8,10 @@
   (load (concat "early-init.el")
         )
   )
+;; double check if treesit is actually available
+(unless (boundp 'treesit-available-p)
+  (defun treesit-available-p () nil)
+  )
 
 ;; lets us know how long it takes to startup
 (defun custo/display-startup-time ()
@@ -384,7 +388,7 @@ and Emacs states, and for non-evil users.")
 (defun custo/enable-evil ()
   "Disable meow, enable evil."
   (interactive)
-  (meow-global-mode -1)
+  (meow-global-mode 'toggle)
   (evil-mode 1)
   (evil-commentary-mode 1)
   (evil-mc-mode 1)
@@ -396,126 +400,9 @@ and Emacs states, and for non-evil users.")
   (evil-mode -1)
   (evil-commentary-mode 0)
   (evil-mc-mode 0)
-  (meow-global-mode 1)
+  (meow-global-mode 'toggle)
   )
 
-(use-package meow
-  :defer t
-  ;; :bind
-  ;; (:map meow-normal-state-keymap
-  ;;       (custo-leader-key . custo-leader-map)
-  ;;  :map meow-motion-state-keymap
-  ;;       (custo-leader-key . custo-leader-map)
-  ;;  :map meow-becon-state-keymap
-  ;;       (custo-leader-key . custo-leader-map)
-  ;;       )
-  :config
-  (general-define-key
-   :keymaps '(meow-normal-state-keymap meow-motion-state-keymap)
-   :major-modes t
-   :prefix custo-local-leader-key
-   ,@args
-   )
-  (general-define-key
-   :keymaps 'meow-insert-state-keymap
-   :major-modes t
-   :prefix custo-local-leader-alt-key
-   ,@args
-   )
-  (defun custo/setup-meow-keybinds ()
-    "Sets up all customacs keybinds."
-    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-    (meow-motion-overwrite-define-key
-     '("j" . meow-next)
-     '("k" . meow-prev)
-     '("<escape>" . ignore)
-     )
-    (meow-leader-define-key
-     ;; SPC j/k will run the original command in MOTION state.
-     '("j" . "H-j")
-     '("k" . "H-k")
-     '("q e" . custo/enable-evil)
-     ;; Use SPC (0-9) for digit arguments.
-     '("1" . meow-digit-argument)
-     '("2" . meow-digit-argument)
-     '("3" . meow-digit-argument)
-     '("4" . meow-digit-argument)
-     '("5" . meow-digit-argument)
-     '("6" . meow-digit-argument)
-     '("7" . meow-digit-argument)
-     '("8" . meow-digit-argument)
-     '("9" . meow-digit-argument)
-     '("0" . meow-digit-argument)
-     '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet)
-     '(":" . execute-extended-command)
-     )
-    (meow-normal-define-key
-     '("0" . meow-expand-0)
-     '("9" . meow-expand-9)
-     '("8" . meow-expand-8)
-     '("7" . meow-expand-7)
-     '("6" . meow-expand-6)
-     '("5" . meow-expand-5)
-     '("4" . meow-expand-4)
-     '("3" . meow-expand-3)
-     '("2" . meow-expand-2)
-     '("1" . meow-expand-1)
-     '("-" . negative-argument)
-     '(";" . meow-reverse)
-     '("," . meow-inner-of-thing)
-     '("." . meow-bounds-of-thing)
-     '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing)
-     '("a" . meow-append)
-     '("A" . meow-open-below)
-     '("b" . meow-back-word)
-     '("B" . meow-back-symbol)
-     '("c" . meow-change)
-     '("d" . meow-delete)
-     '("D" . meow-backward-delete)
-     '("e" . meow-next-word)
-     '("E" . meow-next-symbol)
-     '("f" . meow-find)
-     '("g" . meow-cancel-selection)
-     '("G" . meow-grab)
-     '("h" . meow-left)
-     '("H" . meow-left-expand)
-     '("i" . meow-insert)
-     '("I" . meow-open-above)
-     '("j" . meow-next)
-     '("J" . meow-next-expand)
-     '("k" . meow-prev)
-     '("K" . meow-prev-expand)
-     '("l" . meow-right)
-     '("L" . meow-right-expand)
-     '("m" . meow-join)
-     '("n" . meow-search)
-     '("o" . meow-block)
-     '("O" . meow-to-block)
-     '("p" . meow-yank)
-     '("q" . meow-quit)
-     '("Q" . meow-goto-line)
-     '("r" . meow-replace)
-     '("R" . meow-swap-grab)
-     '("s" . meow-kill)
-     '("t" . meow-till)
-     '("u" . meow-undo)
-     '("U" . meow-undo-in-selection)
-     '("v" . meow-visit)
-     '("w" . meow-mark-word)
-     '("W" . meow-mark-symbol)
-     '("x" . meow-line)
-     '("X" . meow-goto-line)
-     '("y" . meow-save)
-     '("Y" . meow-sync-grab)
-     '("z" . meow-pop-selection)
-     '("'" . repeat)
-     '("<escape>" . ignore)
-     )
-    )
-  ;; (custo/setup-meow-keybinds)
-  )
 
 
 ;; better key binding
@@ -531,17 +418,17 @@ and Emacs states, and for non-evil users.")
                              :states '(normal insert visual emacs)
                              :prefix custo-leader-key
                              :prefix-name "leader"
-                             ;; :prefix-map 'custo-leader-map
+                             :prefix-map 'custo-leader-map
                              :global-prefix custo-leader-alt-key)
                            (general-create-definer custo/local-leader-key
                              :states '(normal insert visual emacs)
                              :prefix custo-local-leader-key
                              :prefix-name "local leader"
-                             ;; :prefix-map 'custo-local-leader-map
+                             :prefix-map 'custo-local-leader-map
                              :global-prefix custo-local-leader-alt-key)
                            ;; define default keybinds
                            (custo/leader-key
-                             "SPC" '(execute-extended-command :wk "M-x") 
+                             ;; "SPC" '(execute-extended-command :wk "M-x") 
                              "TAB" '(evil-switch-to-windows-last-buffer :wk "switch to previous buffer")
                              ":" '(execute-extended-command :wk "M-x")
                              "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
@@ -585,7 +472,7 @@ and Emacs states, and for non-evil users.")
                              "t i" '(rainbow-identifiers-mode :wk "toggle rainbow identifiers")
                              "t I" '((lambda ()
                                        (interactive)
-                                       ;; (tree-sitter-mode 'toggle)
+                                       (tree-sitter-mode 'toggle)
                                        (tree-sitter-hl-mode 'toggle)
                                        )
                                      :wk
@@ -627,6 +514,105 @@ and Emacs states, and for non-evil users.")
                            )
                        )
   )
+
+(use-package meow
+  :after general
+  :config
+  ;; (defun custo/setup-meow-keybinds ()
+  ;; "Sets up all customacs keybinds."
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  (meow-motion-overwrite-define-key
+   '("j" . meow-next)
+   '("k" . meow-prev)
+   '("<escape>" . ignore)
+   )
+  (meow-leader-define-key
+   ;; SPC j/k will run the original command in MOTION state.
+   '("j" . "H-j")
+   '("k" . "H-k")
+   '("q e" . custo/enable-evil)
+   ;; Use SPC (0-9) for digit arguments.
+   '("1" . meow-digit-argument)
+   '("2" . meow-digit-argument)
+   '("3" . meow-digit-argument)
+   '("4" . meow-digit-argument)
+   '("5" . meow-digit-argument)
+   '("6" . meow-digit-argument)
+   '("7" . meow-digit-argument)
+   '("8" . meow-digit-argument)
+   '("9" . meow-digit-argument)
+   '("0" . meow-digit-argument)
+   '("/" . meow-keypad-describe-key)
+   '("?" . meow-cheatsheet)
+   '(":" . execute-extended-command)
+   )
+  (meow-normal-define-key
+   '("0" . meow-expand-0)
+   '("9" . meow-expand-9)
+   '("8" . meow-expand-8)
+   '("7" . meow-expand-7)
+   '("6" . meow-expand-6)
+   '("5" . meow-expand-5)
+   '("4" . meow-expand-4)
+   '("3" . meow-expand-3)
+   '("2" . meow-expand-2)
+   '("1" . meow-expand-1)
+   '("-" . negative-argument)
+   '(";" . meow-reverse)
+   '("," . meow-inner-of-thing)
+   '("." . meow-bounds-of-thing)
+   '("[" . meow-beginning-of-thing)
+   '("]" . meow-end-of-thing)
+   '("a" . meow-append)
+   '("A" . meow-open-below)
+   '("b" . meow-back-word)
+   '("B" . meow-back-symbol)
+   '("c" . meow-change)
+   '("d" . meow-delete)
+   '("D" . meow-backward-delete)
+   '("e" . meow-next-word)
+   '("E" . meow-next-symbol)
+   '("f" . meow-find)
+   '("g" . meow-cancel-selection)
+   '("G" . meow-grab)
+   '("h" . meow-left)
+   '("H" . meow-left-expand)
+   '("i" . meow-insert)
+   '("I" . meow-open-above)
+   '("j" . meow-next)
+   '("J" . meow-next-expand)
+   '("k" . meow-prev)
+   '("K" . meow-prev-expand)
+   '("l" . meow-right)
+   '("L" . meow-right-expand)
+   '("m" . meow-join)
+   '("n" . meow-search)
+   '("o" . meow-block)
+   '("O" . meow-to-block)
+   '("p" . meow-yank)
+   '("q" . meow-quit)
+   '("Q" . meow-goto-line)
+   '("r" . meow-replace)
+   '("R" . meow-swap-grab)
+   '("s" . meow-kill)
+   '("t" . meow-till)
+   '("u" . meow-undo)
+   '("U" . meow-undo-in-selection)
+   '("v" . meow-visit)
+   '("w" . meow-mark-word)
+   '("W" . meow-mark-symbol)
+   '("x" . meow-line)
+   '("X" . meow-goto-line)
+   '("y" . meow-save)
+   '("Y" . meow-sync-grab)
+   '("z" . meow-pop-selection)
+   '("'" . repeat)
+   '("<escape>" . ignore)
+   )
+  ;; )
+  ;;  (custo/setup-meow-keybinds)
+  )
+
 
 
 ;; minad' and oantolin's awesome packages:
@@ -1511,9 +1497,13 @@ and Emacs states, and for non-evil users.")
                                   :keymaps '(js-mode-map
                                              js-ts-mode-map
                                              ;; js-jsx-mode-map
+                                             typescript-mode-map
                                              typescript-ts-mode-map
                                              tsx-ts-mode-map
                                              svelte-mode-map
+                                             html-mode
+                                             mhtml-mode
+                                             web-mode
                                              )
                                   "d" '(:ignore t :wk "jsdoc")
                                   "d f" '(js-doc-insert-function-doc :wk "jsdoc function")
@@ -1541,13 +1531,15 @@ and Emacs states, and for non-evil users.")
                                                         typescript-ts-mode-map
                                                         tsx-ts-mode-map
                                                         svelte-mode-map
+                                                        html-mode
+                                                        mhtml-mode
                                                         web-mode-map
                                                         )
                                              "= =" '((lambda ()
                                                        (interactive)
                                                        (prettier-prettify)
-                                                       (lsp-eslint-apply-all-fixes )
-                                                       ;; (eslint-fix)
+                                                       ;; (lsp-eslint-apply-all-fixes )
+                                                       (eslint-fix)
                                                        ) :wk "format with prettier and eslint")
                                              :keymaps '(css-mode-map
                                                         scss-mode-map)
@@ -1575,43 +1567,59 @@ and Emacs states, and for non-evil users.")
         web-mode-code-indent-offset 2)
   )
 
-(use-package typescript-ts-mode
+(use-package typescript-mode
   :defer t
   :mode "\\.ts\\'"
   :config
-  (setq typescript-ts-mode-intent-offset 2)
-  ;; (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
+  (setq typescript-mode-intent-offset 2)
+  (define-derived-mode typescript-tsx-mode typescript-mode "typescript[tsx]")
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
   )
 
+(when (treesit-available-p)
+  (use-package typescript-ts-mode
+    :defer t
+    :if (treesit-available-p)
+    :mode "\\.ts\\'"
+    :config
+    (setq typescript-ts-mode-intent-offset 2)
+    ;; (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
+    (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+    )
 
-(use-package rust-ts-mode
+  (use-package rust-ts-mode
+    :mode "\\.rs\\'"
+    :if (treesit-available-p)
+    )
+  )
+
+(use-package rustic
+  :defer t
   :mode "\\.rs\\'"
-  ;; :defer t
-  ;; :config
-  ;; (setq indent-tabs-mode nil
-  ;;       rustic-lsp-client 'eglot
-  ;;       ;; rustic-lsp-client 'lsp-mode
-  ;;       ;; lsp-rust-server 'rust-analyzer
-  ;;       ;; rustic-lsp-server 'rust-analyzer
-  ;;       ;; lsp-rust-analyzer-proc-macro-enable t
-  ;;       ;; lsp-rust-analyzer-display-parameter-hints t
-  ;;       ;; lsp-rust-analyzer-server-display-inlay-hints t
-  ;;       ;; lsp-rust-analyzer-inlay-hints-mode t
-  ;;       rustic-indent-offset 4
-  ;;       rustic-format-on-save nil)
-  ;; (custo/local-leader-key
-  ;;   :keymaps 'rustic-mode-map
-  ;;   "= =" '(rustic-format-buffer :wk "format with rustfmt")
-  ;;   "c" '(:ignore t :wk "cargo commands")
-  ;;   "c b" '(rustic-cargo-build :wk "cargo build")
-  ;;   "c C" '(rustic-cargo-check :wk "cargo check")
-  ;;   "c c" '(rustic-cargo-clippy :wk "cargo clippy")
-  ;;   "c r" '(rustic-cargo-run :wk "cargo run")
-  ;;   "c t" '(rustic-cargo-test :wk "cargo test")
-  ;;   ;; "t" '(:ignore t :wk "toggles")
-  ;;   ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
-  ;;   )
+  :config
+  (setq indent-tabs-mode nil
+        rustic-lsp-client 'eglot
+        ;; rustic-lsp-client 'lsp-mode
+        ;; lsp-rust-server 'rust-analyzer
+        ;; rustic-lsp-server 'rust-analyzer
+        ;; lsp-rust-analyzer-proc-macro-enable t
+        ;; lsp-rust-analyzer-display-parameter-hints t
+        ;; lsp-rust-analyzer-server-display-inlay-hints t
+        ;; lsp-rust-analyzer-inlay-hints-mode t
+        rustic-indent-offset 4
+        rustic-format-on-save nil)
+  (custo/local-leader-key
+    :keymaps 'rustic-mode-map
+    "= =" '(rustic-format-buffer :wk "format with rustfmt")
+    "c" '(:ignore t :wk "cargo commands")
+    "c b" '(rustic-cargo-build :wk "cargo build")
+    "c C" '(rustic-cargo-check :wk "cargo check")
+    "c c" '(rustic-cargo-clippy :wk "cargo clippy")
+    "c r" '(rustic-cargo-run :wk "cargo run")
+    "c t" '(rustic-cargo-test :wk "cargo test")
+    ;; "t" '(:ignore t :wk "toggles")
+    ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+    )
   )
 
 (use-package csharp-mode
@@ -1772,23 +1780,35 @@ and Emacs states, and for non-evil users.")
 (use-package filenotify)
 (use-package ert)
 (use-package array)
-(use-package js
-  :mode (("\\.js\\'" . js-ts-mode)
-         ("\\.cjs\\'" . js-ts-mode)
-         ("\\.mjs\\'" . js-ts-mode)
-         )
-  :config
-  ;; (dolist (item '(("\\.js\\'" . js-ts-mode)
-  ;;                 ("\\.jsx\\'" . js-ts-mode)
-  ;;                 ("\\.cjs\\'" . js-ts-mode)
-  ;;                 ("\\.mjs\\'" . js-ts-mode)))
-  ;; (add-to-list 'auto-mode-alist item)
-  ;;   )
-  ;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-  (define-derived-mode javascript-ts-mode js-ts-mode "JavaScript[JSX]")
-  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . javascript-ts-mode))
-  (setq js-indent-level 2)
+
+(if (treesit-available-p)
+    (progn
+      (use-package js
+        :mode (("\\.js\\'" . js-ts-mode)
+               ("\\.cjs\\'" . js-ts-mode)
+               ("\\.mjs\\'" . js-ts-mode)
+               )
+        :config
+        (define-derived-mode javascript-ts-mode js-ts-mode "JavaScript[JSX]")
+        (add-to-list 'auto-mode-alist '("\\.jsx\\'" . javascript-ts-mode))
+        (setq js-indent-level 2)
+        )
+      )
+  (progn
+    (use-package js
+      :mode (("\\.js\\'" . js-mode)
+             ("\\.cjs\\'" . js-mode)
+             ("\\.mjs\\'" . js-mode)
+             )
+      :config
+      ;; (define-derived-mode javascript-ts-mode js-ts-mode "JavaScript[JSX]")
+      ;; (add-to-list 'auto-mode-alist '("\\.jsx\\'" . javascript-ts-mode))
+      (setq js-indent-level 2)
+      )
+    )
   )
+
+
 ;; enable treesit if it is available
 (add-hook 'custo/after-load-hook (lambda ()
                                    (when (treesit-available-p)
@@ -1849,11 +1869,11 @@ and Emacs states, and for non-evil users.")
   :hook
   ((
     js-mode
-    ;;js-jsx-mode
+    ;; js-jsx-mode
     js-ts-mode
     typescript-ts-mode
     tsx-ts-mode
-    ;; rustic-mode
+    rustic-mode
     rust-mode
     rust-ts-mode
     lua-mode
@@ -1910,6 +1930,7 @@ and Emacs states, and for non-evil users.")
                ;; js-jsx-mode-map
                typescript-ts-mode-map
                tsx-ts-mode-map
+               rustic-mode-map
                rust-mode-map
                rust-ts-mode-map
                lua-mode-map
@@ -1924,7 +1945,7 @@ and Emacs states, and for non-evil users.")
                mhtml-mode-map
                python-mode-map
                python-ts-mode-map
-               web-mode-map
+               ;; web-mode-map
                sh-mode-map
                svelte-mode-map
                csharp-mode-map
@@ -1938,6 +1959,7 @@ and Emacs states, and for non-evil users.")
                ;; js-jsx-mode-map
                typescript-ts-mode-map
                tsx-ts-mode-map
+               rustic-mode-map
                rust-mode-map
                rust-ts-mode-map
                lua-mode-map
@@ -1952,7 +1974,7 @@ and Emacs states, and for non-evil users.")
                mhtml-mode-map
                python-mode-map
                python-ts-mode-map
-               web-mode-map
+               ;; web-mode-map
                sh-mode-map
                svelte-mode-map
                csharp-mode-map
@@ -1972,6 +1994,9 @@ and Emacs states, and for non-evil users.")
     "r" '(eglot-rename :wk "rename")
     "= b" '(eglot-format-buffer :wk "format buffer")
     )
+  (meow-leader-define-key
+   '("m g r" . xref-find-references)
+   )
   )
 
 ;; (defun custo/lsp-describe ()
