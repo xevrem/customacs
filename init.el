@@ -9,9 +9,9 @@
         )
   )
 ;; double check if treesit is actually available
-(unless (boundp 'treesit-available-p)
-  (defun treesit-available-p () nil)
-  )
+;; (unless (boundp treesit-available-p)
+;;   (defun treesit-available-p () nil)
+;;   )
 
 ;; lets us know how long it takes to startup
 (defun custo/display-startup-time ()
@@ -1567,60 +1567,63 @@ and Emacs states, and for non-evil users.")
         web-mode-code-indent-offset 2)
   )
 
-(use-package typescript-mode
-  :defer t
-  :mode "\\.ts\\'"
-  :config
-  (setq typescript-mode-intent-offset 2)
-  (define-derived-mode typescript-tsx-mode typescript-mode "typescript[tsx]")
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+
+(if (treesit-available-p)
+    (progn
+      (use-package typescript-ts-mode
+        :defer t
+        :mode "\\.ts\\'"
+        :config
+        (setq typescript-ts-mode-intent-offset 2)
+        ;; (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
+        (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+        )
+
+      (use-package rust-ts-mode
+        :mode "\\.rs\\'"
+        )
+      )
+  (progn
+
+    (use-package typescript-mode
+      :defer t
+      :mode "\\.ts\\'"
+      :config
+      (setq typescript-mode-intent-offset 2)
+      (define-derived-mode typescript-tsx-mode typescript-mode "typescript[tsx]")
+      (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+      )
+    (use-package rustic
+      :defer t
+      :mode "\\.rs\\'"
+      :config
+      (setq indent-tabs-mode nil
+            rustic-lsp-client 'eglot
+            ;; rustic-lsp-client 'lsp-mode
+            ;; lsp-rust-server 'rust-analyzer
+            ;; rustic-lsp-server 'rust-analyzer
+            ;; lsp-rust-analyzer-proc-macro-enable t
+            ;; lsp-rust-analyzer-display-parameter-hints t
+            ;; lsp-rust-analyzer-server-display-inlay-hints t
+            ;; lsp-rust-analyzer-inlay-hints-mode t
+            rustic-indent-offset 4
+            rustic-format-on-save nil)
+      (custo/local-leader-key
+        :keymaps 'rustic-mode-map
+        "= =" '(rustic-format-buffer :wk "format with rustfmt")
+        "c" '(:ignore t :wk "cargo commands")
+        "c b" '(rustic-cargo-build :wk "cargo build")
+        "c C" '(rustic-cargo-check :wk "cargo check")
+        "c c" '(rustic-cargo-clippy :wk "cargo clippy")
+        "c r" '(rustic-cargo-run :wk "cargo run")
+        "c t" '(rustic-cargo-test :wk "cargo test")
+        ;; "t" '(:ignore t :wk "toggles")
+        ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
+        )
+      )
+    )
   )
 
-(when (treesit-available-p)
-  (use-package typescript-ts-mode
-    :defer t
-    :if (treesit-available-p)
-    :mode "\\.ts\\'"
-    :config
-    (setq typescript-ts-mode-intent-offset 2)
-    ;; (define-derived-mode typescript-tsx-mode typescript-mode "tsx")
-    (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-    )
-
-  (use-package rust-ts-mode
-    :mode "\\.rs\\'"
-    :if (treesit-available-p)
-    )
-  )
-
-(use-package rustic
-  :defer t
-  :mode "\\.rs\\'"
-  :config
-  (setq indent-tabs-mode nil
-        rustic-lsp-client 'eglot
-        ;; rustic-lsp-client 'lsp-mode
-        ;; lsp-rust-server 'rust-analyzer
-        ;; rustic-lsp-server 'rust-analyzer
-        ;; lsp-rust-analyzer-proc-macro-enable t
-        ;; lsp-rust-analyzer-display-parameter-hints t
-        ;; lsp-rust-analyzer-server-display-inlay-hints t
-        ;; lsp-rust-analyzer-inlay-hints-mode t
-        rustic-indent-offset 4
-        rustic-format-on-save nil)
-  (custo/local-leader-key
-    :keymaps 'rustic-mode-map
-    "= =" '(rustic-format-buffer :wk "format with rustfmt")
-    "c" '(:ignore t :wk "cargo commands")
-    "c b" '(rustic-cargo-build :wk "cargo build")
-    "c C" '(rustic-cargo-check :wk "cargo check")
-    "c c" '(rustic-cargo-clippy :wk "cargo clippy")
-    "c r" '(rustic-cargo-run :wk "cargo run")
-    "c t" '(rustic-cargo-test :wk "cargo test")
-    ;; "t" '(:ignore t :wk "toggles")
-    ;; "t i" '(lsp-rust-analyzer-inlay-hints-mode :wk "toggle inlay hints")
-    )
-  )
 
 (use-package csharp-mode
   :defer t
