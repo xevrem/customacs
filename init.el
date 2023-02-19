@@ -1468,6 +1468,7 @@ and Emacs states, and for non-evil users.")
      (add-to-list 'tree-sitter-major-mode-language-alist '(js-ts-mode . javascript))
      (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-ts-mode . typescript))
      (add-to-list 'tree-sitter-major-mode-language-alist '(tsx-ts-mode . tsx))
+     (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
      (add-to-list 'tree-sitter-major-mode-language-alist '(rust-ts-mode . rust))
      (add-to-list 'tree-sitter-major-mode-language-alist '(svelte-mode . html))
      (add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . html))
@@ -1498,6 +1499,7 @@ and Emacs states, and for non-evil users.")
                                              js-ts-mode-map
                                              ;; js-jsx-mode-map
                                              typescript-mode-map
+                                             typescript-tsx-mode-map
                                              typescript-ts-mode-map
                                              tsx-ts-mode-map
                                              svelte-mode-map
@@ -1528,6 +1530,8 @@ and Emacs states, and for non-evil users.")
                                              :keymaps '(js-mode-map
                                                         js-ts-mode-map
                                                         ;; js-jsx-mode-map
+                                                        typescript-mode-map
+                                                        typescript-tsx-mode-map
                                                         typescript-ts-mode-map
                                                         tsx-ts-mode-map
                                                         svelte-mode-map
@@ -1568,8 +1572,19 @@ and Emacs states, and for non-evil users.")
   )
 
 
-(if (treesit-available-p)
+(if (and (boundp 'treesit-available-p ) (treesit-available-p))
     (progn
+      (use-package js
+        :mode (("\\.js\\'" . js-ts-mode)
+               ("\\.cjs\\'" . js-ts-mode)
+               ("\\.mjs\\'" . js-ts-mode)
+               )
+        :config
+        (define-derived-mode javascript-ts-mode js-ts-mode "JavaScript[JSX]")
+        (add-to-list 'auto-mode-alist '("\\.jsx\\'" . javascript-ts-mode))
+        (setq js-indent-level 2)
+        )
+
       (use-package typescript-ts-mode
         :defer t
         :mode "\\.ts\\'"
@@ -1584,6 +1599,16 @@ and Emacs states, and for non-evil users.")
         )
       )
   (progn
+    (use-package js
+      :mode (("\\.js\\'" . js-mode)
+             ("\\.cjs\\'" . js-mode)
+             ("\\.mjs\\'" . js-mode)
+             )
+      :config
+      ;; (define-derived-mode javascript-ts-mode js-ts-mode "JavaScript[JSX]")
+      ;; (add-to-list 'auto-mode-alist '("\\.jsx\\'" . javascript-ts-mode))
+      (setq js-indent-level 2)
+      )
 
     (use-package typescript-mode
       :defer t
@@ -1591,8 +1616,9 @@ and Emacs states, and for non-evil users.")
       :config
       (setq typescript-mode-intent-offset 2)
       (define-derived-mode typescript-tsx-mode typescript-mode "typescript[tsx]")
-      (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+      (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
       )
+
     (use-package rustic
       :defer t
       :mode "\\.rs\\'"
@@ -1784,37 +1810,9 @@ and Emacs states, and for non-evil users.")
 (use-package ert)
 (use-package array)
 
-(if (treesit-available-p)
-    (progn
-      (use-package js
-        :mode (("\\.js\\'" . js-ts-mode)
-               ("\\.cjs\\'" . js-ts-mode)
-               ("\\.mjs\\'" . js-ts-mode)
-               )
-        :config
-        (define-derived-mode javascript-ts-mode js-ts-mode "JavaScript[JSX]")
-        (add-to-list 'auto-mode-alist '("\\.jsx\\'" . javascript-ts-mode))
-        (setq js-indent-level 2)
-        )
-      )
-  (progn
-    (use-package js
-      :mode (("\\.js\\'" . js-mode)
-             ("\\.cjs\\'" . js-mode)
-             ("\\.mjs\\'" . js-mode)
-             )
-      :config
-      ;; (define-derived-mode javascript-ts-mode js-ts-mode "JavaScript[JSX]")
-      ;; (add-to-list 'auto-mode-alist '("\\.jsx\\'" . javascript-ts-mode))
-      (setq js-indent-level 2)
-      )
-    )
-  )
-
-
 ;; enable treesit if it is available
 (add-hook 'custo/after-load-hook (lambda ()
-                                   (when (treesit-available-p)
+                                   (when (and (boundp 'treesit-available-p) (treesit-available-p))
                                      (require 'treesit)
                                      (setq treesit-language-source-alist
                                            '(
@@ -1874,6 +1872,8 @@ and Emacs states, and for non-evil users.")
     js-mode
     ;; js-jsx-mode
     js-ts-mode
+    typescript-mode
+    typescript-tsx-mode
     typescript-ts-mode
     tsx-ts-mode
     rustic-mode
@@ -1931,6 +1931,8 @@ and Emacs states, and for non-evil users.")
     :keymaps '(js-mode-map
                js-ts-mode-map
                ;; js-jsx-mode-map
+               typescript-mode
+               typescript-tsx-mode
                typescript-ts-mode-map
                tsx-ts-mode-map
                rustic-mode-map
@@ -1960,6 +1962,8 @@ and Emacs states, and for non-evil users.")
     :keymaps '(js-mode-map
                js-ts-mode-map
                ;; js-jsx-mode-map
+               typescript-mode
+               typescript-tsx-mode
                typescript-ts-mode-map
                tsx-ts-mode-map
                rustic-mode-map
