@@ -65,8 +65,8 @@
  ;;Another tip from doom.
  default-file-name-handler-alist file-name-handler-alist
  file-name-handler-alist nil
- ;; dont report async compile warnings
  native-comp-async-report-warnings-errors nil
+ native-comp-warning-on-missing-source nil
  )
 
 ;; And then finally a hook to reset everything.
@@ -95,6 +95,11 @@
 (when (boundp 'native-comp-speed)
   (setq-default native-comp-speed 2)
   )
+
+;; emacs 29 and 30 change the name of this variable, but some programs may still reference it
+(unless (boundp 'native-comp-deferred-compilation-deny-list)
+  (setq-default native-comp-deferred-compilation-deny-list '())
+)
 
 
 ;; Site files tend to use `load-file', which emits "Loading X..." messages in

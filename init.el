@@ -30,14 +30,14 @@
 (defvar custo-leader-key "SPC"
   "The leader prefix key for Evil users.")
 
-(defvar custo-leader-alt-key "M-SPC"
+(defvar custo-leader-alt-key "C-SPC"
   "An alternative leader prefix key, used for Insert and Emacs states, and for
 non-evil users.")
 
 (defvar custo-local-leader-key "SPC m"
   "The localleader prefix key, for major-mode specific commands.")
 
-(defvar custo-local-leader-alt-key "M-SPC m"
+(defvar custo-local-leader-alt-key "C-SPC m"
   "The localleader prefix key, for major-mode specific commands. Used for Insert
 and Emacs states, and for non-evil users.")
 
@@ -48,7 +48,7 @@ and Emacs states, and for non-evil users.")
               ring-bell-function 'ignore ;; disable all visual and audible bells
               indent-tabs-mode nil ;; uses spaces and not tabs
               create-lockfiles nil ;; do not create lockfiles
-              truncate-lines 1 ;; truncate lines by default
+              truncate-lines nil ;; truncate lines by default
               truncate-partial-width-windows nil
               ;; disable until we actually call it
               recentf-auto-cleanup 'never
@@ -322,15 +322,15 @@ and Emacs states, and for non-evil users.")
              exec-path-from-shell-copy-env)
   :hook
   (custo/after-init . (lambda ()
-			(unless (daemonp)
-			  (when (memq window-system '(mac ns x))
-			    (message "setup env vars")
-			    (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
+                        (unless (daemonp)
+                          (when (memq window-system '(mac ns x))
+                            (message "setup env vars")
+                            (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
                             (exec-path-from-shell-copy-env "JSON_ALLOW_NUL")
-			    (exec-path-from-shell-initialize)
-			    )
-			  )
-			)
+                            (exec-path-from-shell-initialize)
+                            )
+                          )
+                        )
                     )
   )
 
@@ -368,17 +368,17 @@ and Emacs states, and for non-evil users.")
                               )
                           )
   :bind (:map which-key-mode-map 
-        ("M-<down>" . which-key-C-h-dispatch)
-        ("C-<right>" . which-key-show-next-page-cycle)
-        ("C-<left>" . which-key-show-previous-page-cycle)
-        :map help-map
-        ("M-<down>" . which-key-C-h-dispatch)
-        ("C-<right>" . which-key-show-next-page-cycle)
-        ("C-<left>" . which-key-show-previous-page-cycle)
-        :map which-key-C-h-map
-        ("<right>" . which-key-show-next-page-cycle)
-        ("<left>" . which-key-show-previous-page-cycle)
-        )
+              ("M-<down>" . which-key-C-h-dispatch)
+              ("C-<right>" . which-key-show-next-page-cycle)
+              ("C-<left>" . which-key-show-previous-page-cycle)
+              :map help-map
+              ("M-<down>" . which-key-C-h-dispatch)
+              ("C-<right>" . which-key-show-next-page-cycle)
+              ("C-<left>" . which-key-show-previous-page-cycle)
+              :map which-key-C-h-map
+              ("<right>" . which-key-show-next-page-cycle)
+              ("<left>" . which-key-show-previous-page-cycle)
+              )
   :config
   (setq which-key-idle-delay 0.1)
   (message "wk hook")
@@ -418,13 +418,13 @@ and Emacs states, and for non-evil users.")
                              :states '(normal insert visual emacs)
                              :prefix custo-leader-key
                              :prefix-name "leader"
-                             :prefix-map 'custo-leader-map
+                             ;; :prefix-map 'custo-leader-map
                              :global-prefix custo-leader-alt-key)
                            (general-create-definer custo/local-leader-key
                              :states '(normal insert visual emacs)
                              :prefix custo-local-leader-key
                              :prefix-name "local leader"
-                             :prefix-map 'custo-local-leader-map
+                             ;; :prefix-map 'custo-local-leader-map
                              :global-prefix custo-local-leader-alt-key)
                            ;; define default keybinds
                            (custo/leader-key
@@ -516,6 +516,7 @@ and Emacs states, and for non-evil users.")
   )
 
 (use-package meow
+  :defer t
   :after general
   :config
   ;; (defun custo/setup-meow-keybinds ()
@@ -666,16 +667,19 @@ and Emacs states, and for non-evil users.")
   (message "consult config")
   (consult-customize
    consult-theme
-   :preview-key '(:debounce 0.5 any)
+   :preview-key '("C-P"
+                  :debounce 0.5 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
    consult--source-recent-file consult--source-project-recent-file
    consult--source-bookmark consult-buffer consult-project-buffer
-   :preview-key (kbd "C-p")
+   :preview-key "C-p"
    )
+  (add-to-list 'consult-async-split-styles-alist '(space :seperator 32 :function consult--split-separator))
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref
         consult-line-numbers-widen t
+        consult-async-split-style 'space
         consult-async-min-input 2
         consult-async-refresh-delay 0.5
         consult-async-input-throttle 0.5
@@ -773,8 +777,8 @@ and Emacs states, and for non-evil users.")
 
 (use-package cape
   :straight '(:type git
-                   :host github
-                   :repo "minad/cape")
+                    :host github
+                    :repo "minad/cape")
   :defer t
   :commands (cape-file cape-dabbref cape-keyword cape-symbol)
   :hook
@@ -858,10 +862,10 @@ and Emacs states, and for non-evil users.")
  'color-theme-sanityinc-tomorrow)
 (use-package challenger-deep-theme
   :straight '(:local-repo "challenger-deep-theme"
-              :type git
-              :host github
-              :repo "challenger-deep-theme/emacs"
-              :file "challenger-deep-theme.el")
+                          :type git
+                          :host github
+                          :repo "challenger-deep-theme/emacs"
+                          :file "challenger-deep-theme.el")
   :demand t
   )
 
@@ -869,11 +873,11 @@ and Emacs states, and for non-evil users.")
   :demand t)
 (use-package catppuccin-theme
   :straight '(catppuccin-theme
-    :type git :host github
-    :repo "catppuccin/emacs"
-    :branch "main"
-    :file "catppuccin-theme.el"
-    )
+              :type git :host github
+              :repo "catppuccin/emacs"
+              :branch "main"
+              :file "catppuccin-theme.el"
+              )
   :after autothemer
   :demand t
   :config
@@ -1189,10 +1193,10 @@ and Emacs states, and for non-evil users.")
 (use-package vundo
   :defer t
   :straight '(:type git :host github
-                   :repo "casouri/vundo"
-                   :branch "master"
-                   :file "vundo.el"
-                   )
+                    :repo "casouri/vundo"
+                    :branch "master"
+                    :file "vundo.el"
+                    )
   :commands (vundo)
   :hook
   (custo/after-general-load . (lambda ()
@@ -1571,8 +1575,7 @@ and Emacs states, and for non-evil users.")
         web-mode-code-indent-offset 2)
   )
 
-
-(if (and (boundp 'treesit-available-p ) (treesit-available-p))
+(if (and (fboundp 'treesit-available-p) (treesit-available-p))
     (progn
       (use-package js
         :mode (("\\.js\\'" . js-ts-mode)
@@ -1812,7 +1815,7 @@ and Emacs states, and for non-evil users.")
 
 ;; enable treesit if it is available
 (add-hook 'custo/after-load-hook (lambda ()
-                                   (when (and (boundp 'treesit-available-p) (treesit-available-p))
+                                   (when (and (fboundp 'treesit-available-p) (treesit-available-p))
                                      (require 'treesit)
                                      (setq treesit-language-source-alist
                                            '(
@@ -1919,18 +1922,17 @@ and Emacs states, and for non-evil users.")
   :config
   ;; (setq eldoc-echo-area-use-multiline-p 5)
   ;; (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(mhtml-mode . ("vscode-html-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(json-ts-mode . ("vscode-json-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(css-ts-mode . ("vscode-css-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer")))
-  (add-to-list 'eglot-server-programs '((js-ts-mode typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(python-ts-mode
+  (add-to-list 'eglot-server-programs '((html-mode mhtml-mode) . ("vscode-html-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '((json-mode json-ts-mode) . ("vscode-json-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '((css-mode scss-mode css-ts-mode) . ("vscode-css-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '((rust-mode rustic-mode rust-ts-mode) . ("rust-analyzer")))
+  (add-to-list 'eglot-server-programs '((js-mode typescript-mode typescript-tsx-jode js-ts-mode typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '((python-mode python-ts-mode)
                                         . ,(eglot-alternatives
                                             '("pylsp" "pyls" ("pyright-langserver" "--stdio") "jedi-language-server"))))
   (custo/leader-key
     :keymaps '(js-mode-map
                js-ts-mode-map
-               ;; js-jsx-mode-map
                typescript-mode
                typescript-tsx-mode
                typescript-ts-mode-map
@@ -1950,7 +1952,6 @@ and Emacs states, and for non-evil users.")
                mhtml-mode-map
                python-mode-map
                python-ts-mode-map
-               ;; web-mode-map
                sh-mode-map
                svelte-mode-map
                csharp-mode-map
@@ -1961,7 +1962,6 @@ and Emacs states, and for non-evil users.")
   (custo/local-leader-key
     :keymaps '(js-mode-map
                js-ts-mode-map
-               ;; js-jsx-mode-map
                typescript-mode
                typescript-tsx-mode
                typescript-ts-mode-map
@@ -1981,7 +1981,6 @@ and Emacs states, and for non-evil users.")
                mhtml-mode-map
                python-mode-map
                python-ts-mode-map
-               ;; web-mode-map
                sh-mode-map
                svelte-mode-map
                csharp-mode-map
@@ -2001,9 +2000,9 @@ and Emacs states, and for non-evil users.")
     "r" '(eglot-rename :wk "rename")
     "= b" '(eglot-format-buffer :wk "format buffer")
     )
-  (meow-leader-define-key
-   '("m g r" . xref-find-references)
-   )
+  ;; (meow-leader-define-key
+  ;;  '("m g r" . xref-find-references)
+  ;;  )
   )
 
 ;; (defun custo/lsp-describe ()
