@@ -30,14 +30,14 @@
 (defvar custo-leader-key "SPC"
   "The leader prefix key for Evil users.")
 
-(defvar custo-leader-alt-key "C-SPC"
+(defvar custo-leader-alt-key "M-SPC"
   "An alternative leader prefix key, used for Insert and Emacs states, and for
 non-evil users.")
 
 (defvar custo-local-leader-key "SPC m"
   "The localleader prefix key, for major-mode specific commands.")
 
-(defvar custo-local-leader-alt-key "C-SPC m"
+(defvar custo-local-leader-alt-key "M-SPC m"
   "The localleader prefix key, for major-mode specific commands. Used for Insert
 and Emacs states, and for non-evil users.")
 
@@ -458,6 +458,7 @@ and Emacs states, and for non-evil users.")
                              "j f" '(evil-jump-forward :wk "jump forward")
                              "j b" '(evil-jump-backward :wk "jump forward")
                              "k" '(evil-lookup :wk "lookup thing at point")
+                             "K" '(eldoc-doc-buffer :wk "eldoc for thing at point")
                              "m" '(:ignore t :wk "local-leader")
                              "o" '(:ignore t :wk "org")
                              "p" '(projectile-command-map :wk "projectile")
@@ -715,6 +716,7 @@ and Emacs states, and for non-evil users.")
   :hook
   (custo/after-init . (lambda ()
                         (setq completion-styles '(orderless partial-completion basic)
+  ;;                            orderless-matching-styles
                               completion-category-defaults nil
                               completion-category-overrides '((file (styles orderless partial-completion))
                                                               (command (styles orderless))
@@ -771,34 +773,37 @@ and Emacs states, and for non-evil users.")
   ;; since we use orderless
   (setq corfu-quit-at-boundary nil
         corfu-auto nil
+        corfu-auto-prefix 3
         )
   
   )
 
-(use-package cape
-  :straight '(:type git
-                    :host github
-                    :repo "minad/cape")
-  :defer t
-  :commands (cape-file cape-dabbref cape-keyword cape-symbol)
-  :hook
-  (custo/after-orderless-init . (lambda ()
-                                  (add-to-list 'completion-at-point-functions #'cape-file)
-                                  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-                                  (add-to-list 'completion-at-point-functions #'cape-keyword)
-                                  (add-to-list 'completion-at-point-functions #'cape-symbol)
-                                  )
-                              )
-  )
+;; (use-package cape
+;;   :straight '(:type git
+;;                     :host github
+;;                     :repo "minad/cape")
+;;   :defer t
+;;   :commands (cape-file cape-dabbref cape-keyword cape-symbol)
+;;   :hook
+;;   (custo/after-orderless-init . (lambda ()
+;;                                   (add-to-list 'completion-at-point-functions #'cape-file)
+;;                                   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+;;                                   (add-to-list 'completion-at-point-functions #'cape-keyword)
+;;                                   (add-to-list 'completion-at-point-functions #'cape-symbol)
+;;                                   )
+;;                               )
+;;   )
 
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 1
-
+  (setq completion-cycle-threshold nil
         ;; Enable indentation+completion using the TAB key.
         ;; Completion is often bound to M-TAB.
         tab-always-indent 'complete
+        ;; do your best not to complete when you should not
+        ;; two tabs issues completion
+        tab-first-completion 'word-or-paren-or-punct
         )
   )
 
@@ -1909,7 +1914,7 @@ and Emacs states, and for non-evil users.")
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
         ([remap evil-lookup] . custo/eldoc)
-        ([remap eldoc-doc-buffer] . custo/eldoc)
+        ;; ([remap eldoc-doc-buffer] . custo/eldoc)
         ;; :map evil-normal-state-map
         ;; ("g r" . xref-find-references)
         ;; ("g t" . eglot-find-typeDefinition)
