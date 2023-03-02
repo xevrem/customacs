@@ -19,9 +19,10 @@
   (message "Emacs loaded in %s with %d garbage collections."
            (format "%.2f seconds"
                    (float-time
-                    (time-subtract after-init-time before-init-time)))
+                    (time-since before-init-time)))
            gcs-done))
-(add-hook 'emacs-startup-hook #'custo/display-startup-time)
+;;(add-hook 'emacs-startup-hook #'custo/display-startup-time)
+(add-hook 'custo/final-hook #'custo/display-startup-time)
 
 ;;;
 ;;; CUSTOM VARS
@@ -190,31 +191,74 @@ and Emacs states, and for non-evil users.")
   )
 
 
-;; setup straight for package management, its much better than use-package
-(setq straight-use-package-by-default t
-      straight-repository-branch "master"
-      ;; single file for caching autoloads
-      straight-cache-autoloads t
-      ;; NOTE: requires python3 and watchexec
-      ;; straight-check-for-modifications '(watch-files find-when-checking)
-      ;; NOTE: requires no watchexec
-      straight-find-executable "fd"
-      straight-check-for-modifications '(check-on-save find-when-checking)
-      )
+(defvar elpaca-installer-version 0.2)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil
+                              :files (:defaults (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(when-let ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+           (build (expand-file-name "elpaca/" elpaca-builds-directory))
+           (order (cdr elpaca-order))
+           ((add-to-list 'load-path (if (file-exists-p build) build repo)))
+           ((not (file-exists-p repo))))
+  (condition-case-unless-debug err
+      (if-let ((buffer (pop-to-buffer-same-window "*elpaca-installer*"))
+               ((zerop (call-process "git" nil buffer t "clone"
+                                     (plist-get order :repo) repo)))
+               (default-directory repo)
+               ((zerop (call-process "git" nil buffer t "checkout"
+                                     (or (plist-get order :ref) "--"))))
+               (emacs (concat invocation-directory invocation-name))
+               ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                     "--eval" "(byte-recompile-directory \".\" 0 'force)"))))
+          (progn (require 'elpaca)
+                 (elpaca-generate-autoloads "elpaca" repo)
+                 (kill-buffer buffer))
+        (error "%s" (with-current-buffer buffer (buffer-string))))
+    ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+(require 'elpaca-autoloads)
+;;(add-hook 'after-init-hook #'elpaca-process-queues)
+(add-hook 'custo/after-startup-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-(straight-use-package 'use-package)
+;; Install use-package support
+(elpaca elpaca-use-package
+  ;; Enable :elpaca use-package keyword.
+  (elpaca-use-package-mode)
+  ;; Assume :elpaca t unless otherwise specified.
+  (setq elpaca-use-package-by-default t))
+
+;; Block until current queue processed.
+(elpaca-wait)
+
+;; ;; setup straight for package management, its much better than use-package
+;; (setq straight-use-package-by-default t
+;;       straight-repository-branch "master"
+;;       ;; single file for caching autoloads
+;;       straight-cache-autoloads t
+;;       ;; NOTE: requires python3 and watchexec
+;;       ;; straight-check-for-modifications '(watch-files find-when-checking)
+;;       ;; NOTE: requires no watchexec
+;;       straight-find-executable "fd"
+;;       straight-check-for-modifications '(check-on-save find-when-checking)
+;;       )
+
+;; (defvar bootstrap-version)
+;; (let ((bootstrap-file
+;;        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+;;       (bootstrap-version 5))
+;;   (unless (file-exists-p bootstrap-file)
+;;     (with-current-buffer
+;;         (url-retrieve-synchronously
+;;          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+;;          'silent 'inhibit-cookies)
+;;       (goto-char (point-max))
+;;       (eval-print-last-sexp)))
+;;   (load bootstrap-file nil 'nomessage))
+;; (straight-use-package 'use-package)
 
 ;;
 ;; CUSTOM HOOKS
@@ -238,15 +282,20 @@ and Emacs states, and for non-evil users.")
 (defvar custo/after-init-hook nil
   "Hook called after init or server frame")
 
+(defvar custo/final-hook nil
+  "Hook called last.")
+
 (defun custo/run-init-hooks ()
   "Run all custo-after-init hooks."
   (run-hooks 'custo/after-init-hook)
   (run-hooks 'custo/after-load-hook)
+  (run-hooks 'custo/final-hook)
   )
 
-(add-hook 'custo/after-startup-hook 'custo/run-init-hooks)
-;;(add-hook 'after-init-hook 'custo/run-after-init-hooks)
-;;(add-hook 'server-after-make-frame-hook 'custo/run-after-init-hooks)
+;;(add-hook 'custo/after-startup-hook 'custo/run-init-hooks)
+(add-hook 'elpaca-after-init-hook 'custo/run-init-hooks)
+;;(add-hook 'elpaca-after-init-hook 'custo/run-after-init-hooks)
+;;(add-hook 'elpaca-server-after-make-frame-hook 'custo/run-after-init-hooks)
 
 ;; creates a private config file to store custom locals used by this config
 (defconst private-file (expand-file-name "~/.private.el"))
@@ -349,14 +398,15 @@ and Emacs states, and for non-evil users.")
   )
 
 
-(use-package savehist
-  :defer t
-  :hook
-  (custo/after-init . (lambda ()
-                        (savehist-mode t)
-                        )
-                    )
-  )
+;;(use-package savehist
+;;  :defer t
+;;  :hook
+(add-hook 'custo/after-init-hook (lambda ()
+				   (require 'savehist)
+				   (savehist-mode t)
+				  )
+)
+;;  )
 
 ;; setup a special menu that tells us what keys are available
 ;; based on the current mode, set pop-up delay to 0.1s
@@ -619,9 +669,9 @@ and Emacs states, and for non-evil users.")
 
 ;; minad' and oantolin's awesome packages:
 (use-package vertico
-  :straight '(:type git :host github
-                    :repo "minad/vertico"
-                    :branch "main")
+  ;;:straight '(:type git :host github
+  ;;                  :repo "minad/vertico"
+  ;;                  :branch "main")
   :defer t
   :hook
   (custo/after-init . (lambda ()
@@ -795,6 +845,7 @@ and Emacs states, and for non-evil users.")
 ;;   )
 
 (use-package emacs
+  :elpaca nil
   :init
   ;; TAB cycle if there are only few candidates
   (setq completion-cycle-threshold nil
@@ -861,28 +912,28 @@ and Emacs states, and for non-evil users.")
   (make-directory (expand-file-name "themes/" user-emacs-directory))
   )
 (setq customacs-theme-directory (expand-file-name "themes/" user-emacs-directory))
-(straight-use-package
- 'spacemacs-theme)
-(straight-use-package
- 'color-theme-sanityinc-tomorrow)
+;; (use-package spacemacs-theme)
+(use-package color-theme-sanityinc-tomorrow)
 (use-package challenger-deep-theme
-  :straight '(:local-repo "challenger-deep-theme"
-                          :type git
-                          :host github
-                          :repo "challenger-deep-theme/emacs"
-                          :file "challenger-deep-theme.el")
+  ;; :straight '(:local-repo "challenger-deep-theme"
+  ;;                         :type git
+  ;;                         :host github
+  ;;                         :repo "challenger-deep-theme/emacs"
+  ;;                         :file "challenger-deep-theme.el")
   :demand t
   )
 
+(use-package base16-theme)
 (use-package autothemer
   :demand t)
+(use-package atom-one-dark-theme)
 (use-package catppuccin-theme
-  :straight '(catppuccin-theme
-              :type git :host github
-              :repo "catppuccin/emacs"
-              :branch "main"
-              :file "catppuccin-theme.el"
-              )
+  ;; :straight '(catppuccin-theme
+  ;;             :type git :host github
+  ;;             :repo "catppuccin/emacs"
+  ;;             :branch "main"
+  ;;             :file "catppuccin-theme.el"
+  ;;             )
   :after autothemer
   :demand t
   :config
@@ -907,23 +958,23 @@ and Emacs states, and for non-evil users.")
                       )
   )
 
-(straight-use-package
- '(doom-catppuccin
-   :local-repo "doom-catppuccin"
-   :type git
-   :host github
-   :repo "mangkoran/themes"
-   :branch "doom-catppuccin"
-   :file "doom-catppuccin-theme.el"
-   :config
-   (setq doom-catppuccin-dark-variant "mocha")
-   )
- )
+;;(straight-use-package
+;; '(doom-catppuccin
+;;   :local-repo "doom-catppuccin"
+;;   :type git
+;;   :host github
+;;   :repo "mangkoran/themes"
+;;   :branch "doom-catppuccin"
+;;   :file "doom-catppuccin-theme.el"
+;;   :config
+;;   (setq doom-catppuccin-dark-variant "mocha")
+;;   )
+;; )
 
 ;; highlight the current column
-(use-package hl-line
-  :hook
-  (prog-mode . hl-line-mode))
+;;(use-package hl-line
+;;  :hook
+;; (prog-mode . hl-line-mode))
 
 ;; for certian versions of emacs, we need to change the backgroun
 (add-hook 'tty-setup-hook
@@ -1204,11 +1255,11 @@ and Emacs states, and for non-evil users.")
 
 (use-package vundo
   :defer t
-  :straight '(:type git :host github
-                    :repo "casouri/vundo"
-                    :branch "master"
-                    :file "vundo.el"
-                    )
+  ;; :straight '(:type git :host github
+  ;;                   :repo "casouri/vundo"
+  ;;                   :branch "master"
+  ;;                   :file "vundo.el"
+  ;;                   )
   :commands (vundo)
   :hook
   (custo/after-general-load . (lambda ()
@@ -1572,6 +1623,7 @@ and Emacs states, and for non-evil users.")
           )
 
 (use-package css-mode
+  :elpaca nil
   :defer t
   :mode ("\\.css\\'" "\\.scss\\'")
   :config
@@ -1590,6 +1642,7 @@ and Emacs states, and for non-evil users.")
 (if (and (fboundp 'treesit-available-p) (treesit-available-p))
     (progn
       (use-package js
+        :elpaca nil
         :mode (("\\.js\\'" . js-ts-mode)
                ("\\.cjs\\'" . js-ts-mode)
                ("\\.mjs\\'" . js-ts-mode)
@@ -1601,6 +1654,7 @@ and Emacs states, and for non-evil users.")
         )
 
       (use-package typescript-ts-mode
+        :elpaca nil
         :defer t
         :mode "\\.ts\\'"
         :config
@@ -1610,6 +1664,7 @@ and Emacs states, and for non-evil users.")
         )
 
       (use-package rust-ts-mode
+        :elpaca nil
         :mode "\\.rs\\'"
         )
       )
@@ -1752,6 +1807,7 @@ and Emacs states, and for non-evil users.")
   )
 
 (use-package conf-mode
+  :elpaca nil
   :defer t
   :mode ("\\.nu\\'"))
 
@@ -1764,9 +1820,9 @@ and Emacs states, and for non-evil users.")
   )
 
 (use-package plantuml-mode
-  :straight '(:type git :host github
-                    :repo "skuro/plantuml-mode"
-                    :branch "develop")
+  ;; :straight '(:type git :host github
+  ;;                   :repo "skuro/plantuml-mode"
+  ;;                   :branch "develop")
   :defer t
   :config
   (setq plantuml-default-exec-mode 'server
@@ -1784,10 +1840,10 @@ and Emacs states, and for non-evil users.")
 
 (use-package wgsl-mode
   :defer t
-  :straight '(:type git :host github
-                    :repo "acowley/wgsl-mode"
-                    :branch "master"
-                    )
+  ;; :straight '(:type git :host github
+  ;;                   :repo "acowley/wgsl-mode"
+  ;;                   :branch "master"
+  ;;                   )
   :mode ("\\.wgsl\\'")
   )
 
@@ -1806,24 +1862,24 @@ and Emacs states, and for non-evil users.")
 
 ;; packages used by eglot
 ;; we try to pull new ones if they exist
-(use-package eldoc)
-(use-package imenu)
-(use-package cl-lib)
-(use-package project)
-(use-package pcase)
-(use-package compile) ; for some faces
-(use-package warnings)
-(use-package flymake
-  :commands (flymake-show-buffer-diagnostics
-             flymake-show-project-diagnostics)
-  :hook
-  ((eglot-managed-mode lsp-mode) . flymake-mode)
-  )
-(use-package xref)
-(use-package jsonrpc)
-(use-package filenotify)
-(use-package ert)
-(use-package array)
+;;(use-package eldoc)
+;;(use-package imenu)
+;; (use-package cl-lib)
+;;(use-package project)
+;;(use-package pcase)
+;;(use-package compile) ; for some faces
+;;(use-package warnings)
+;;(use-package flymake
+;;  :commands (flymake-show-buffer-diagnostics
+;;             flymake-show-project-diagnostics)
+;;  :hook
+;;  ((eglot-managed-mode lsp-mode) . flymake-mode)
+;;  )
+;;(use-package xref)
+;;(use-package jsonrpc)
+;;(use-package filenotify)
+;;(use-package ert)
+;;(use-package array)
 
 ;; enable treesit if it is available
 (add-hook 'custo/after-load-hook (lambda ()
@@ -1926,11 +1982,11 @@ and Emacs states, and for non-evil users.")
         ;; ("g r" . xref-find-references)
         ;; ("g t" . eglot-find-typeDefinition)
         )
-  :general
-  (:states 'normal
-           "g r" 'xref-find-references
-           "g t" 'eglot-find-typeDefinition
-           )
+;;  :general
+;;  (:states 'normal
+;;           "g r" 'xref-find-references
+;;           "g t" 'eglot-find-typeDefinition
+;;           )
   :config
   ;; (setq eldoc-echo-area-use-multiline-p 5)
   ;; (add-to-list 'eglot-server-programs '(web-mode . ("vscode-html-language-server" "--stdio")))
@@ -2235,10 +2291,10 @@ and Emacs states, and for non-evil users.")
 
 
 (use-package org
-  :straight
-  '(org
-    :local-repo nil
-    )
+  ;; :straight
+  ;; '(org
+  ;;   :local-repo nil
+  ;;   )
   :defer t
   :mode ("\\.org\\'" . (lambda ()
                          (require 'ob-js)
@@ -2378,9 +2434,9 @@ and Emacs states, and for non-evil users.")
 
 ;; we'll setup this directory so that ox-gfm doesnt freak out when
 ;; it doesnt see an actual `org` directory
-(unless (file-directory-p (expand-file-name "straight/repos/org/" user-emacs-directory))
-  (make-directory (expand-file-name "straight/repos/org/" user-emacs-directory))
-  )
+;;(unless (file-directory-p (expand-file-name "straight/repos/org/" user-emacs-directory))
+;;  (make-directory (expand-file-name "straight/repos/org/" user-emacs-directory))
+;;  )
 
 
 (use-package ox-gfm
@@ -2440,10 +2496,13 @@ and Emacs states, and for non-evil users.")
 ;; terminal related packages
 (use-package term-cursor
   :if (not (display-graphic-p))
-  :straight '(:type git :host github
-                    :repo "h0d/term-cursor.el"
-                    :branch "master"
-                    :file "term-cursor.el")
+  ;; :straight '(:type git
+  :elpaca '(term-cursor 
+  :host github
+  :repo "h0d/term-cursor.el"
+  ;;:branch "master"
+  ;;:file "term-cursor.el"
+  )
   :defer t
   :commands (term-cursor-mode)
   :hook
@@ -2549,9 +2608,11 @@ and Emacs states, and for non-evil users.")
 
 (use-package gcmh
   :defer t
-  :hook (custo/after-init . gcmh-mode)
+  :hook (custo/final . gcmh-mode)
   :config
-  (setq-default gcmh-idle-delay 'auto  ; default is 15s
+  (setq-default gc-cons-threshold default-gc-cons-threshold
+                gc-cons-percentage default-gc-cons-percentage
+                gcmh-idle-delay 'auto  ; default is 15s
                 gcmh-auto-idle-delay-factor 10
                 gcmh-high-cons-threshold (* 16 1024 1024)  ; 16mb
                 ;; gcmh-verbose t
@@ -2562,3 +2623,25 @@ and Emacs states, and for non-evil users.")
 
 (provide 'init)
 ;;; init ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(safe-local-variable-values
+   '((eval let
+           ((project-directory
+             (car
+              (dir-locals-find-file default-directory))))
+           (add-to-list 'eglot-server-programs
+                        '((js-mode typescript-mode typescript-tsx-jode js-ts-mode typescript-ts-mode tsx-ts-mode)
+                          "./.yarn/sdks/typescript/bin/tsserver" "--stdio"))
+           (setq lsp-clients-typescript-server-args
+                 `("--tsserver-path" ,(concat project-directory "./.yarn/sdks/typescript/bin/tsserver")
+                   "--stdio"))))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

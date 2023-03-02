@@ -74,8 +74,6 @@
           (lambda (&rest _)
             ;; (message "startup hook was fired")
             (setq-default 
-             gc-cons-threshold default-gc-cons-threshold
-             gc-cons-percentage default-gc-cons-percentage
              file-name-handler-alist default-file-name-handler-alist)
 
             ;; delete no longer necessary startup variable
