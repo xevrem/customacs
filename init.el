@@ -19,10 +19,10 @@
   (message "Emacs loaded in %s with %d garbage collections."
            (format "%.2f seconds"
                    (float-time
-                    (time-subtract elpaca-after-init-time before-init-time)))
+                    (time-since before-init-time)))
            gcs-done))
 ;;(add-hook 'emacs-startup-hook #'custo/display-startup-time)
-(add-hook 'elpaca-after-init-hook #'custo/display-startup-time)
+(add-hook 'custo/final-hook #'custo/display-startup-time)
 
 ;;;
 ;;; CUSTOM VARS
