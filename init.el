@@ -889,6 +889,13 @@ and Emacs states, and for non-evil users.")
   (setq catppuccin-flavor 'mocha)
   )
 
+(use-package atom-one-dark-theme)
+(use-package snazzy-theme)
+(use-package gruvbox-theme)
+(use-package zenburn-theme)
+(use-package base16-theme)
+;; (use-package dracula-theme)
+
 (use-package doom-themes
   :defer t
   :hook
