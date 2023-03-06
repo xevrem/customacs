@@ -224,6 +224,8 @@ and Emacs states, and for non-evil users.")
 (add-hook 'custo/after-startup-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
+;; (elpaca-process-queues)
+
 ;; Install use-package support
 (elpaca elpaca-use-package
   ;; Enable :elpaca use-package keyword.
@@ -923,10 +925,8 @@ and Emacs states, and for non-evil users.")
   :demand t
   )
 
-(use-package base16-theme)
 (use-package autothemer
   :demand t)
-(use-package atom-one-dark-theme)
 (use-package catppuccin-theme
   ;; :straight '(catppuccin-theme
   ;;             :type git :host github
@@ -1304,6 +1304,15 @@ and Emacs states, and for non-evil users.")
                             )
   )
 
+(use-package ripgrep
+  :elpaca '(ripgrep
+            :host github
+            :repo "nlamirault/ripgrep.el"
+            :branch "master"
+            :files '("ripgrep.el", "projectile-ripgrep.el")
+            )
+  )
+
 ;; setup project management
 (use-package projectile
   :defer t
@@ -1327,7 +1336,7 @@ and Emacs states, and for non-evil users.")
   (projectile-completion-system 'default)
   :config
   ;; used by projectile-ripgrep
-  (use-package ripgrep)
+  (require 'ripgrep)
   )
 
 (use-package find-file-in-project
@@ -1977,6 +1986,7 @@ and Emacs states, and for non-evil users.")
   (:map eglot-mode-map
         ([remap xref-goto-xref] . custo/xref-goto-xref)
         ([remap evil-lookup] . custo/eldoc)
+
         ;; ([remap eldoc-doc-buffer] . custo/eldoc)
         ;; :map evil-normal-state-map
         ;; ("g r" . xref-find-references)
