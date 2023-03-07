@@ -1303,12 +1303,12 @@ and Emacs states, and for non-evil users.")
   )
 
 (use-package ripgrep
-  :elpaca '(ripgrep
-            :host github
-            :repo "nlamirault/ripgrep.el"
-            :branch "master"
-            :files '("ripgrep.el", "projectile-ripgrep.el")
-            )
+  ;; :elpaca '(ripgrep
+  ;;           :host github
+  ;;           :repo "nlamirault/ripgrep.el"
+  ;;           :branch "master"
+  ;;           :files '("ripgrep.el", "projectile-ripgrep.el")
+  ;;           )
   )
 
 ;; setup project management
