@@ -279,6 +279,9 @@ and Emacs states, and for non-evil users.")
 (defvar custo/after-orderless-init-hook nil
   "Hook called after orderless init.")
 
+(defvar custo/before-init-hook nil
+  "Hook called beofre custo/after-init or server frame")
+
 (defvar custo/after-init-hook nil
   "Hook called after init or server frame")
 
@@ -287,6 +290,7 @@ and Emacs states, and for non-evil users.")
 
 (defun custo/run-init-hooks ()
   "Run all custo-after-init hooks."
+  (run-hooks 'custo/before-init-hook)
   (run-hooks 'custo/after-init-hook)
   (run-hooks 'custo/after-load-hook)
   (run-hooks 'custo/final-hook)
@@ -352,17 +356,18 @@ and Emacs states, and for non-evil users.")
     )
   )
 
-(add-hook 'custo/after-init-hook 'custo/mac-os-compat)
+(add-hook 'custo/before-init-hook 'custo/mac-os-compat)
 
 ;; now we can run setup after we have initialized the first time
-(add-hook 'custo/after-init-hook 'custo/setup-font-faces)
+(add-hook 'custo/before-init-hook 'custo/setup-font-faces)
 
 ;;
 ;; PACKAGE CONFIGURATION
 ;;
 
 ;; add bug-hunter package for finding init.el bugs
-(use-package bug-hunter)
+(use-package bug-hunter
+  :defer t)
 
 ;; get shell variables
 (use-package exec-path-from-shell
@@ -370,17 +375,13 @@ and Emacs states, and for non-evil users.")
   :commands (exec-path-from-shell-initialize
              exec-path-from-shell-copy-env)
   :hook
-  (custo/after-init . (lambda ()
-                        (unless (daemonp)
-                          (when (memq window-system '(mac ns x))
-                            (message "setup env vars")
-                            (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
-                            (exec-path-from-shell-copy-env "JSON_ALLOW_NUL")
-                            (exec-path-from-shell-initialize)
-                            )
-                          )
-                        )
-                    )
+  (custo/before-init . (lambda ()
+                         (message "setup env vars")
+                         (exec-path-from-shell-copy-env "LSP_USE_PLISTS")
+                         (exec-path-from-shell-copy-env "JSON_ALLOW_NUL")
+                         (exec-path-from-shell-initialize)
+                         )
+                     )
   )
 
 
