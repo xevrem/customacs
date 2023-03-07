@@ -191,74 +191,74 @@ and Emacs states, and for non-evil users.")
   )
 
 
-(defvar elpaca-installer-version 0.2)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil
-                              :files (:defaults (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(when-let ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-           (build (expand-file-name "elpaca/" elpaca-builds-directory))
-           (order (cdr elpaca-order))
-           ((add-to-list 'load-path (if (file-exists-p build) build repo)))
-           ((not (file-exists-p repo))))
-  (condition-case-unless-debug err
-      (if-let ((buffer (pop-to-buffer-same-window "*elpaca-installer*"))
-               ((zerop (call-process "git" nil buffer t "clone"
-                                     (plist-get order :repo) repo)))
-               (default-directory repo)
-               ((zerop (call-process "git" nil buffer t "checkout"
-                                     (or (plist-get order :ref) "--"))))
-               (emacs (concat invocation-directory invocation-name))
-               ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                     "--eval" "(byte-recompile-directory \".\" 0 'force)"))))
-          (progn (require 'elpaca)
-                 (elpaca-generate-autoloads "elpaca" repo)
-                 (kill-buffer buffer))
-        (error "%s" (with-current-buffer buffer (buffer-string))))
-    ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-(require 'elpaca-autoloads)
-;;(add-hook 'after-init-hook #'elpaca-process-queues)
-(add-hook 'custo/after-startup-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+;; (defvar elpaca-installer-version 0.2)
+;; (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+;; (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+;; (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+;; (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+;;                               :ref nil
+;;                               :files (:defaults (:exclude "extensions"))
+;;                               :build (:not elpaca--activate-package)))
+;; (when-let ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+;;            (build (expand-file-name "elpaca/" elpaca-builds-directory))
+;;            (order (cdr elpaca-order))
+;;            ((add-to-list 'load-path (if (file-exists-p build) build repo)))
+;;            ((not (file-exists-p repo))))
+;;   (condition-case-unless-debug err
+;;       (if-let ((buffer (pop-to-buffer-same-window "*elpaca-installer*"))
+;;                ((zerop (call-process "git" nil buffer t "clone"
+;;                                      (plist-get order :repo) repo)))
+;;                (default-directory repo)
+;;                ((zerop (call-process "git" nil buffer t "checkout"
+;;                                      (or (plist-get order :ref) "--"))))
+;;                (emacs (concat invocation-directory invocation-name))
+;;                ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+;;                                      "--eval" "(byte-recompile-directory \".\" 0 'force)"))))
+;;           (progn (require 'elpaca)
+;;                  (elpaca-generate-autoloads "elpaca" repo)
+;;                  (kill-buffer buffer))
+;;         (error "%s" (with-current-buffer buffer (buffer-string))))
+;;     ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+;; (require 'elpaca-autoloads)
+;; ;;(add-hook 'after-init-hook #'elpaca-process-queues)
+;; (add-hook 'custo/after-startup-hook #'elpaca-process-queues)
+;; (elpaca `(,@elpaca-order))
 
-;; Install use-package support
-(elpaca elpaca-use-package
-  ;; Enable :elpaca use-package keyword.
-  (elpaca-use-package-mode)
-  ;; Assume :elpaca t unless otherwise specified.
-  (setq elpaca-use-package-by-default t))
+;; ;; Install use-package support
+;; (elpaca elpaca-use-package
+;;   ;; Enable :elpaca use-package keyword.
+;;   (elpaca-use-package-mode)
+;;   ;; Assume :elpaca t unless otherwise specified.
+;;   (setq elpaca-use-package-by-default t))
 
-;; Block until current queue processed.
-(elpaca-wait)
+;; ;; Block until current queue processed.
+;; (elpaca-wait)
 
-;; ;; setup straight for package management, its much better than use-package
-;; (setq straight-use-package-by-default t
-;;       straight-repository-branch "master"
-;;       ;; single file for caching autoloads
-;;       straight-cache-autoloads t
-;;       ;; NOTE: requires python3 and watchexec
-;;       ;; straight-check-for-modifications '(watch-files find-when-checking)
-;;       ;; NOTE: requires no watchexec
-;;       straight-find-executable "fd"
-;;       straight-check-for-modifications '(check-on-save find-when-checking)
-;;       )
+;; setup straight for package management, its much better than use-package
+(setq straight-use-package-by-default t
+      straight-repository-branch "master"
+      ;; single file for caching autoloads
+      straight-cache-autoloads t
+      ;; NOTE: requires python3 and watchexec
+      ;; straight-check-for-modifications '(watch-files find-when-checking)
+      ;; NOTE: requires no watchexec
+      straight-find-executable "fd"
+      straight-check-for-modifications '(check-on-save find-when-checking)
+      )
 
-;; (defvar bootstrap-version)
-;; (let ((bootstrap-file
-;;        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-;;       (bootstrap-version 5))
-;;   (unless (file-exists-p bootstrap-file)
-;;     (with-current-buffer
-;;         (url-retrieve-synchronously
-;;          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-;;          'silent 'inhibit-cookies)
-;;       (goto-char (point-max))
-;;       (eval-print-last-sexp)))
-;;   (load bootstrap-file nil 'nomessage))
-;; (straight-use-package 'use-package)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(straight-use-package 'use-package)
 
 ;;
 ;; CUSTOM HOOKS
@@ -292,10 +292,10 @@ and Emacs states, and for non-evil users.")
   (run-hooks 'custo/final-hook)
   )
 
-;;(add-hook 'custo/after-startup-hook 'custo/run-init-hooks)
-(add-hook 'elpaca-after-init-hook 'custo/run-init-hooks)
+(add-hook 'custo/after-startup-hook 'custo/run-init-hooks)
+;;(add-hook 'elpaca-after-init-hook 'custo/run-init-hooks)
 ;;(add-hook 'elpaca-after-init-hook 'custo/run-after-init-hooks)
-;;(add-hook 'elpaca-server-after-make-frame-hook 'custo/run-after-init-hooks)
+
 
 ;; creates a private config file to store custom locals used by this config
 (defconst private-file (expand-file-name "~/.private.el"))
@@ -478,7 +478,7 @@ and Emacs states, and for non-evil users.")
                              :global-prefix custo-local-leader-alt-key)
                            ;; define default keybinds
                            (custo/leader-key
-                             ;; "SPC" '(execute-extended-command :wk "M-x") 
+                             "SPC" '(execute-extended-command :wk "M-x") 
                              "TAB" '(evil-switch-to-windows-last-buffer :wk "switch to previous buffer")
                              ":" '(execute-extended-command :wk "M-x")
                              "X" '(execute-extended-command-for-buffer :wk "M-x for buffer")
@@ -845,7 +845,6 @@ and Emacs states, and for non-evil users.")
 ;;   )
 
 (use-package emacs
-  :elpaca nil
   :init
   ;; TAB cycle if there are only few candidates
   (setq completion-cycle-threshold nil
@@ -854,7 +853,7 @@ and Emacs states, and for non-evil users.")
         tab-always-indent 'complete
         ;; do your best not to complete when you should not
         ;; two tabs issues completion
-        tab-first-completion 'word-or-paren-or-punct
+        tab-first-completion 'word
         )
   )
 
@@ -915,11 +914,11 @@ and Emacs states, and for non-evil users.")
 ;; (use-package spacemacs-theme)
 (use-package color-theme-sanityinc-tomorrow)
 (use-package challenger-deep-theme
-  ;; :straight '(:local-repo "challenger-deep-theme"
-  ;;                         :type git
-  ;;                         :host github
-  ;;                         :repo "challenger-deep-theme/emacs"
-  ;;                         :file "challenger-deep-theme.el")
+  :straight '(:local-repo "challenger-deep-theme"
+                          :type git
+                          :host github
+                          :repo "challenger-deep-theme/emacs"
+                          :file "challenger-deep-theme.el")
   :demand t
   )
 
@@ -928,12 +927,12 @@ and Emacs states, and for non-evil users.")
   :demand t)
 (use-package atom-one-dark-theme)
 (use-package catppuccin-theme
-  ;; :straight '(catppuccin-theme
-  ;;             :type git :host github
-  ;;             :repo "catppuccin/emacs"
-  ;;             :branch "main"
-  ;;             :file "catppuccin-theme.el"
-  ;;             )
+  :straight '(catppuccin-theme
+              :type git :host github
+              :repo "catppuccin/emacs"
+              :branch "main"
+              :file "catppuccin-theme.el"
+              )
   :after autothemer
   :demand t
   :config
@@ -1616,7 +1615,6 @@ and Emacs states, and for non-evil users.")
           )
 
 (use-package css-mode
-  :elpaca nil
   :defer t
   :mode ("\\.css\\'" "\\.scss\\'")
   :config
@@ -1635,7 +1633,6 @@ and Emacs states, and for non-evil users.")
 (if (and (fboundp 'treesit-available-p) (treesit-available-p))
     (progn
       (use-package js
-        :elpaca nil
         :mode (("\\.js\\'" . js-ts-mode)
                ("\\.cjs\\'" . js-ts-mode)
                ("\\.mjs\\'" . js-ts-mode)
@@ -1647,7 +1644,6 @@ and Emacs states, and for non-evil users.")
         )
 
       (use-package typescript-ts-mode
-        :elpaca nil
         :defer t
         :mode "\\.ts\\'"
         :config
@@ -1657,7 +1653,6 @@ and Emacs states, and for non-evil users.")
         )
 
       (use-package rust-ts-mode
-        :elpaca nil
         :mode "\\.rs\\'"
         )
       )
@@ -1800,7 +1795,6 @@ and Emacs states, and for non-evil users.")
   )
 
 (use-package conf-mode
-  :elpaca nil
   :defer t
   :mode ("\\.nu\\'"))
 
@@ -1906,25 +1900,11 @@ and Emacs states, and for non-evil users.")
                                              (yaml "https://github.com/ikatyang/tree-sitter-yaml")
                                              )
                                            )
-                                     ;; ensures treesit-auto auto-applies the remap after install
-                                     ;; (advice-add 'treesit-install-language-grammar
-                                     ;;             :after (lambda (&rest _r) (treesit-auto-apply-remap)))
-                                     
-                                     ;; (use-package treesit-auto
-                                     ;;   :if (treesit-available-p)
-                                     ;;   :straight '(
-                                     ;;               :local-repo "treesit-auto"
-                                     ;;               :type git
-                                     ;;               :host github
-                                     ;;               :repo "renzmann/treesit-auto"
-                                     ;;               :file "treesit/auto.el"
-                                     ;;               )
-                                     ;;   :demand t
-                                     ;;   ;; :config
-                                     ;;   ;; (treesit-auto-apply-remap)
-                                     ;;   )
+                                     (defun install-all-treesit ()
+                                       "Installs all tree sitter packages."
+                                       (dolist (entry treesit-language-source-alist)
+                                         (treesit-install-language-grammar (car entry))))
                                      )
-                                   ;; ensure that javascript is properly setup
                                    )
 
           )
@@ -2284,10 +2264,10 @@ and Emacs states, and for non-evil users.")
 
 
 (use-package org
-  ;; :straight
-  ;; '(org
-  ;;   :local-repo nil
-  ;;   )
+  :straight
+  '(org
+    :local-repo nil
+    )
   :defer t
   :mode ("\\.org\\'" . (lambda ()
                          (require 'ob-js)
@@ -2427,9 +2407,9 @@ and Emacs states, and for non-evil users.")
 
 ;; we'll setup this directory so that ox-gfm doesnt freak out when
 ;; it doesnt see an actual `org` directory
-;;(unless (file-directory-p (expand-file-name "straight/repos/org/" user-emacs-directory))
-;;  (make-directory (expand-file-name "straight/repos/org/" user-emacs-directory))
-;;  )
+(unless (file-directory-p (expand-file-name "straight/repos/org/" user-emacs-directory))
+ (make-directory (expand-file-name "straight/repos/org/" user-emacs-directory))
+ )
 
 
 (use-package ox-gfm
@@ -2489,13 +2469,12 @@ and Emacs states, and for non-evil users.")
 ;; terminal related packages
 (use-package term-cursor
   :if (not (display-graphic-p))
-  ;; :straight '(:type git
-  :elpaca '(term-cursor 
-  :host github
-  :repo "h0d/term-cursor.el"
-  ;;:branch "master"
-  ;;:file "term-cursor.el"
-  )
+  :straight '(:type git
+                    :host github
+                    :repo "h0d/term-cursor.el"
+                    ;;:branch "master"
+                    :file "term-cursor.el"
+                    )
   :defer t
   :commands (term-cursor-mode)
   :hook
@@ -2615,26 +2594,3 @@ and Emacs states, and for non-evil users.")
 ;; (custo/run-after-init-hooks)
 
 (provide 'init)
-;;; init ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(safe-local-variable-values
-   '((eval let
-           ((project-directory
-             (car
-              (dir-locals-find-file default-directory))))
-           (add-to-list 'eglot-server-programs
-                        '((js-mode typescript-mode typescript-tsx-jode js-ts-mode typescript-ts-mode tsx-ts-mode)
-                          "./.yarn/sdks/typescript/bin/tsserver" "--stdio"))
-           (setq lsp-clients-typescript-server-args
-                 `("--tsserver-path" ,(concat project-directory "./.yarn/sdks/typescript/bin/tsserver")
-                   "--stdio"))))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
