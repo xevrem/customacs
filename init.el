@@ -1485,10 +1485,10 @@ and Emacs states, and for non-evil users.")
                                   )
                                 )
                             )
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  ;; :custom
+  ;; (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :config
-  (setq magit-diff-refine-hunk t ; show granular diffs in selected hunk
+  (setq ;; magit-diff-refine-hunk t ; show granular diffs in selected hunk
         ;; Don't autosave repo buffers. This is too magical, and saving can
         ;; trigger a bunch of unwanted side-effects, like save hooks and
         ;; formatters. Trust the user to know what they're doing.
@@ -1502,8 +1502,8 @@ and Emacs states, and for non-evil users.")
         ;; only show whitespace that causes issues
         magit-diff-paint-whitespace 'uncommitted 
         )
-  (remove-hook 'magit-refs-sections-hook 'magit-insert-tags)
-  (remove-hook 'server-switch-hook 'magit-commit-diff)
+  ;; (remove-hook 'magit-refs-sections-hook 'magit-insert-tags)
+  ;; (remove-hook 'server-switch-hook 'magit-commit-diff)
   )
 
 ;;enable super syntax highlighting
